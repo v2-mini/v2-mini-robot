@@ -1,0 +1,22 @@
+
+<?xml version="1.0"?>
+<package>
+  <name>v2-mini</name>
+  <version>0.0.1</version>
+  <description>Metapackage of software to install on V2-Mini.</description>
+
+  <maintainer email="intelligence@openrobotics.ca">openrobotics</maintainer>
+  <author email="jmoore90@hotmail.ca">Jonathan Moore</author>
+
+  <license>BSD</license>
+
+  <url type="website">http://openrobotics.ca/</url>
+
+  <!-- <run_depend>...</run_depend> -->
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <export>
+    <metapackage />
+  </export>
+</package>
