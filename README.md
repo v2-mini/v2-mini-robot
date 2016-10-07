@@ -1,3 +1,3 @@
-# V2-Mini Robot
+# V2-Mini
 
-## Packages for the V2-Mini
+## ROS packages for the V2-Mini Robot.
