@@ -8,7 +8,7 @@ ros::NodeHandle nh;
 std_msgs::String str_msg;
 ros::Publisher megaware("megaware", &str_msg);
 
-char hello[13] = "hello world!";
+char hello[16] = "hello fn world!";
 
 void setup()
 {

@@ -23,3 +23,7 @@ rosserial_add_client_target(firmware unoware ALL)
 rosserial_add_client_target(firmware megaware ALL)
 rosserial_add_client_target(firmware unoware-upload)
 rosserial_add_client_target(firmware megaware-upload)
+
+install(DIRECTORY launch
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)

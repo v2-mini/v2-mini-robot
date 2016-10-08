@@ -3,6 +3,7 @@
 *.bag
 *build/
 *devel/
+CMakeLists.txt
 
 # Compiled source #
 ###################
