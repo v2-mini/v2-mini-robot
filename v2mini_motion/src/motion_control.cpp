@@ -1,63 +1,105 @@
 #include <ros/ros.h>
+#include <ros/console.h>
 #include <geometry_msgs/Twist.h>
 #include <stdlib.h>
-#include <ros/console.h>
+#include <stdio.h>
+#include <ncurses.h>
 
 /**
- * Control movements of the base and torso autonomously, or with a UI.
+ * Control movements of the base and torso autonomously or remotely.
  */
 
-void keyboard_ui(geometry_msgs::Twist& base_msg) {
+class Remote_Control {
 
-  // get the commands...
-
-  base_msg.linear.x = 1;
-  base_msg.linear.y = 1;
-  base_msg.linear.z = 1;
-  base_msg.angular.z = 1;
-}
-
-void autonomous(geometry_msgs::Twist& base_msg) {
-  // todo
-}
-
-int main(int argc, char **argv) {
-
-  ros::init(argc, argv, "motion_control");
+private:
   ros::NodeHandle n;
+  ros::Publisher base_pub;
 
+public:
+  Remote_Control(ros::NodeHandle &nh) {
+    n = nh;
+    base_pub = n.advertise<geometry_msgs::Twist>("motion_cmds", 1);
+  }
+
+  void keyboard_interface() {
+
+    ros::Rate loop_rate(50);
+
+    char key_cmd;
+    initscr();
+    cbreak();
+    timeout(100);
+
+    while(ros::ok()){
+
+      geometry_msgs::Twist motion_cmds;
+
+      key_cmd = getch();  // update to read multiple keys concurrently
+
+        if(key_cmd == 'w') {
+          // set y-velocity -> forwards
+          motion_cmds.linear.y = 1;
+
+        } else if(key_cmd == 's') {
+          // set y-velocity -> backwards
+          motion_cmds.linear.y = -1;
+
+        } else if(key_cmd == 'd') {
+          // set x-velocity -> right
+          motion_cmds.linear.x = 1;
+
+        } else if(key_cmd == 'a') {
+          // set x-velocity -> left
+          motion_cmds.linear.x = -1;
+
+        } else if(key_cmd == 'i') {
+          // set angular velocity -> CCW
+          motion_cmds.angular.z = 1;
+
+        } else if(key_cmd == 'o') {
+          // set angular velocity -> CW
+          motion_cmds.angular.z = -1;
+
+        } else if(key_cmd == 'r') {
+          // set delta torso height -> up
+          motion_cmds.linear.z = 1;
+
+        } else if(key_cmd == 'f') {
+          // set delta torso height -> down
+          motion_cmds.linear.z = -1;
+
+        } else if(key_cmd == 'b') {
+          break;
+
+        }
+        //publish the movement commands
+        base_pub.publish(motion_cmds);
+        loop_rate.sleep();
+      }
+
+      nocbreak();
+  }
+};
+
+int main(int argc, char** argv)
+{
+  ros::init(argc, argv, "motion_control");
+  ros::NodeHandle nh;
+
+  // Get type of control from param (auto or remote)
   std::string control_type;
   ros::NodeHandle pnh("~");
-  // Need the type of control (_control:=auto or _control:=remote).
   pnh.getParam("control", control_type);
-
-  if (control_type != "remote" && control_type != "auto") {
-    control_type = "remote"; // change default to auto later...
-  }
 
   ROS_DEBUG_STREAM("control type:" << control_type);
 
-  // Publish base velocities and torso height
-  ros::Publisher base_pub = n.advertise<geometry_msgs::Twist>(
-    "base_cmds", 3);
+  if (control_type == "remote"){
+    Remote_Control robocontrol(nh);
+    robocontrol.keyboard_interface();
 
-  // loop at 10 Hz
-  ros::Rate loop_rate(10);
-
-  while (ros::ok()) {
-
-    geometry_msgs::Twist base_msg;
-
-    if (control_type == "remote"){
-      keyboard_ui(base_msg);
-    } else {
-      autonomous(base_msg);
-    }
-
-    base_pub.publish(base_msg);
-
-    loop_rate.sleep();
-
+  } else {
+    // todo --> autonomous
   }
+
   return 0;
 }

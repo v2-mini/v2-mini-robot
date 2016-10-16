@@ -9,13 +9,13 @@ ros::NodeHandle nh;
 int out1 = 13;
 
 // ros vars
-int velx, vely, velang, height;
+int velX, velY, velAngular, torso_height;
 
 void motion_cb(const geometry_msgs::Twist& motion_cmds) {
-  velx = motion_cmds.linear.x;
-  vely = motion_cmds.linear.y;
-  velang = motion_cmds.angular.z;
-  height = motion_cmds.linear.z;
+  velX = motion_cmds.linear.x;
+  velY = motion_cmds.linear.y;
+  velAngular = motion_cmds.angular.z;
+  torso_height = motion_cmds.linear.z;
 }
 
 ros::Subscriber<geometry_msgs::Twist> sub_motion(
@@ -24,9 +24,9 @@ ros::Subscriber<geometry_msgs::Twist> sub_motion(
 void move_base() {
 
   digitalWrite(out1, LOW);
-  delay(vely*1000);
+  delay(velY*1000);
   digitalWrite(out1, HIGH);
-  delay(vely*1000);
+  delay(velY*1000);
 }
 
 void move_torso() {
@@ -56,7 +56,6 @@ void loop() {
   // State 4: Measure ultrasonics ---
 
   // State 5: Calculate base error ---
-
 
   nh.spinOnce();
   delay(1);
