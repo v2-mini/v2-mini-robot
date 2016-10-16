@@ -1,25 +1,63 @@
-#include <ros.h>
-#include <std_msgs/String.h>
-
 #include <Arduino.h>
+
+#include <ros.h>
+#include "geometry_msgs/Twist.h"
 
 ros::NodeHandle nh;
 
-std_msgs::String str_msg;
-ros::Publisher unoware("unoware", &str_msg);
+// arduino vars
+int out1 = 13;
 
-char hello[16] = "hello fn world!";
+// ros vars
+int velx, vely, velang, height;
 
-void setup()
-{
-  nh.initNode();
-  nh.advertise(unoware);
+void motion_cb(const geometry_msgs::Twist& motion_cmds) {
+  velx = motion_cmds.linear.x;
+  vely = motion_cmds.linear.y;
+  velang = motion_cmds.angular.z;
+  height = motion_cmds.linear.z;
 }
 
-void loop()
-{
-  str_msg.data = hello;
-  unoware.publish( &str_msg );
+ros::Subscriber<geometry_msgs::Twist> sub_motion(
+  "base_cmds", &motion_cb);
+
+void move_base() {
+
+  digitalWrite(out1, LOW);
+  delay(vely*1000);
+  digitalWrite(out1, HIGH);
+  delay(vely*1000);
+}
+
+void move_torso() {
+}
+
+void setup() {
+
+  // arduino setup
+  pinMode(out1, OUTPUT);
+
+  // ros setup
+  nh.initNode();
+  nh.subscribe(sub_motion);
+
+}
+
+void loop() {
+
+  // State 1: Move the base ---
+  move_base();
+
+
+  // State 2: Move the torso ---
+
+  // State 3: Measure the batteries ---
+
+  // State 4: Measure ultrasonics ---
+
+  // State 5: Calculate base error ---
+
+
   nh.spinOnce();
-  delay(1000);
+  delay(1);
 }
