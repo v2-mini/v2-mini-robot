@@ -5,6 +5,14 @@
 *devel/
 CMakeLists.txt
 
+# eclipse #
+###########
+*.metadata/
+*.settings/
+*.project
+*.cproject
+*Debug/
+
 # Compiled source #
 ###################
 *.com

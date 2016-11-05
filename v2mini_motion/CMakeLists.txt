@@ -5,6 +5,10 @@ project(v2mini_motion)
 find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs geometry_msgs genmsg)
 find_package(PkgConfig REQUIRED)
 
+#include_directories(include)
+
+INCLUDE(FindPkgConfig)
+
 ## Generate added messages and services
 #generate_messages(DEPENDENCIES std_msgs)
 
@@ -18,5 +22,7 @@ add_executable(motion_control src/motion_control.cpp)
 target_link_libraries(motion_control ${catkin_LIBRARIES})
 target_link_libraries(motion_control ${catkin_LIBRARIES} ncurses)
 target_link_libraries(motion_control ${ncurses++_LIBRARIES})
+target_link_libraries(motion_control ${catkin_LIBRARIES} SDL2)
+target_link_libraries(motion_control ${SDL2_LIBRARIES})
 add_dependencies(motion_control v2mini_motion_generate_messages_cpp)
 add_dependencies(motion_control ${catkin_EXPORTED_TARGETS} motion_control)
