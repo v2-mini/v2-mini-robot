@@ -35,9 +35,9 @@ RobotController::RobotController() {
 			SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 
 			// todo remove .png stuff vv
-
 			IMG_Init(IMG_INIT_PNG);
-			SDL_Surface* loadedSurface = IMG_Load("robo_icon.jpg");
+//			std::string ros_path = ros::package::getPath("v2mini_robot")
+			SDL_Surface* loadedSurface = IMG_Load("/home/jon/Pictures/robo_icon.jpg"); //todo make rel path
 			texture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
 			SDL_FreeSurface(loadedSurface);
 
@@ -76,10 +76,10 @@ int* RobotController::getKeyCmds() {
 	if (keys[SDL_SCANCODE_LEFT] != keys[SDL_SCANCODE_RIGHT]) {
 
 		if (keys[SDL_SCANCODE_RIGHT] == 1) {
-			icon_vel[0] = 1;
+			icon_vel[0] = 10000;
 
 		} else {
-			icon_vel[0] = -1;
+			icon_vel[0] = -10000;
 		}
 
 	} else {
@@ -90,10 +90,10 @@ int* RobotController::getKeyCmds() {
 	if (keys[SDL_SCANCODE_UP] != keys[SDL_SCANCODE_DOWN]) {
 
 		if (keys[SDL_SCANCODE_UP] == 1) {
-			icon_vel[1] = 1;
+			icon_vel[1] = 10000;
 
 		} else {
-			icon_vel[1] = -1;
+			icon_vel[1] = -10000;
 		}
 
 	} else {
@@ -104,10 +104,10 @@ int* RobotController::getKeyCmds() {
 	if (keys[SDL_SCANCODE_Q] != keys[SDL_SCANCODE_W]) {
 
 		if (keys[SDL_SCANCODE_Q] == 1) {
-			icon_vel[2] = 1;
+			icon_vel[2] = 10000;
 
 		} else {
-			icon_vel[2] = -1;
+			icon_vel[2] = -10000;
 		}
 
 	} else {
@@ -120,10 +120,10 @@ int* RobotController::getKeyCmds() {
 	if (keys[SDL_SCANCODE_R] != keys[SDL_SCANCODE_F]) {
 
 		if (keys[SDL_SCANCODE_R] == 1) {
-			torso_vel = 1;
+			torso_vel = 10000;
 
 		} else {
-			torso_vel = -1;
+			torso_vel = -10000;
 		}
 	}
 
