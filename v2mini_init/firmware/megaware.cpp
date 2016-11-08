@@ -5,49 +5,43 @@
 ros::NodeHandle nh;
 
 // --> probably need min threshold speed too (ie not 0).
-const int max_speed = 200;         // rps ...update val
-const int wheel_radius = 400;         // cm ...
-const int base_radius = 16;         // cm ...
-const int speed_increment = 1;
+const int MAX_MOTOR_SPEED = 150;         // rps ...update vals
+const int WHEEL_RADIUS = 400;         // cm ...
+const int BASE_RADIUS = 16;         // cm ...
+const int SPEED_INC = 1;
 
-// Front-Right base motor.
-const int motorR_pwm = 4;
-const int motorR_d1 = 52;
-const int motorR_d2 = 50;
+// PINS { F, B, R, L }
+const int BASE_MOTOR_PWM[] = {5, 2, 4, 3};
+const int BASE_MOTOR_D1[] = {48, 44, 50, 40};
+const int BASE_MOTOR_D2[] = {46, 38, 52, 42};
 
-// Front-Left base motor.
-const int motorF_pwm = 5;
-const int motorF_d1 = 46;
-const int motorF_d2 = 48;
+const float ROT_FACTOR = PI / 180 * BASE_RADIUS;
 
-// Back-Right base motor.
-const int motorB_pwm = 2;
-const int motorB_d1 = 38;
-const int motorB_d2 = 44;
+// Motor Matrix: (F, B, R, L) ^ T
+// Each row is: { -sin(a), cos(a), ROT_FACTOR}
+// Where a is the angle from the x-axis to the motor-axis
+const float MOTOR_MATRIX[4][3] = {
+  { -1.0, 0, ROT_FACTOR },
+  { 1.0, 0, ROT_FACTOR },
+  { 0, 1.0, ROT_FACTOR },
+  { 0, -1.0, ROT_FACTOR },
+};
 
-// Back-Left base motor.
-const int motorL_pwm = 3;
-const int motorL_d1 = 42;
-const int motorL_d2 = 40;
+// { x vel, y vel, angular vel }
+float input_velocity[] = {0, 0, 0};
+float torso_height = 0;
 
-// Only need to calculate motor speeds for FR & FL.
-const float motor_vectorR[] = {0, 1.0, 1.0};
-const float motor_vectorF[] = {-1.0, 0.0, 1.0};
-
-float velX, velY, velW, torso_height;
-
-volatile bool cwR_actual, cwF_actual;
-volatile bool R_isStopped, F_isStopped = true;
-volatile float motorR_speedPrev, motorF_speedPrev = 0;
-volatile float motorB_speedPrev, motorL_speedPrev = 0;
-volatile float motorR_speedErr, motorF_speedErr = 0;
-volatile float motorB_speedErr, motorL_speedErr = 0;
+// { F, B, R, L }
+float motor_speed_previous[] = {0, 0, 0, 0};
+float motor_speed_error[] = {0, 0, 0, 0};
+bool motor_stopped[] = {true, true, true, true};
+bool cw_rotation_actual[3];
 
 // "base_cmds" subscription callback.
 void motion_cb(const geometry_msgs::Twist& motion_cmds) {
-  velX = motion_cmds.linear.x;
-  velY = motion_cmds.linear.y;
-  velW = motion_cmds.angular.z;
+  input_velocity[0] = motion_cmds.linear.x;
+  input_velocity[1] = motion_cmds.linear.y;
+  input_velocity[2] = motion_cmds.angular.z;
   torso_height = motion_cmds.linear.z;
 }
 
@@ -80,13 +74,13 @@ float new_motor_speed(float speed, float prev_speed) {
   float delta_speed = prev_speed - speed;
 
   bool same_dir = speed > 0 ? true: false;
-  bool full_increment = abs(delta_speed) > speed_increment ? true: false;
+  bool full_increment = abs(delta_speed) > SPEED_INC ? true: false;
   bool decrease_speed = delta_speed > 0 ? true: false;
 
   if (!same_dir) {
     if (full_increment) {
       // Decrease speed.
-      new_speed = prev_speed - speed_increment;
+      new_speed = prev_speed - SPEED_INC;
     } else {
       // Come to a stop.
       new_speed = 0;
@@ -95,7 +89,7 @@ float new_motor_speed(float speed, float prev_speed) {
   } else if (decrease_speed) {
     if (full_increment) {
       // Decrease speed.
-      new_speed = prev_speed - speed_increment;
+      new_speed = prev_speed - SPEED_INC;
     } else {
       // Set to desired.
       new_speed = speed;
@@ -104,7 +98,7 @@ float new_motor_speed(float speed, float prev_speed) {
   } else {
     if (full_increment) {
       // Increase speed.
-      new_speed = prev_speed + speed_increment;
+      new_speed = prev_speed + SPEED_INC;
     } else {
       // Set to desired.
       new_speed = speed;
@@ -124,170 +118,123 @@ Control the velocity of the base:
 3 Accelerate or Decelerate the motors by comparing the
   desired state with the previous state.
 
-- Acceleration is determined by the size of 'speed_increment',
+- Acceleration is determined by the size of 'SPEED_INC',
   and by the delay between each 'analogWrite()'
 
 *********************************************************/
 void move_base() {
 
-  float motorR_speed, motorL_speed, motorF_speed, motorB_speed;
-  bool cwR_desired, cwF_desired;
+  // F, B, R, L
+  float motor_speed[] = {0, 0, 0, 0};
+  bool cw_rotation[3];
 
-  // Calculate desired motor speeds.
-  motorR_speed =
-  motor_vectorR[0] * velX + motor_vectorR[1] * velY +
-  motor_vectorR[2] * velW * PI / 180 * base_radius;
-
-  motorF_speed =
-  motor_vectorF[0] * velX + motor_vectorF[1] * velY +
-  motor_vectorF[2] * velW * PI / 180 * base_radius;
-
-  motorL_speed = -motorR_speed;
-  motorB_speed = -motorF_speed;
-
-  // Adjust for error. ------>  (TODO VARIFY METHOD).
-  motorR_speed = motorR_speed + motorR_speedErr;
-  motorF_speed = motorF_speed + motorF_speedErr;
-  motorB_speed = motorB_speed + motorB_speedErr;
-  motorL_speed = motorL_speed + motorL_speedErr;
-
-  // Reset error
-  motorR_speedErr = motorL_speedErr = 0;
-  motorF_speedErr = motorB_speedErr = 0;
-
-  // Calculate desired motor direction.
-  cwR_desired = motorR_speed < 0 ? true : false;
-  cwF_desired = motorF_speed < 0 ? true : false;
-
-  // Take the magnitude.
-  motorR_speed = abs(motorR_speed);
-  motorF_speed = abs(motorF_speed);
-  motorB_speed = abs(motorB_speed);
-  motorL_speed = abs(motorL_speed);
-
-  // Motor Speeds are capped so preserve speed ratio.
-  if (motorR_speed >= motorF_speed && motorR_speed > max_speed) {
-    motorF_speed = motorF_speed * max_speed / motorR_speed;
-    motorR_speed = max_speed;
-    // todo mirror B an L???
-
-  } else if (motorF_speed >= motorR_speed && motorF_speed > max_speed) {
-    motorR_speed = motorR_speed * max_speed / motorF_speed;
-    motorF_speed = max_speed;
+  // Calculate desired motor speeds
+  // These values are targets to ramp up or down towards.
+  for (int i = 0; i < 3; i++) {
+    for (int j = 0; j < 2; j++) {
+      motor_speed[i] += input_velocity[j] * MOTOR_MATRIX[i][j];
+    }
   }
 
-  // Convert speeds to 8-bit.
-  motorR_speed = map(motorR_speed, 0, max_speed, 0, 255);
-  motorF_speed = map(motorF_speed, 0, max_speed, 0, 255);
-  motorB_speed = map(motorB_speed, 0, max_speed, 0, 255);
-  motorL_speed = map(motorL_speed, 0, max_speed, 0, 255);
+  // Vars for the determining the min and max speeds
+  int min_elem, max_elem = 0;
+  int min_speed, max_speed;
 
-  // Acceleration Logic for motor sets FR and FL -------------------- :
-  // 1. Stopped and want to move or stay stopped.
-  // 2. Already moving in direction and want to speed up or down.
-  // 3. Currently moving in the opposite direction and want to switch.
+  for (int i = 0; i < 3; i++) {
 
-  // FR Motor Set ---- :
-  if (R_isStopped) {
+    // Adjust for error. ------>  (TODO VARIFY METHOD)
+    motor_speed[i] += motor_speed_error[i];
 
-      if (motorR_speed > 0) {
+    motor_speed_error[i] = 0;
 
-        R_isStopped = false;
+    // Calculate desired motor direction.
+    cw_rotation[i] = motor_speed[i] < 0 ? true : false;
 
-        if (cwR_desired) {
+    // Take the magnitude.
+    motor_speed[i] = abs(motor_speed[i]);
+
+    // Keep track of the min and max speed elements
+    if (i == 0) {
+      min_speed = motor_speed[0];
+      max_speed = motor_speed[0];
+
+    } else {
+
+      if (motor_speed[i] > max_speed) {
+        max_elem = i;
+        max_speed = motor_speed[i];
+
+      } else if (motor_speed[i] < min_speed) {
+        min_elem = i;
+        min_speed = motor_speed[i];
+
+      }
+    }
+  }
+
+  for (int i = 0; i < 3; i++) {
+
+    // Motor Speeds are capped so preserve speed ratio.
+    // TODO THIS WILL NOT PRESERVE SPEED RATIO.. WHICH IS REQUIRED
+    // TODO use min_speed and max_speed to scale.
+
+    // Convert speeds to 8-bit.
+    motor_speed[i] = map(motor_speed[i], 0, MAX_MOTOR_SPEED, 0, 255);
+
+    // Acceleration Logic for each motor -------------------- :
+    // 1. Stopped and want to move or stay stopped.
+    // 2. Already moving in direction and want to speed up or down.
+    // 3. Currently moving in the opposite direction and want to switch
+
+    if (motor_stopped[i]) {
+
+      if (motor_speed[i] > 0) {
+
+        motor_stopped[i] = false;
+
+        if (cw_rotation[i]) {
           // Set motor rotation CW
-          digitalWrite(motorR_d1, LOW);
-          digitalWrite(motorR_d2, HIGH);
-          digitalWrite(motorL_d1, HIGH);
-          digitalWrite(motorL_d2, LOW);
+          digitalWrite(BASE_MOTOR_D1[i], LOW);
+          digitalWrite(BASE_MOTOR_D2[i], HIGH);
 
         } else {
           // Set motor rotation CCW
-          digitalWrite(motorR_d1, HIGH);
-          digitalWrite(motorR_d2, LOW);
-          digitalWrite(motorL_d1, LOW);
-          digitalWrite(motorL_d2, HIGH);
+          digitalWrite(BASE_MOTOR_D1[i], HIGH);
+          digitalWrite(BASE_MOTOR_D2[i], LOW);
+
         }
 
-        cwR_actual = cwR_desired;
+        cw_rotation_actual[i] = cw_rotation[i];
 
-        // Accelerate motors
-        motorR_speedPrev = new_motor_speed(motorR_speed, motorR_speedPrev);
-        motorL_speedPrev = new_motor_speed(motorL_speed, motorL_speedPrev);
+        // Get the incremented up motor speed
+        motor_speed[i] = new_motor_speed(motor_speed[i], 0);
+
       }
 
-  } else if (cwR_desired == cwR_actual && motorR_speed > 0) {
+    } else if (cw_rotation[i] == cw_rotation_actual[i] && motor_speed[i] > 0) {
 
-    // Accelerate OR Decelerate motors
-    motorR_speedPrev = new_motor_speed(motorR_speed, motorR_speedPrev);
-    motorL_speedPrev = new_motor_speed(motorL_speed, motorL_speedPrev);
+      // Get the incremented up-or-down motor speed
+      motor_speed[i] = new_motor_speed(
+        motor_speed[i], motor_speed_previous[i]);
 
-  } else {
+    } else {
 
-    // Decelerate motors (to an eventual stop)
-    motorR_speedPrev = new_motor_speed(0, motorR_speedPrev);
-    motorL_speedPrev = new_motor_speed(0, motorL_speedPrev);
+      // Get the incremented down motor speed
+      motor_speed[i] = new_motor_speed(0, motor_speed_previous[i]);
 
-    if (motorR_speedPrev == 0 || motorL_speedPrev == 0) {
-      R_isStopped = true;
+      if (motor_speed[i] == 0) {
+        motor_stopped[i] = true;
+      }
+
     }
+
+    motor_speed_previous[i] = motor_speed[i];
 
   }
 
-  // FL Motor Set ---- :
-  if (F_isStopped) {
-
-      if (motorF_speed > 0) {
-
-        F_isStopped = false;
-
-        if (cwF_desired) {
-          // Set motor rotation CW
-          digitalWrite(motorF_d1, LOW);
-          digitalWrite(motorF_d2, HIGH);
-          digitalWrite(motorB_d1, HIGH);
-          digitalWrite(motorB_d2, LOW);
-
-        } else {
-          // Set motor rotation CCW
-          digitalWrite(motorF_d1, HIGH);
-          digitalWrite(motorF_d2, LOW);
-          digitalWrite(motorB_d1, LOW);
-          digitalWrite(motorB_d2, HIGH);
-        }
-
-        cwF_actual = cwF_desired;
-
-        // Accelerate motors
-        motorF_speedPrev = new_motor_speed(motorF_speed, motorF_speedPrev);
-        motorB_speedPrev = new_motor_speed(motorB_speed, motorB_speedPrev);
-      }
-
-  } else if (cwF_desired == cwF_actual && motorF_speed > 0) {
-
-    // Accelerate OR Decelerate motors
-    motorF_speedPrev = new_motor_speed(motorF_speed, motorF_speedPrev);
-
-    motorB_speedPrev = new_motor_speed(motorB_speed, motorB_speedPrev);
-
-  } else {
-
-    // Decelerate motors (and eventually stop)
-    motorF_speedPrev = new_motor_speed(0, motorF_speedPrev);
-    motorB_speedPrev = new_motor_speed(0, motorB_speedPrev);
-
-    if (motorF_speedPrev == 0 || motorB_speedPrev == 0) {
-      F_isStopped = true;
-    }
-
+  for (int i = 0; i < 3; i++) {
+    analogWrite(BASE_MOTOR_PWM[i], motor_speed[i]);
   }
-
-  analogWrite(motorR_pwm, motorR_speedPrev);
-  analogWrite(motorL_pwm, motorR_speedPrev);
-  // analogWrite(motorL_pwm, motorL_speedPrev);
-  analogWrite(motorF_pwm, motorF_speedPrev);
-  analogWrite(motorB_pwm, motorF_speedPrev);
-  // analogWrite(motorB_pwm, motorB_speedPrev);
 
 }
 
@@ -309,23 +256,14 @@ void calc_base_error() {
 
 void setup() {
 
-  pinMode(motorR_pwm, OUTPUT);
-  pinMode(motorR_d1, OUTPUT);
-  pinMode(motorR_d2, OUTPUT);
+  // setup pins
+  for (int i = 0; i < 3; i++) {
+    pinMode(BASE_MOTOR_PWM[i], OUTPUT);
+    pinMode(BASE_MOTOR_D1[i], OUTPUT);
+    pinMode(BASE_MOTOR_D2[i], OUTPUT);
+  }
 
-  pinMode(motorF_pwm, OUTPUT);
-  pinMode(motorF_d1, OUTPUT);
-  pinMode(motorF_d2, OUTPUT);
-
-  pinMode(motorB_pwm, OUTPUT);
-  pinMode(motorB_d1, OUTPUT);
-  pinMode(motorB_d2, OUTPUT);
-
-  pinMode(motorL_pwm, OUTPUT);
-  pinMode(motorL_d1, OUTPUT);
-  pinMode(motorL_d2, OUTPUT);
-
-  // ros setup
+  // setup ros
   nh.initNode();
   nh.subscribe(sub_motion);
 
