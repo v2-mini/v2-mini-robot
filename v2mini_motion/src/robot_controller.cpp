@@ -2,6 +2,7 @@
 #include <SDL2/SDL_image.h>
 #include <stdexcept>
 #include <stdio.h>
+#include <cmath>
 
 #include "v2mini_motion/robot_controller.h"
 
@@ -12,7 +13,7 @@ const Uint8 *keys = SDL_GetKeyboardState(NULL);
 RobotController::RobotController() {
 
 	// Initialize SDL
-	if (SDL_Init(SDL_INIT_VIDEO) == 0) {
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) == 0) {
 
 		//Set texture filtering to linear
 		SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "1");
@@ -143,20 +144,32 @@ int* RobotController::getKeyCmds() {
 	key_cmds[2] = icon_vel[2];
 	key_cmds[3] = torso_vel;
 
-//	printf("x= %i\n", key_cmds[0]);
-//	printf("y= %i\n", key_cmds[1]);
-//	printf("w= %i\n", key_cmds[2]);
-//	printf("t= %i\n", key_cmds[3]);
-
 	return key_cmds;
 }
 
 int* RobotController::getGamepadCmds() {
 	static int cmds[] = {0, 0, 0, 0};
+	const int deadzone = 1000;
 
-	// LEFT JOY STICK
-	cmds[0] = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX);
-	cmds[1] = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY);
+	// LEFT JOY STICK X
+	int axis_leftx = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX);
+
+	if (std::abs(axis_leftx) > deadzone) {
+		cmds[0] = axis_leftx;
+	}
+	else {
+		cmds[0] = 0;
+	}
+
+	// LEFT JOY STICK Y
+	int axis_lefty = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY);
+
+	if (std::abs(axis_lefty) > deadzone) {
+		cmds[1] = -axis_lefty;
+	}
+	else {
+		cmds[1] = 0;
+	}
 
 	// LEFT & RIGHT BOTTOM TRIGGERS
 	int cww_rot = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_TRIGGERLEFT);

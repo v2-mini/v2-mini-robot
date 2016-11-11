@@ -46,10 +46,10 @@ int main(int argc, char ** argv) {
 				// controller.reRenderImage();
 			}
 
-			base_cmds.linear.x = key_cmds[0];
-			base_cmds.linear.y = key_cmds[1];
-			base_cmds.angular.z = key_cmds[2];
-			base_cmds.linear.z = key_cmds[3];
+			base_cmds.linear.x = gamepad_cmds[0];
+			base_cmds.linear.y = gamepad_cmds[1];
+			base_cmds.angular.z = gamepad_cmds[2];
+			base_cmds.linear.z = gamepad_cmds[3];
 
 			//publish the movement commands
 			base_pub.publish(base_cmds);
