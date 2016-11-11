@@ -17,12 +17,13 @@ class RobotController {
 		SDL_Surface* surface = NULL;
 		SDL_Renderer* renderer = NULL;
 		SDL_Texture* texture = NULL;
-		SDL_Event event;
+		SDL_GameController *controller = NULL;
 
 	public:
 		RobotController();
 		~RobotController();
 		int* getKeyCmds();
+		int* getGamepadCmds();
 		bool checkQuitStatus();
 		void reRenderImage();
 };

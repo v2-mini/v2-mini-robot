@@ -24,15 +24,27 @@ int main(int argc, char ** argv) {
 
 	ros::Rate loop_rate(50);
 	int* key_cmds = NULL;
+	int* gamepad_cmds = NULL;
+	SDL_Event event;
+	bool quit = false;
 
-	while(ros::ok() && !controller.checkQuitStatus()) {
+	while(ros::ok() && !controller.checkQuitStatus() && !quit) {
 
 		geometry_msgs::Twist base_cmds;
 
 		if (control_type == "remote") {
 
-			key_cmds = controller.getKeyCmds();
-			// controller.reRenderImage();
+			while(SDL_PollEvent(&event) != 0)
+			{
+
+				if (event.type == SDL_QUIT) {
+					quit = true;
+				}
+
+				key_cmds = controller.getKeyCmds();
+				gamepad_cmds = controller.getGamepadCmds();
+				// controller.reRenderImage();
+			}
 
 			base_cmds.linear.x = key_cmds[0];
 			base_cmds.linear.y = key_cmds[1];

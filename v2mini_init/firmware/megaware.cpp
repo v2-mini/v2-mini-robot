@@ -176,7 +176,7 @@ void move_base() {
 
     // Motor Speeds are capped so preserve speed ratio.
     // TODO THIS WILL NOT PRESERVE SPEED RATIO.. WHICH IS REQUIRED
-    // TODO use min_speed and max_speed to scale.
+    // TODO use min_speed and max_speed to scale. (could 'map()' it..?)
 
     // Convert speeds to 8-bit.
     motor_speed[i] = map(motor_speed[i], 0, MAX_MOTOR_SPEED, 0, 255);

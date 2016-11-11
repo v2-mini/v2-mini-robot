@@ -2,7 +2,6 @@
 #include <SDL2/SDL_image.h>
 #include <stdexcept>
 #include <stdio.h>
-#include <string>
 
 #include "v2mini_motion/robot_controller.h"
 
@@ -25,6 +24,13 @@ RobotController::RobotController() {
 			throw std::runtime_error("SDL failed to create window\n");
 
 		} else {
+
+			controller = SDL_GameControllerOpen(0);
+
+			if (controller == NULL) {
+				printf("open failed: %s\n", SDL_GetError());
+			}
+
 			// Setup SDL window and load robot icon
 			renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
@@ -55,6 +61,12 @@ RobotController::~RobotController() {
 	SDL_DestroyTexture(texture);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
+
+	if (controller != NULL) {
+		SDL_GameControllerClose(controller);
+		controller = NULL;
+	}
+
 	window = NULL;
 	renderer = NULL;
 	texture = NULL;
@@ -64,9 +76,8 @@ RobotController::~RobotController() {
 }
 
 int* RobotController::getKeyCmds() {
-	static int base_cmds[] = {0, 0, 0, 0};
 
-	SDL_PumpEvents();
+	static int key_cmds[] = {0, 0, 0, 0};
 
 	if(keys[SDL_SCANCODE_ESCAPE]) {
 		quit = true;
@@ -127,17 +138,39 @@ int* RobotController::getKeyCmds() {
 		}
 	}
 
-	base_cmds[0] = icon_vel[0];
-	base_cmds[1] = icon_vel[1];
-	base_cmds[2] = icon_vel[2];
-	base_cmds[3] = torso_vel;
+	key_cmds[0] = icon_vel[0];
+	key_cmds[1] = icon_vel[1];
+	key_cmds[2] = icon_vel[2];
+	key_cmds[3] = torso_vel;
 
-//	printf("x= %i\n", base_cmds[0]);
-//	printf("y= %i\n", base_cmds[1]);
-//	printf("w= %i\n", base_cmds[2]);
-//	printf("t= %i\n", base_cmds[3]);
+//	printf("x= %i\n", key_cmds[0]);
+//	printf("y= %i\n", key_cmds[1]);
+//	printf("w= %i\n", key_cmds[2]);
+//	printf("t= %i\n", key_cmds[3]);
 
-	return base_cmds;
+	return key_cmds;
+}
+
+int* RobotController::getGamepadCmds() {
+	static int cmds[] = {0, 0, 0, 0};
+
+	// LEFT JOY STICK
+	cmds[0] = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX);
+	cmds[1] = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY);
+
+	// LEFT & RIGHT BOTTOM TRIGGERS
+	int cww_rot = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_TRIGGERLEFT);
+	int cw_rot = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
+
+	cmds[2] = cww_rot - cw_rot;
+
+	// A & Y BUTTONS
+	int torso_up = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_Y);
+	int torso_down = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_A);
+
+	cmds[3] = torso_up - torso_down;
+
+	return cmds;
 }
 
 void RobotController::reRenderImage() {
