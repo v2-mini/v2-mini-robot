@@ -7,15 +7,16 @@ ros::NodeHandle nh;
 enum VEL {BASE_VELX, BASE_VELY, BASE_VELZ};
 
 // --> probably need min threshold speed too (ie not 0).
-const int MAX_MOTOR_SPEED = 65;            // cm/s
+const int NUM_MOTORS = 4;
+const int MAX_MOTOR_SPEED = 30;            // cm/s
 const int WHEEL_RADIUS = 3;                // cm
 const int BASE_RADIUS = 15;                // cm
 const int SPEED_INC = 1;
 
 // PINS { F, B, R, L }
 const int BASE_MOTOR_PWM[] = {5, 2, 4, 3};
-const int BASE_MOTOR_D1[] = {48, 44, 50, 40};
-const int BASE_MOTOR_D2[] = {46, 38, 52, 42};
+const int BASE_MOTOR_D1[] = {46, 38, 52, 42};
+const int BASE_MOTOR_D2[] = {48, 44, 50, 40};
 
 const float ROT_FACTOR = PI / 180.0 * BASE_RADIUS;
 
@@ -37,7 +38,7 @@ float torso_vel = 0;
 float motor_speed_previous[] = {0, 0, 0, 0};
 float motor_speed_error[] = {0, 0, 0, 0};
 bool motor_stopped[] = {true, true, true, true};
-bool cw_rotation_actual[3];
+bool cw_rotation_actual[NUM_MOTORS];
 
 // "base_cmds" subscription callback.
 void motion_cb(const geometry_msgs::Twist& motion_cmds) {
@@ -128,17 +129,17 @@ void move_base() {
 
   // F, B, R, L
   float motor_speed[] = {0, 0, 0, 0};
-  bool cw_rotation[3];
+  bool cw_rotation[NUM_MOTORS];
 
   // Calculate desired motor speeds
   // These values are targets to ramp up or down towards.
-  for (int i = 0; i < 3; i++) {
-    for (int j = 0; j < 2; j++) {
+  for (int i = 0; i < NUM_MOTORS; i++) {
+    for (int j = 0; j < 3; j++) {
       motor_speed[i] += input_velocity[j] * MOTOR_MATRIX[i][j];
     }
   }
 
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < NUM_MOTORS; i++) {
 
     // Adjust for error. ------>  (TODO VARIFY METHOD)
     motor_speed[i] += motor_speed_error[i];
@@ -153,7 +154,7 @@ void move_base() {
 
   }
 
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < NUM_MOTORS; i++) {
 
     // NOTE: Input velocities must already be mapped to range:
     // radial velocity < 30 cm/s
@@ -213,10 +214,9 @@ void move_base() {
 
   }
 
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < NUM_MOTORS; i++) {
     analogWrite(BASE_MOTOR_PWM[i], motor_speed[i]);
   }
-
 }
 
 void move_torso() {
@@ -238,7 +238,7 @@ void calc_base_error() {
 void setup() {
 
   // setup pins
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < NUM_MOTORS; i++) {
     pinMode(BASE_MOTOR_PWM[i], OUTPUT);
     pinMode(BASE_MOTOR_D1[i], OUTPUT);
     pinMode(BASE_MOTOR_D2[i], OUTPUT);

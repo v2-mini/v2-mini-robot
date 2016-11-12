@@ -50,7 +50,7 @@ RobotController::RobotController()
 			// todo remove .png stuff vv
 			IMG_Init(IMG_INIT_PNG);
 //			std::string ros_path = ros::package::getPath("v2mini_robot")
-			SDL_Surface* loadedSurface = IMG_Load("/home/jon/Pictures/robo_icon.jpg"); //todo make rel path
+			SDL_Surface* loadedSurface = IMG_Load("/home/v2-mini/Pictures/robo_icon.jpg"); //todo make rel path
 			texture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
 			SDL_FreeSurface(loadedSurface);
 
