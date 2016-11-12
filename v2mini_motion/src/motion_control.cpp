@@ -6,7 +6,7 @@
 
 #include "v2mini_motion/robot_controller.h"
 
-enum ROBOT_VEL {BASE_VELX, BASE_VELY, BASE_VELZ, TORSO_VELZ}; // TODO CANT IMPORT from robot_contoller?
+using v2mini_motion::ROBOT_VEL;
 
 int main(int argc, char ** argv) {
 
@@ -20,7 +20,7 @@ int main(int argc, char ** argv) {
 	ros::NodeHandle pnh("~");
 	pnh.getParam("control", control_type);
 
-	ROS_DEBUG_STREAM("control type:" << control_type);
+	printf("Control Type: %s\n", control_type.c_str());
 
 	float* gamepad_cmds = NULL;
 	bool quit = false;
@@ -51,10 +51,10 @@ int main(int argc, char ** argv) {
 
 			}
 
-			base_cmds.linear.x = gamepad_cmds[BASE_VELX];
-			base_cmds.linear.y = gamepad_cmds[BASE_VELY];
-			base_cmds.angular.z = gamepad_cmds[BASE_VELZ];
-			base_cmds.linear.z = gamepad_cmds[TORSO_VELZ];
+			base_cmds.linear.x = gamepad_cmds[v2mini_motion::BASE_VELX];
+			base_cmds.linear.y = gamepad_cmds[v2mini_motion::BASE_VELY];
+			base_cmds.angular.z = gamepad_cmds[v2mini_motion::BASE_VELZ];
+			base_cmds.linear.z = gamepad_cmds[v2mini_motion::TORSO_VELZ];
 
 			//publish the movement commands
 			base_pub.publish(base_cmds);
@@ -65,6 +65,8 @@ int main(int argc, char ** argv) {
 		}
 
 	}
+
+	gamepad_cmds = NULL;
 
 	return 0;
 }

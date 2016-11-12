@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <ros/package.h>
 #include <stdexcept>
 #include <stdio.h>
 #include <cmath>
@@ -25,8 +26,7 @@ RobotController::RobotController()
 
 		if (window == NULL)
 		{
-			throw std::runtime_error("SDL failed to create window\n");
-
+			printf("SDL failed to create window: %s\n", SDL_GetError());
 		}
 		else
 		{
@@ -34,7 +34,7 @@ RobotController::RobotController()
 
 			if (controller == NULL)
 			{
-				printf("open failed: %s\n", SDL_GetError());
+				printf("No Game Controller detected: %s\n", SDL_GetError());
 			}
 
 			// Setup SDL window and load robot icon
@@ -42,14 +42,15 @@ RobotController::RobotController()
 
 			if (renderer == NULL)
 			{
-				throw std::runtime_error("SDL failed to render\n");
+				printf("SDL failed to render: %s\n", SDL_GetError());
 			}
 
 			SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 
-			// todo remove .png stuff vv
 			IMG_Init(IMG_INIT_PNG);
-//			std::string ros_path = ros::package::getPath("v2mini_robot")
+			std::string ros_path = ros::package::getPath("v2mini_robot");
+			printf("ros_path = %s\n", ros_path.c_str());
+
 			SDL_Surface* loadedSurface = IMG_Load("/home/v2-mini/Pictures/robo_icon.jpg"); //todo make rel path
 			texture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
 			SDL_FreeSurface(loadedSurface);
@@ -59,7 +60,7 @@ RobotController::RobotController()
 	}
 	else
 	{
-		throw std::runtime_error("SDL failed to initialize\n");
+		printf("SDL failed to initialize: %s\n", SDL_GetError());
 	}
 }
 
