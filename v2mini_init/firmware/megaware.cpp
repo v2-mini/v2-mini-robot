@@ -4,10 +4,12 @@
 
 ros::NodeHandle nh;
 
+enum VEL {BASE_VELX, BASE_VELY, BASE_VELZ};
+
 // --> probably need min threshold speed too (ie not 0).
-const int MAX_MOTOR_SPEED = 150;         // rps ...update vals
-const int WHEEL_RADIUS = 400;         // cm ...
-const int BASE_RADIUS = 16;         // cm ...
+const int MAX_MOTOR_SPEED = 65;            // cm/s
+const int WHEEL_RADIUS = 3;                // cm
+const int BASE_RADIUS = 15;                // cm
 const int SPEED_INC = 1;
 
 // PINS { F, B, R, L }
@@ -15,7 +17,7 @@ const int BASE_MOTOR_PWM[] = {5, 2, 4, 3};
 const int BASE_MOTOR_D1[] = {48, 44, 50, 40};
 const int BASE_MOTOR_D2[] = {46, 38, 52, 42};
 
-const float ROT_FACTOR = PI / 180 * BASE_RADIUS;
+const float ROT_FACTOR = PI / 180.0 * BASE_RADIUS;
 
 // Motor Matrix: (F, B, R, L) ^ T
 // Each row is: { -sin(a), cos(a), ROT_FACTOR}
@@ -29,7 +31,7 @@ const float MOTOR_MATRIX[4][3] = {
 
 // { x vel, y vel, angular vel }
 float input_velocity[] = {0, 0, 0};
-float torso_height = 0;
+float torso_vel = 0;
 
 // { F, B, R, L }
 float motor_speed_previous[] = {0, 0, 0, 0};
@@ -39,10 +41,10 @@ bool cw_rotation_actual[3];
 
 // "base_cmds" subscription callback.
 void motion_cb(const geometry_msgs::Twist& motion_cmds) {
-  input_velocity[0] = motion_cmds.linear.x;
-  input_velocity[1] = motion_cmds.linear.y;
-  input_velocity[2] = motion_cmds.angular.z;
-  torso_height = motion_cmds.linear.z;
+  input_velocity[BASE_VELX] = motion_cmds.linear.x;
+  input_velocity[BASE_VELY] = motion_cmds.linear.y;
+  input_velocity[BASE_VELZ] = motion_cmds.angular.z;
+  torso_vel = motion_cmds.linear.z;
 }
 
 // Subscribe to ROS topic "/base_cmds"
@@ -136,10 +138,6 @@ void move_base() {
     }
   }
 
-  // Vars for the determining the min and max speeds
-  int min_elem, max_elem = 0;
-  int min_speed, max_speed;
-
   for (int i = 0; i < 3; i++) {
 
     // Adjust for error. ------>  (TODO VARIFY METHOD)
@@ -153,30 +151,13 @@ void move_base() {
     // Take the magnitude.
     motor_speed[i] = abs(motor_speed[i]);
 
-    // Keep track of the min and max speed elements
-    if (i == 0) {
-      min_speed = motor_speed[0];
-      max_speed = motor_speed[0];
-
-    } else {
-
-      if (motor_speed[i] > max_speed) {
-        max_elem = i;
-        max_speed = motor_speed[i];
-
-      } else if (motor_speed[i] < min_speed) {
-        min_elem = i;
-        min_speed = motor_speed[i];
-
-      }
-    }
   }
 
   for (int i = 0; i < 3; i++) {
 
-    // Motor Speeds are capped so preserve speed ratio.
-    // TODO THIS WILL NOT PRESERVE SPEED RATIO.. WHICH IS REQUIRED
-    // TODO use min_speed and max_speed to scale. (could 'map()' it..?)
+    // NOTE: Input velocities must already be mapped to range:
+    // radial velocity < 30 cm/s
+    // angular velocity < 120 deg/s
 
     // Convert speeds to 8-bit.
     motor_speed[i] = map(motor_speed[i], 0, MAX_MOTOR_SPEED, 0, 255);

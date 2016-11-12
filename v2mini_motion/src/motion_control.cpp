@@ -6,6 +6,8 @@
 
 #include "v2mini_motion/robot_controller.h"
 
+enum ROBOT_VEL {BASE_VELX, BASE_VELY, BASE_VELZ, TORSO_VELZ}; // TODO CANT IMPORT from robot_contoller?
+
 int main(int argc, char ** argv) {
 
 	ros::init(argc, argv, "motion_control");
@@ -20,13 +22,14 @@ int main(int argc, char ** argv) {
 
 	ROS_DEBUG_STREAM("control type:" << control_type);
 
+	float* gamepad_cmds = NULL;
+	bool quit = false;
+
 	v2mini_motion::RobotController controller;
 
-	ros::Rate loop_rate(50);
-	int* key_cmds = NULL;
-	int* gamepad_cmds = NULL;
 	SDL_Event event;
-	bool quit = false;
+
+	ros::Rate loop_rate(50);
 
 	while(ros::ok() && !controller.checkQuitStatus() && !quit) {
 
@@ -41,15 +44,17 @@ int main(int argc, char ** argv) {
 					quit = true;
 				}
 
-				key_cmds = controller.getKeyCmds();
+				// TODO USE LOGIC AND PARAM TO SELECT BASE CONTROL TYPE (KEY OR GAMECONTROLLER)
+
+				controller.getKeyCmds();
 				gamepad_cmds = controller.getGamepadCmds();
-				// controller.reRenderImage();
+
 			}
 
-			base_cmds.linear.x = gamepad_cmds[0];
-			base_cmds.linear.y = gamepad_cmds[1];
-			base_cmds.angular.z = gamepad_cmds[2];
-			base_cmds.linear.z = gamepad_cmds[3];
+			base_cmds.linear.x = gamepad_cmds[BASE_VELX];
+			base_cmds.linear.y = gamepad_cmds[BASE_VELY];
+			base_cmds.angular.z = gamepad_cmds[BASE_VELZ];
+			base_cmds.linear.z = gamepad_cmds[TORSO_VELZ];
 
 			//publish the movement commands
 			base_pub.publish(base_cmds);
