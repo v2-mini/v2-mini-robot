@@ -1,0 +1,30 @@
+<!-- Start V2Mini and a Controller (locally) -->
+
+<launch>
+
+  <arg name="control" default="remote" /> <!-- 'autonomous' or 'remote' -->
+  <arg name="controller" default="keyboard" /> <!-- 'gamepad' or 'keyboard' -->
+  <arg name="use_mega" default="true" />
+  <arg name="use_uno" default="true" />
+
+  <!-- Launch the MCU nodes -->
+  <include file="$(find v2mini_init)/launch/devices.launch">
+    <arg name="use_mega" value="$(arg use_mega)"/>
+    <arg name="use_uno" value="$(arg use_uno)"/>
+  </include>
+
+  <!-- Launch the controller node -->
+  <node name="controller" pkg="v2mini_motion" type="motion_control" respawn="false" >
+      <param name="control" value="$(arg control)" />
+      <param name="controller" value="$(arg controller)" />
+  </node>
+
+</launch>
+
+<!--
+
+example:
+
+roslaunch v2mini_motion motion_direct.launch use_mega:=false use_uno:=true controller:=gamepad
+
+-->

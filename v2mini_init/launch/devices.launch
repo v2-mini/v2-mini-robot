@@ -1,14 +1,18 @@
 <!-- Launch I/0 Devices -->
 <launch>
+
+    <arg name="use_mega" default="true"/>
+    <arg name="use_uno" default="true"/>
+
     <!-- launch arduino mega node (robot base) -->
-    <group ns="mega_base">
+    <group if="$(arg use_mega)" ns="mega_base">
         <node name="megaware" pkg="rosserial_python" type="serial_node.py" respawn="true" >
             <param name="port" value="/dev/arduino_mega" />
         </node>
     </group>
 
         <!-- launch arduino uno node (robot torso) -->
-    <group ns="uno_torso">
+    <group if="$(arg use_uno)" ns="uno_torso">
       <node name="unoware" pkg="rosserial_python" type="serial_node.py" respawn="true" >
           <param name="port" value="/dev/arduino_uno" />
       </node>
