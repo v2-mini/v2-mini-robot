@@ -1,4 +1,4 @@
-<!-- Launch I/0 Devices -->
+<!-- Launch MCU Nodes -->
 <launch>
 
     <arg name="use_mega" default="true"/>
