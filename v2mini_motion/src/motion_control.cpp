@@ -17,12 +17,33 @@ int main(int argc, char ** argv) {
 
 	// Get type of control from param (auto or remote)
 	std::string control_type;
+	std::string controller_type;
 	ros::NodeHandle pnh("~");
 	pnh.getParam("control", control_type);
 
+	// Use remote control as default (no arg).
+	if (control_type == "")
+	{
+		control_type == "remote";
+	}
+
 	printf("Control Type: %s\n", control_type.c_str());
 
-	float* gamepad_cmds = NULL;
+	if (control_type == "remote")
+	{
+		// Controlled by either keyboard or gamepad
+		pnh.getParam("controller", controller_type);
+
+		// Use keyboard controller as default (no arg).
+		if (controller_type == "")
+		{
+			controller_type = "keyboard";
+		}
+
+		printf("Controller: %s\n", controller_type.c_str());
+	}
+
+	float* cmds = NULL;
 	bool quit = false;
 
 	v2mini_motion::RobotController controller;
@@ -31,42 +52,51 @@ int main(int argc, char ** argv) {
 
 	ros::Rate loop_rate(50);
 
-	while(ros::ok() && !controller.checkQuitStatus() && !quit) {
+	while(ros::ok() && !controller.checkQuitStatus() && !quit)
+	{
 
 		geometry_msgs::Twist base_cmds;
 
-		if (control_type == "remote") {
+		if (control_type == "remote")
+		{
 
 			while(SDL_PollEvent(&event) != 0)
 			{
 
-				if (event.type == SDL_QUIT) {
+				if (event.type == SDL_QUIT)
+				{
 					quit = true;
 				}
 
-				// TODO USE LOGIC AND PARAM TO SELECT BASE CONTROL TYPE (KEY OR GAMECONTROLLER)
+				// getKeyCmds by default (also checks 'esc' button)
+				cmds = controller.getKeyCmds();
 
-				controller.getKeyCmds();
-				gamepad_cmds = controller.getGamepadCmds();
+				if (controller_type == "gamepad")
+				{
+					// overwrite the pointer if gamecontroller is used
+					cmds = controller.getGamepadCmds();
+				}
 
 			}
 
-			base_cmds.linear.x = gamepad_cmds[v2mini_motion::BASE_VELX];
-			base_cmds.linear.y = gamepad_cmds[v2mini_motion::BASE_VELY];
-			base_cmds.angular.z = gamepad_cmds[v2mini_motion::BASE_VELZ];
-			base_cmds.linear.z = gamepad_cmds[v2mini_motion::TORSO_VELZ];
+			base_cmds.linear.x = cmds[v2mini_motion::BASE_VELX];
+			base_cmds.linear.y = cmds[v2mini_motion::BASE_VELY];
+			base_cmds.angular.z = cmds[v2mini_motion::BASE_VELZ];
+			base_cmds.linear.z = cmds[v2mini_motion::TORSO_VELZ];
 
 			//publish the movement commands
 			base_pub.publish(base_cmds);
 			loop_rate.sleep();
 
-		} else {
+		}
+		else
+		{
 			// todo --> autonomous
 		}
 
 	}
 
-	gamepad_cmds = NULL;
+	cmds = NULL;
 
 	return 0;
 }

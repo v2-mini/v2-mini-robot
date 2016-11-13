@@ -26,6 +26,8 @@ class RobotController {
 		SDL_Texture* texture = NULL;
 		SDL_GameController *controller = NULL;
 
+		void loadGamepad();
+
 	public:
 
 		RobotController();

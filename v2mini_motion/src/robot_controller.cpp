@@ -30,13 +30,6 @@ RobotController::RobotController()
 		}
 		else
 		{
-			controller = SDL_GameControllerOpen(0);
-
-			if (controller == NULL)
-			{
-				printf("No Game Controller detected: %s\n", SDL_GetError());
-			}
-
 			// Setup SDL window and load robot icon
 			renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
@@ -85,11 +78,21 @@ RobotController::~RobotController()
 	SDL_Quit();
 }
 
+void RobotController::loadGamepad()
+{
+	controller = SDL_GameControllerOpen(0);
+
+	if (controller == NULL)
+	{
+		printf("No Game Controller detected: %s\n", SDL_GetError());
+	}
+}
+
 float* RobotController::getKeyCmds()
 {
 
 	static float key_cmds[] = {0, 0, 0, 0};
-	int max_value = 100;
+	const int max_value = 1000;
 
 	if(keys[SDL_SCANCODE_ESCAPE])
 	{
@@ -107,6 +110,10 @@ float* RobotController::getKeyCmds()
 			key_cmds[BASE_VELX] = -max_value;
 		}
 	}
+	else
+	{
+		key_cmds[BASE_VELX] = 0;
+	}
 
 	// Base Forward & Back
 	if (keys[SDL_SCANCODE_UP] != keys[SDL_SCANCODE_DOWN])
@@ -120,6 +127,10 @@ float* RobotController::getKeyCmds()
 			key_cmds[BASE_VELY] = -max_value;
 		}
 	}
+	else
+	{
+		key_cmds[BASE_VELY] = 0;
+	}
 
 	// Angular CW & CCW
 	if (keys[SDL_SCANCODE_Q] != keys[SDL_SCANCODE_W])
@@ -132,6 +143,10 @@ float* RobotController::getKeyCmds()
 		{
 			key_cmds[BASE_VELZ] = -max_value;
 		}
+	}
+	else
+	{
+		key_cmds[BASE_VELZ] = 0;
 	}
 
 	// Torso Height Up & Down
@@ -147,6 +162,10 @@ float* RobotController::getKeyCmds()
 			key_cmds[TORSO_VELZ] = -max_value;
 		}
 	}
+	else
+	{
+		key_cmds[TORSO_VELZ] = 0;
+	}
 
 	mapVelocity(key_cmds, max_value);
 
@@ -158,6 +177,8 @@ float* RobotController::getGamepadCmds()
 	static float cmds[] = {0, 0, 0, 0};
 	const int max_value = 32769;
 	const int deadzone = 300;
+
+	loadGamepad();
 
 	// LEFT JOY STICK X
 	int axis_leftx = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX);
@@ -216,18 +237,8 @@ void RobotController::mapVelocity(float *val_array, int ceiling_value)
 	val_array[BASE_VELX] = velx * MAX_BASE_RADIAL_VEL / ceiling_value;
 	val_array[BASE_VELY] = vely * MAX_BASE_RADIAL_VEL / ceiling_value;
 
-	// Cap angular speed
-	if (std::abs(float(val_array[BASE_VELZ])) > MAX_BASE_ANGULAR_VEL)
-	{
-		if (val_array[BASE_VELZ] < 0)
-		{
-			val_array[BASE_VELZ] = -MAX_BASE_ANGULAR_VEL;
-		}
-		else
-		{
-			val_array[BASE_VELZ] = MAX_BASE_ANGULAR_VEL;
-		}
-	}
+	// Map value range for angular
+	val_array[BASE_VELZ] = val_array[BASE_VELZ] * MAX_BASE_ANGULAR_VEL / ceiling_value;
 
 	// Cap torso speed
 	if (std::abs(float(val_array[TORSO_VELZ])) > MAX_TORSO_VEL)
@@ -256,4 +267,4 @@ bool RobotController::checkQuitStatus()
 	return quit;
 }
 
-} // namespace v2mini_motion
+} 		// namespace v2mini_motion
