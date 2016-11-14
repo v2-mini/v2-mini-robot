@@ -6,7 +6,7 @@
   <!-- set true if being launched from remote -->
 
   <arg name="remote_machine" default="false"/><!-- set true if being launched from remote -->
-  <arg name="v2mini_ip"/><!-- provide v2-mini's IP if being launched from remote -->
+  <arg name="v2mini_ip" default="localhost"/><!-- provide v2-mini's IP if being launched from remote -->
   <arg name="control" default="remote"/> <!-- 'autonomous' or 'remote' -->
   <arg name="controller" default="keyboard"/> <!-- 'gamepad' or 'keyboard' -->
   <arg name="use_mega" default="true"/><!-- launch base MCU node -->
