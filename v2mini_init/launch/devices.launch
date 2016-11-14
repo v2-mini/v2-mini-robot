@@ -12,15 +12,11 @@
     <!-- launch arduino mega node (robot base) -->
     <group if="$(arg use_mega)"  ns="mega_base">
 
-        <!-- Start megaware node on V2-Mini from a remote machine -->
-        <node name="megaware" if="$(arg remote_machine)" machine="v2-mini" pkg="rosserial_python" type="serial_node.py" respawn="true">
-            <param name="port" value="/dev/arduino_mega" />
-        </node>
+      <!-- Start megaware node on V2-Mini from a remote machine -->
+      <node name="megaware" if="$(arg remote_machine)" machine="v2-mini" pkg="rosserial_python" type="serial_node.py" respawn="true" args="_port:=/dev/arduino_mega"/>
 
-        <!-- Start megaware node on V2-Mini locally -->
-        <node name="megaware" unless="$(arg remote_machine)" pkg="rosserial_python" type="serial_node.py" respawn="true">
-            <param name="port" value="/dev/arduino_mega" />
-        </node>
+      <!-- Start megaware node on V2-Mini locally -->
+      <node name="megaware" unless="$(arg remote_machine)" pkg="rosserial_python" type="serial_node.py" respawn="true" args="_port:=/dev/arduino_mega"/>
 
     </group>
 
@@ -28,14 +24,10 @@
     <group if="$(arg use_uno)" ns="uno_torso">
 
       <!-- Start unoware node on V2-Mini locally -->
-      <node name="unoware" if="$(arg remote_machine)" machine="v2-mini" pkg="rosserial_python" type="serial_node.py" respawn="true" >
-          <param name="port" value="/dev/arduino_uno" />
-      </node>
+      <node name="unoware" if="$(arg remote_machine)" machine="v2-mini" pkg="rosserial_python" type="serial_node.py" respawn="true" args="_port:=/dev/arduino_uno"/>
 
       <!-- Start unoware node on V2-Mini locally -->
-      <node name="unoware" unless="$(arg remote_machine)" pkg="rosserial_python" type="serial_node.py" respawn="true" >
-          <param name="port" value="/dev/arduino_uno" />
-      </node>
+      <node name="unoware" unless="$(arg remote_machine)" pkg="rosserial_python" type="serial_node.py" respawn="true" args="_port:=/dev/arduino_uno"/>
 
     </group>
 
