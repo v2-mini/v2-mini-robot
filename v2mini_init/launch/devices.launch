@@ -7,7 +7,7 @@
     <arg name="use_mega" default="true"/><!-- launch base MCU node -->
     <arg name="use_uno" default="true"/><!-- launch torso/head MCU node -->
 
-    <machine name="v2-mini" address="$(arg v2mini_ip)" user="v2-mini" timeout="15.0"/>
+    <machine name="v2-mini" address="v2-mini" user="v2-mini" timeout="15.0" env-loader="$(env HOME)/Code/src/v2mini_robot/v2mini_init/v2mini_env.sh"/>
 
     <!-- launch arduino mega node (robot base) -->
     <group if="$(arg use_mega)"  ns="mega_base">
