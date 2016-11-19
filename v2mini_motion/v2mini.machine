@@ -1,4 +1,0 @@
-<launch>
-  <machine name="v2-mini" address="v2-mini" user="v2-mini" default="true"/>
-  <machine name="remote-machine" address="jon" user="jon" env-loader="/home/jmoore/v2mini_ws/devel/env.sh"/>
-<launch/>
