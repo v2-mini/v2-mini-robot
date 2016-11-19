@@ -14,7 +14,7 @@
   <!-- Launch the MCU nodes -->
   <include file="$(find v2mini_init)/launch/devices.launch">
     <arg name="use_mega_base" value="$(arg use_mega_base)"/>
-    <arg name="use_mega_head" value="$(arg use_mega_head)"/>
+    <arg name="use_mega_torso" value="$(arg use_mega_torso)"/>
     <arg name="use_uno" value="$(arg use_uno)"/>
   </include>
 

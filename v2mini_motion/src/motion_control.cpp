@@ -89,7 +89,7 @@ int main(int argc, char ** argv) {
 
 			//publish the movement commands
 			base_pub.publish(base_cmds);
-			base_pub.publish(torso_cmds);
+			torso_pub.publish(torso_cmds);
 			loop_rate.sleep();
 
 		}
