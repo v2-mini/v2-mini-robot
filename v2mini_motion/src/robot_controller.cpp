@@ -91,7 +91,7 @@ void RobotController::loadGamepad()
 float* RobotController::getKeyCmds()
 {
 
-	static float key_cmds[] = {0, 0, 0, 0};
+	static float key_cmds[] = {0, 0, 0, 0, 0};
 	const int max_value = 1000;
 
 	if(keys[SDL_SCANCODE_ESCAPE])
@@ -166,6 +166,17 @@ float* RobotController::getKeyCmds()
 	{
 		key_cmds[TORSO_VELZ] = 0;
 	}
+
+	// Toggle Face
+	if (keys[SDL_SCANCODE_E] != 0)
+	{
+		key_cmds[FACE] = 1;
+	}
+	else
+	{
+		key_cmds[FACE] = 0;
+	}
+
 
 	mapVelocity(key_cmds, max_value);
 
