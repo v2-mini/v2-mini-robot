@@ -2,19 +2,27 @@
 
 <launch>
 
-    <arg name="use_mega" default="true"/><!-- launch base MCU node -->
-    <arg name="use_uno" default="true"/><!-- launch torso/head MCU node -->
+    <arg name="use_mega_base" default="true"/><!-- launch base MCU node -->
+    <arg name="use_mega_torso" default="true"/><!-- launch face/torso MCU node -->
+    <arg name="use_uno" default="true"/><!-- launch head/hand MCU node -->
 
     <!-- launch arduino mega node (robot base) -->
-    <group if="$(arg use_mega)"  ns="mega_base">
-      <node name="megaware" machine="v2-mini" pkg="rosserial_python" type="serial_node.py" respawn="true">
-        <param name="port" value="/dev/arduino_mega"/>
+    <group if="$(arg use_mega_base)"  ns="base">
+      <node name="mega_baseware" machine="v2-mini" pkg="rosserial_python" type="serial_node.py" respawn="true">
+        <param name="port" value="/dev/arduino_mega_base"/>
       </node>
     </group>
 
-    <!-- launch arduino uno node (robot torso/head) -->
-    <group if="$(arg use_uno)" ns="uno_torso">
-      <node name="unoware" machine="v2-mini" pkg="rosserial_python" type="serial_node.py" respawn="true">
+    <!-- launch arduino mega node (robot torso/face) -->
+    <group if="$(arg use_mega_torso)" ns="torso">
+      <node name="mega_torsoware" machine="v2-mini" pkg="rosserial_python" type="serial_node.py" respawn="true">
+        <param name="port" value="/dev/arduino_mega_head"/>
+      </node>
+    </group>
+
+    <!-- launch arduino uno node (robot head/hand) -->
+    <group if="$(arg use_uno)" ns="head">
+      <node name="uno_headware" machine="v2-mini" pkg="rosserial_python" type="serial_node.py" respawn="true">
         <param name="port" value="/dev/arduino_uno"/>
       </node>
     </group>

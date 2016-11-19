@@ -5,14 +5,16 @@
   <arg name="control_machine" default="v2-mini"/><!-- set true if being launched from remote -->
   <arg name="control" default="remote"/> <!-- 'autonomous' or 'remote' -->
   <arg name="controller" default="keyboard"/> <!-- 'gamepad' or 'keyboard' -->
-  <arg name="use_mega" default="true"/><!-- launch base MCU node -->
-  <arg name="use_uno" default="true"/><!-- launch torso/head MCU node -->
+  <arg name="use_mega_base" default="true"/><!-- launch base MCU node -->
+  <arg name="use_mega_torso" default="true"/><!-- launch torso MCU node -->
+  <arg name="use_uno" default="true"/><!-- launch head MCU node -->
 
   <include file="$(find v2mini_init)/v2mini.machine"/>
 
   <!-- Launch the MCU nodes -->
   <include file="$(find v2mini_init)/launch/devices.launch">
-    <arg name="use_mega" value="$(arg use_mega)"/>
+    <arg name="use_mega_base" value="$(arg use_mega_base)"/>
+    <arg name="use_mega_head" value="$(arg use_mega_head)"/>
     <arg name="use_uno" value="$(arg use_uno)"/>
   </include>
 

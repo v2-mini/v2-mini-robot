@@ -20,8 +20,6 @@ const int BASE_MOTOR_D2[] = {48, 44, 50, 40};
 
 const float ROT_FACTOR = PI / 180.0 * BASE_RADIUS;
 
-const int TORSO_D = 8;
-
 // Motor Matrix: (F, B, R, L) ^ T
 // Each row is: { -sin(a), cos(a), ROT_FACTOR}
 // Where a is the angle from the x-axis to the motor-axis
@@ -34,7 +32,6 @@ const float MOTOR_MATRIX[4][3] = {
 
 // { x vel, y vel, angular vel }
 float input_velocity[] = {0, 0, 0};
-float torso_vel = 0;
 
 // { F, B, R, L }
 float motor_speed_previous[] = {0, 0, 0, 0};
@@ -47,7 +44,6 @@ void motion_cb(const geometry_msgs::Twist& motion_cmds) {
   input_velocity[BASE_VELX] = motion_cmds.linear.x;
   input_velocity[BASE_VELY] = motion_cmds.linear.y;
   input_velocity[BASE_VELZ] = motion_cmds.angular.z;
-  torso_vel = motion_cmds.linear.z;
 }
 
 // Subscribe to ROS topic "/base_cmds"
@@ -221,19 +217,6 @@ void move_base() {
   }
 }
 
-void move_torso() {
-
-  if (torso_vel == 0)
-  {
-    digitalWrite(TORSO_D, HIGH);
-  }
-  else
-  {
-    digitalWrite(TORSO_D, LOW);
-  }
-
-}
-
 void measure_batts() {
   return;
 }
@@ -255,8 +238,6 @@ void setup() {
     pinMode(BASE_MOTOR_D2[i], OUTPUT);
   }
 
-  pinMode(TORSO_D, OUTPUT);
-
   // setup ros
   nh.initNode();
   nh.subscribe(sub_motion);
@@ -267,9 +248,6 @@ void loop() {
 
   // State 1: Control the base ---
   move_base();
-
-  // State 2: Control the torso ---
-  move_torso();
 
   // State 3: Measure the batteries ---
   measure_batts();
