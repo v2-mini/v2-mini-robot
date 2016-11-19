@@ -82,7 +82,10 @@ int main(int argc, char ** argv) {
 			base_cmds.linear.x = cmds[v2mini_motion::BASE_VELX];
 			base_cmds.linear.y = cmds[v2mini_motion::BASE_VELY];
 			base_cmds.angular.z = cmds[v2mini_motion::BASE_VELZ];
-			base_cmds.linear.z = cmds[v2mini_motion::TORSO_VELZ];
+			// base_cmds.linear.z = cmds[v2mini_motion::TORSO_VELZ];
+
+			base_cmds.linear.z = cmds[v2mini_motion::FACE]; // TODO TEMP
+
 
 			//publish the movement commands
 			base_pub.publish(base_cmds);

@@ -20,6 +20,8 @@ const int BASE_MOTOR_D2[] = {48, 44, 50, 40};
 
 const float ROT_FACTOR = PI / 180.0 * BASE_RADIUS;
 
+const int TORSO_D = 8;
+
 // Motor Matrix: (F, B, R, L) ^ T
 // Each row is: { -sin(a), cos(a), ROT_FACTOR}
 // Where a is the angle from the x-axis to the motor-axis
@@ -220,7 +222,16 @@ void move_base() {
 }
 
 void move_torso() {
-  return;
+
+  if (torso_vel == 0)
+  {
+    digitalWrite(TORSO_D, HIGH);
+  }
+  else
+  {
+    digitalWrite(TORSO_D, LOW);
+  }
+
 }
 
 void measure_batts() {
@@ -243,6 +254,8 @@ void setup() {
     pinMode(BASE_MOTOR_D1[i], OUTPUT);
     pinMode(BASE_MOTOR_D2[i], OUTPUT);
   }
+
+  pinMode(TORSO_D, OUTPUT);
 
   // setup ros
   nh.initNode();

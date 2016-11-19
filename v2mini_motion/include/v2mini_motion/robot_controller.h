@@ -12,7 +12,7 @@ const int MAX_BASE_RADIAL_VEL = 30;		// cm/s
 const int MAX_BASE_ANGULAR_VEL = 120;	// deg/s
 const float MAX_TORSO_VEL = 0.6;		// cm/s
 
-enum ROBOT_VEL {BASE_VELX, BASE_VELY, BASE_VELZ, TORSO_VELZ};
+enum ROBOT_VEL {BASE_VELX, BASE_VELY, BASE_VELZ, TORSO_VELZ, FACE};
 
 class RobotController {
 

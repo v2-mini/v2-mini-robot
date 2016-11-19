@@ -174,7 +174,7 @@ float* RobotController::getKeyCmds()
 
 float* RobotController::getGamepadCmds()
 {
-	static float cmds[] = {0, 0, 0, 0};
+	static float cmds[] = {0, 0, 0, 0, 0};
 	const int max_value = 32769;
 	const int deadzone = 300;
 
@@ -215,6 +215,9 @@ float* RobotController::getGamepadCmds()
 	int torso_down = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_A);
 
 	cmds[TORSO_VELZ] = torso_up - torso_down;
+
+	// B Button
+	cmds[FACE] = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_B);
 
 	mapVelocity(cmds, max_value);
 
