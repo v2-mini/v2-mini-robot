@@ -2,7 +2,7 @@
 
 <launch>
 
-  <arg name="machine" default="v2-mini"/><!-- set true if being launched from remote -->
+  <arg name="control_machine" default="v2-mini"/><!-- set true if being launched from remote -->
   <arg name="control" default="remote"/> <!-- 'autonomous' or 'remote' -->
   <arg name="controller" default="keyboard"/> <!-- 'gamepad' or 'keyboard' -->
   <arg name="use_mega" default="true"/><!-- launch base MCU node -->
@@ -17,7 +17,7 @@
   </include>
 
   <!-- Launch the controller node -->
-  <node name="controller" machine="$(arg machine)" pkg="v2mini_motion" type="motion_control" respawn="false" >
+  <node name="controller" machine="$(arg control_machine)" pkg="v2mini_motion" type="motion_control" respawn="false" >
       <param name="control" value="$(arg control)" />
       <param name="controller" value="$(arg controller)" />
   </node>
