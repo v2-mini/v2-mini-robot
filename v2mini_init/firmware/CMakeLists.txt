@@ -16,6 +16,6 @@ generate_arduino_firmware(mega_baseware
 
 generate_arduino_firmware(mega_torsoware
   SRCS mega_torsoware.cpp ${ROS_LIB_DIR}/time.cpp
-  BOARD mega1280
+  BOARD mega
   PORT /dev/arduino_mega_head
 )
