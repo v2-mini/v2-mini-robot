@@ -14,6 +14,7 @@ int main(int argc, char ** argv) {
 	ros::NodeHandle n;
 
 	ros::Publisher base_pub = n.advertise<geometry_msgs::Twist>("base_cmds", 1);
+	ros::Publisher torso_pub = n.advertise<geometry_msgs::Twist>("torso_cmds", 1);
 
 	// Get type of control from param (auto or remote)
 	std::string control_type;
@@ -56,6 +57,7 @@ int main(int argc, char ** argv) {
 	{
 
 		geometry_msgs::Twist base_cmds;
+		geometry_msgs::Twist torso_cmds;
 
 		if (control_type == "remote")
 		{
@@ -82,13 +84,12 @@ int main(int argc, char ** argv) {
 			base_cmds.linear.x = cmds[v2mini_motion::BASE_VELX];
 			base_cmds.linear.y = cmds[v2mini_motion::BASE_VELY];
 			base_cmds.angular.z = cmds[v2mini_motion::BASE_VELZ];
-			// base_cmds.linear.z = cmds[v2mini_motion::TORSO_VELZ];
 
-			base_cmds.linear.z = cmds[v2mini_motion::FACE]; // TODO TEMP
-
+			torso_cmds.linear.x = cmds[v2mini_motion::FACE];
 
 			//publish the movement commands
 			base_pub.publish(base_cmds);
+			base_pub.publish(torso_cmds);
 			loop_rate.sleep();
 
 		}
