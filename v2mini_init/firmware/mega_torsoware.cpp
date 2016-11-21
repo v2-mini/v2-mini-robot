@@ -37,7 +37,7 @@ const int TORSO_MINH = 50;
 
 int face_input = 0;
 int torso_input = 0;
-int torso_current = 0;
+int torso_current = 75;
 
 int prev_time;
 
