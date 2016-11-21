@@ -46,12 +46,12 @@ void motion_cb(const geometry_msgs::Twist& motion_cmds) {
   input_velocity[BASE_VELZ] = motion_cmds.angular.z;
 }
 
-geometry_msgs::Twist debug_msg;
-ros::Publisher base_debugger("base_debugger", &debug_msg);
-
 // Subscribe to ROS topic "/base_cmds"
 ros::Subscriber<geometry_msgs::Twist> sub_motion(
   "base_cmds", &motion_cb);
+
+// geometry_msgs::Twist debug_msg;
+// ros::Publisher base_debugger("base_debugger", &debug_msg);
 
 /*********************************************************
 Get the new motor speed from the desired speed and the
@@ -165,7 +165,6 @@ void move_base() {
 
   for (int i = 0; i < NUM_MOTORS; i++) {
 
-    // NOTE: Input velocities must already be mapped to range:
     // radial velocity < 30 cm/s
     // angular velocity < 120 deg/s
 
@@ -234,10 +233,10 @@ void move_base() {
     }
   }
 
-  debug_msg.linear.x = motor_speed[0];
-  debug_msg.linear.y = motor_speed[1];
-  debug_msg.linear.z = motor_speed[2];
-  debug_msg.angular.x = motor_speed[3];
+  // debug_msg.linear.x = motor_speed[0];
+  // debug_msg.linear.y = motor_speed[1];
+  // debug_msg.linear.z = motor_speed[2];
+  // debug_msg.angular.x = motor_speed[3];
 
   for (int i = 0; i < NUM_MOTORS; i++)
   {
@@ -269,7 +268,7 @@ void setup() {
   // setup ros
   nh.initNode();
   nh.subscribe(sub_motion);
-  nh.advertise(base_debugger); // comment out when not debugging
+  // nh.advertise(base_debugger); // comment out when not debugging
 
 }
 
@@ -287,6 +286,6 @@ void loop() {
   // State 5: Calculate base error ---
   calc_base_error();
 
-  base_debugger.publish(&debug_msg); // comment out when not debugging
+  // base_debugger.publish(&debug_msg); // comment out when not debugging
   nh.spinOnce();
 }
