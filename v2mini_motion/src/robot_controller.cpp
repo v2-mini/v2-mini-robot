@@ -155,16 +155,16 @@ float* RobotController::getKeyCmds()
 
 		if (keys[SDL_SCANCODE_R] == 1)
 		{
-			key_cmds[TORSO_VELZ] = max_value;
+			key_cmds[TORSO_VEL] = 1;
 		}
 		else
 		{
-			key_cmds[TORSO_VELZ] = -max_value;
+			key_cmds[TORSO_VEL] = -1;
 		}
 	}
 	else
 	{
-		key_cmds[TORSO_VELZ] = 0;
+		key_cmds[TORSO_VEL] = 0;
 	}
 
 	// Toggle Face
@@ -225,7 +225,7 @@ float* RobotController::getGamepadCmds()
 	int torso_up = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_Y);
 	int torso_down = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_A);
 
-	cmds[TORSO_VELZ] = torso_up - torso_down;
+	cmds[TORSO_VEL] = torso_up - torso_down;
 
 	// B Button
 	cmds[FACE] = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_B);
@@ -253,19 +253,6 @@ void RobotController::mapVelocity(float *val_array, int ceiling_value)
 
 	// Map value range for angular
 	val_array[BASE_VELZ] = val_array[BASE_VELZ] * MAX_BASE_ANGULAR_VEL / ceiling_value;
-
-	// Cap torso speed
-	if (std::abs(float(val_array[TORSO_VELZ])) > MAX_TORSO_VEL)
-	{
-		if (val_array[TORSO_VELZ] < 0)
-		{
-			val_array[TORSO_VELZ] = -MAX_TORSO_VEL;
-		}
-		else
-		{
-			val_array[TORSO_VELZ] = MAX_TORSO_VEL;
-		}
-	}
 }
 
 void RobotController::reRenderImage()

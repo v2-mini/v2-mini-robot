@@ -10,6 +10,9 @@ Servo s1;
 Servo s2;
 Servo s3;
 Servo s4;
+Servo torso;
+
+const int TORSO_MAXV = 10; // deg/s
 
 int servoPin[] = {23,25,27,29,31};
 int expression = 0;
@@ -24,19 +27,25 @@ int rgbPins[] = {45,44,46};
 int rgbScale[] = {120,120,120};
 
 int count = 0;
-int time;
 int val;
 int lastread;
 Servo myservo;
 
-const int TORSO = 53;
+const int TORSO_PIN = 53;
+const int TORSO_MAXH = 95;
+const int TORSO_MINH = 50;
 
 int face_input = 0;
+int torso_input = 0;
+int torso_current = 0;
+
+int prev_time;
 
 void motion_cb(const geometry_msgs::Twist& motion_cmds)
 {
   // todo msg type to use? probably don't need twist..
   face_input = motion_cmds.linear.x;
+  torso_input = motion_cmds.linear.y;
 }
 
 // Subscribe to ROS topic "/torso_cmds"
@@ -45,13 +54,27 @@ ros::Subscriber<geometry_msgs::Twist> sub_motion(
 
 void move_torso()
 {
-  return;
+  if (torso_input > 0)
+  {
+    if (torso_current < TORSO_MAXH)
+    {
+      // move torso upward
+      torso_current++;
+      torso.write(torso_current);
+    }
+  }
+  else if (torso_input < 0)
+  {
+    if (torso_current > TORSO_MINH)
+    {
+      // move torso downward
+      torso_current--;
+      torso.write(torso_current);
+    }
+  }
 }
 
 void ledWrite(int r,int g,int b){
-//  analogWrite(rgbPins[0], r*rgbScale[0]/100);
-//  analogWrite(rgbPins[1], g*rgbScale[1]/100);
-//  analogWrite(rgbPins[2], b*rgbScale[2]/100);
   digitalWrite(rgbPins[0], r);
   digitalWrite(rgbPins[1], g);
   digitalWrite(rgbPins[2], b);
@@ -61,14 +84,14 @@ void expressionSet(int exp){
   s1.write(expressions[exp][1]);
   s3.write(expressions[exp][3]);
 
-  delay(100);
+  delay(50);
   s0.write(expressions[exp][0]);
 
-  delay(100);
+  delay(50);
   s2.write(expressions[exp][2]);
   s4.write(expressions[exp][4]);
 
-     ledWrite(expressions[exp][5],expressions[exp][6],expressions[exp][7]);
+  ledWrite(expressions[exp][5],expressions[exp][6],expressions[exp][7]);
 }
 
 void allServo(int val){
@@ -118,6 +141,9 @@ void setup()
   s2.attach(servoPin[2]);
   s3.attach(servoPin[3]);
   s4.attach(servoPin[4]);
+  torso.attach(TORSO_PIN);
+
+  prev_time = millis();
 
   // setup ros
   nh.initNode();
@@ -126,7 +152,11 @@ void setup()
 
 void loop()
 {
-  move_torso();
+  if ((millis() - prev_time) > (1000 / TORSO_MAXV))
+  {
+    move_torso();
+    prev_time = millis();
+  }
 
   toggle_face();
 
