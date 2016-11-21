@@ -46,6 +46,9 @@ void motion_cb(const geometry_msgs::Twist& motion_cmds) {
   input_velocity[BASE_VELZ] = motion_cmds.angular.z;
 }
 
+geometry_msgs::Twist debug_msg;
+ros::Publisher base_debugger("base_debugger", &debug_msg);
+
 // Subscribe to ROS topic "/base_cmds"
 ros::Subscriber<geometry_msgs::Twist> sub_motion(
   "base_cmds", &motion_cb);
@@ -128,6 +131,8 @@ void move_base() {
   // F, B, R, L
   float motor_speed[] = {0, 0, 0, 0};
   bool cw_rotation[NUM_MOTORS];
+  int max_elem = 0;
+  int max_mapped = 0;
 
   // Calculate desired motor speeds
   // These values are targets to ramp up or down towards.
@@ -150,6 +155,12 @@ void move_base() {
     // Take the magnitude.
     motor_speed[i] = abs(motor_speed[i]);
 
+    // keep track of the max speed input
+    if (i > 0 && motor_speed[i] > motor_speed[max_elem])
+    {
+      max_elem = i;
+    }
+
   }
 
   for (int i = 0; i < NUM_MOTORS; i++) {
@@ -157,9 +168,6 @@ void move_base() {
     // NOTE: Input velocities must already be mapped to range:
     // radial velocity < 30 cm/s
     // angular velocity < 120 deg/s
-
-    // Convert speeds to 8-bit.
-    motor_speed[i] = map(motor_speed[i], 0, MAX_MOTOR_SPEED, 0, 255);
 
     // Acceleration Logic for each motor -------------------- :
     // 1. Stopped and want to move or stay stopped.
@@ -210,9 +218,29 @@ void move_base() {
 
     motor_speed_previous[i] = motor_speed[i];
 
+    // Convert speeds to 8-bit.
+    motor_speed[i] = map(motor_speed[i], 0, MAX_MOTOR_SPEED, 0, 255);
+
   }
 
-  for (int i = 0; i < NUM_MOTORS; i++) {
+  max_mapped = motor_speed[max_elem];
+
+  // Scale the values if greater than 8-bit
+  if (max_mapped > 255)
+  {
+    for (int i = 0; i < NUM_MOTORS; i++)
+    {
+      motor_speed[i] = motor_speed[i] * 255 / max_mapped;
+    }
+  }
+
+  debug_msg.linear.x = motor_speed[0];
+  debug_msg.linear.y = motor_speed[1];
+  debug_msg.linear.z = motor_speed[2];
+  debug_msg.angular.x = motor_speed[3];
+
+  for (int i = 0; i < NUM_MOTORS; i++)
+  {
     analogWrite(BASE_MOTOR_PWM[i], motor_speed[i]);
   }
 }
@@ -241,6 +269,7 @@ void setup() {
   // setup ros
   nh.initNode();
   nh.subscribe(sub_motion);
+  nh.advertise(base_debugger); // comment out when not debugging
 
 }
 
@@ -258,5 +287,6 @@ void loop() {
   // State 5: Calculate base error ---
   calc_base_error();
 
+  base_debugger.publish(&debug_msg); // comment out when not debugging
   nh.spinOnce();
 }

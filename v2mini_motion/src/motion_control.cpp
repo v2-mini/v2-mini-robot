@@ -1,6 +1,5 @@
 #include <geometry_msgs/Twist.h>
 #include <ros/ros.h>
-#include <ros/console.h>
 #include <stdlib.h>
 #include <stdio.h>
 

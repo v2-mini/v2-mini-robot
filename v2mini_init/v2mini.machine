@@ -1,5 +1,4 @@
 <launch>
-  <!--<machine name="v2-mini" address="192.168.1.74" user="v2-mini" env-loader="/home/v2-mini/v2mini_ws/devel/env.sh"/>-->
-  <machine name="v2-mini" address="192.168.1.74" user="jon"/>
-  <machine name="remote_machine" address="192.168.1.74" user="jon" default="true"/>
+  <machine name="v2-mini" address="128.189.228.126" user="v2-mini" env-loader="/home/v2-mini/v2mini_ws/devel/env.sh"/>
+  <machine name="remote_machine" address="128.189.233.33" user="jon" default="true"/>
 </launch>
