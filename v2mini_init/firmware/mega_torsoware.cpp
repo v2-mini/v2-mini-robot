@@ -12,16 +12,16 @@ Servo s3;
 Servo s4;
 Servo torso;
 
-const int TORSO_MAXV = 10; // deg/s
+const int TORSO_MAXV = 5; // deg/s
 
 int servoPin[] = {23,25,27,29,31};
 int expression = 0;
-int expressions[][8] =  {{100,90,80,90,80,0,50,50}, //neutral
-                        {150,115,90,70,30,0,0,50},  //sad
-                        {20,90,80,90,160,0,50,0},  //happy
-                        {80,65,80,115,100,50,0,0},//mad
-                        {20,85,150,95,160,50,50,0},//interested
-                        {20,105,180,75,90,50,0,50}};  //uncertain
+int expressions[][8] =  {{100,90,80,90,80,0,50,50},    //neutral
+                        {150,115,90,70,30,0,0,50},     //sad
+                        {20,90,80,90,160,0,50,0},      //happy
+                        {80,65,80,115,100,50,0,0},     //mad
+                        {20,85,150,95,160,50,50,0},    //interested
+                        {20,105,180,75,90,50,0,50}};   //uncertain
 
 int rgbPins[] = {45,44,46};
 int rgbScale[] = {120,120,120};
@@ -39,7 +39,7 @@ int face_input = 0;
 int torso_input = 0;
 int torso_current = 75;
 
-int prev_time;
+unsigned long prev_time;
 
 void motion_cb(const geometry_msgs::Twist& motion_cmds)
 {
@@ -56,7 +56,7 @@ void move_torso()
 {
   if (torso_input > 0)
   {
-    if (torso_current < TORSO_MAXH)
+    if (torso_current < TORSO_MAXH && torso_current > TORSO_MINH) // TODO REDUNDANT MOVE TO FCN
     {
       // move torso upward
       torso_current++;
@@ -65,7 +65,7 @@ void move_torso()
   }
   else if (torso_input < 0)
   {
-    if (torso_current > TORSO_MINH)
+    if (torso_current < TORSO_MAXH && torso_current > TORSO_MINH)
     {
       // move torso downward
       torso_current--;
@@ -152,7 +152,7 @@ void setup()
 
 void loop()
 {
-  if ((millis() - prev_time) > (1000 / TORSO_MAXV))
+  if ((millis() - prev_time) > (1000.0 / TORSO_MAXV))
   {
     move_torso();
     prev_time = millis();

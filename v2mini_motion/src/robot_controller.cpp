@@ -189,10 +189,15 @@ float* RobotController::getGamepadCmds()
 	const int max_value = 32769;
 	const int deadzone = 300;
 
+	int axis_leftx;
+	int axis_lefty;
+	int axis_righx;
+	int axis_righy;
+
 	loadGamepad();
 
-	// LEFT JOY STICK X
-	int axis_leftx = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX);
+	// LEFT JOY STICK X FOR SIDEWAYS TRANSLATION
+	axis_leftx = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX);
 
 	if (std::abs(axis_leftx) > deadzone)
 	{
@@ -203,8 +208,8 @@ float* RobotController::getGamepadCmds()
 		cmds[BASE_VELX] = 0;
 	}
 
-	// LEFT JOY STICK Y
-	int axis_lefty = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY);
+	// LEFT JOY STICK Y FOR FORWARD TRANSLATION
+	axis_lefty = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY);
 
 	if (std::abs(axis_lefty) > deadzone)
 	{
@@ -215,20 +220,58 @@ float* RobotController::getGamepadCmds()
 		cmds[BASE_VELY] = 0;
 	}
 
-	// LEFT & RIGHT BOTTOM TRIGGERS
+	// LEFT & RIGHT BOTTOM TRIGGERS FOR CW ROTATION AND CCW ROTATION
 	int cww_rot = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_TRIGGERLEFT);
 	int cw_rot = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
 
 	cmds[BASE_VELZ] = cww_rot - cw_rot;
 
-	// A & Y BUTTONS
+	// A & Y BUTTONS FOR TORSO UP AND DOWN
 	int torso_up = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_Y);
 	int torso_down = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_A);
 
 	cmds[TORSO_VEL] = torso_up - torso_down;
 
-	// B Button
+	// B BUTTON FOR FACE TOGGLING
 	cmds[FACE] = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_B);
+
+//	// CONTROL ARM MOTION IN THE YZ PLANE WITH DPAD UP KEYBINDING
+//	if (SDL_CONTROLLER_BUTTON_DPAD_UP)
+//	{
+//		// RIGHT JOY STICK X FOR SIDEWAYS TRANSLATION
+//		axis_righx. = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX);
+//
+//		if (std::abs(axis_leftx) > deadzone)
+//		{
+//			cmds[BASE_VELX] = axis_leftx;
+//		}
+//		else
+//		{
+//			cmds[BASE_VELX] = 0;
+//		}
+//
+//		// RIGHT JOY STICK Y FOR FORWARD TRANSLATION
+//		axis_righy = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_RIGHTY);
+//
+//		if (std::abs(axis_lefty) > deadzone)
+//		{
+//			cmds[ARM_VELYZ] = -axis_lefty;
+//		}
+//		else
+//		{
+//			cmds[ARM_VELYZ] = 0;
+//		}
+//	}
+//	// CONTROL ARM MOTION IN THE XZ PLANE WITH DPAD LEFT KEYBINDING
+//	else if (SDL_CONTROLLER_BUTTON_DPAD_LEFT)
+//	{
+//
+//	}
+//	// CONTROL ARM MOTION IN THE XY PLANE WITH DPAD DOWN KEYBINDING
+//	else if (SDL_CONTROLLER_BUTTON_DPAD_DOWN)
+//	{
+//
+//	}
 
 	mapVelocity(cmds, max_value);
 

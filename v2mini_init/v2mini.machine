@@ -1,4 +1,14 @@
 <launch>
-  <machine name="v2-mini" address="128.189.228.126" user="v2-mini" env-loader="/home/v2-mini/v2mini_ws/devel/env.sh"/>
-  <machine name="remote_machine" address="128.189.233.33" user="jon" default="true"/>
+
+  <arg name="remote_machine" default="false"/>
+
+  <group if="$(arg remote_machine)">
+    <machine name="v2-mini" address="128.189.228.126" user="v2-mini" env-loader="/home/v2-mini/v2mini_ws/devel/env.sh"/>
+    <machine name="remote" address="128.189.233.33" user="jon" default="true"/>
+  </group>
+
+  <group unless="$(arg remote_machine)">
+    <machine name="v2-mini" address="127.0.0.1" user="v2-mini" default="true"/>
+  </group>
+
 </launch>
