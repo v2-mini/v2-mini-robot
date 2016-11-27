@@ -3,9 +3,10 @@
 
   <name>v2mini_controllers</name>
   <version>0.0.0</version>
-  <description>Package for handling v2mini's dynamixel arm</description>
+  <description>This package handles v2mini's dynamixel arm controllers.</description>
 
   <maintainer email="openrobotics.v2.mini@gmail.com">jon</maintainer>
+  <license>BSD</license>
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>dynamixel_controllers</build_depend>
