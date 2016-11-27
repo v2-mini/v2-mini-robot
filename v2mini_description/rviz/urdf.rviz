@@ -50,7 +50,7 @@ Visualization Manager:
       Plane Cell Count: 10
       Reference Frame: <Fixed Frame>
       Value: true
-    - Alpha: 0.8
+    - Alpha: 1
       Class: rviz/RobotModel
       Collision Enabled: false
       Enabled: true
@@ -75,12 +75,22 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        head_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         left_wheel:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
         right_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        torso_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -102,9 +112,13 @@ Visualization Manager:
           Value: true
         front_wheel:
           Value: true
+        head_link:
+          Value: true
         left_wheel:
           Value: true
         right_wheel:
+          Value: true
+        torso_link:
           Value: true
       Marker Scale: 0.5
       Name: TF
@@ -121,6 +135,9 @@ Visualization Manager:
             {}
           right_wheel:
             {}
+          torso_link:
+            head_link:
+              {}
       Update Interval: 0
       Value: true
   Enabled: true
@@ -147,7 +164,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 0.832571
+      Distance: 1.83557
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
@@ -159,10 +176,10 @@ Visualization Manager:
         Z: 0
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.710202
+      Pitch: 0.540202
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 5.43673
+      Yaw: 4.13669
     Saved: ~
 Window Geometry:
   Displays:
@@ -181,4 +198,4 @@ Window Geometry:
     collapsed: false
   Width: 1216
   X: 55
-  Y: 18
+  Y: 14
