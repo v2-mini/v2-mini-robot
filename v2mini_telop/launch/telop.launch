@@ -1,0 +1,46 @@
+<!-- Start V2Mini and a Controller -->
+
+<launch>
+
+  <arg name="remote_telop" default="false"/><!-- is the telop node running on v2mini? -->
+  <arg name="robot_user" default="v2-mini"/><!-- robot's machine username (for testing) -->
+  <arg name="remote_user" default="jon"/><!-- remote machine username -->
+
+  <arg name="controller" default="keyboard"/><!-- 'gamepad' or 'keyboard' -->
+
+  <arg name="use_mega_base" default="true"/><!-- launch base MCU node -->
+  <arg name="use_mega_torso" default="true"/><!-- launch torso MCU node -->
+  <arg name="use_uno" default="true"/><!-- launch head MCU node -->
+
+  <include file="$(find v2mini_init)/v2mini.machine">
+    <arg name="remote_telop" value="$(arg remote_telop)"/>
+    <arg name="robot_user" value="$(arg robot_user)"/>
+    <arg name="remote_user" value="$(arg remote_user)"/>
+  </include>
+
+  <!-- Launch the MCU nodes -->
+  <include file="$(find v2mini_init)/launch/devices.launch">
+    <arg name="use_mega_base" value="$(arg use_mega_base)"/>
+    <arg name="use_mega_torso" value="$(arg use_mega_torso)"/>
+    <arg name="use_uno" value="$(arg use_uno)"/>
+  </include>
+
+  <arg name="control_machine" if="$(arg remote_telop)" value="remote"/>
+  <arg name="control_machine" unless="$(arg remote_telop)" value="v2-mini"/>
+
+  <!-- Launch the controller node -->
+  <node name="controller" machine="$(arg control_machine)" pkg="v2mini_telop" type="telop" respawn="false" >
+      <remap from="torso_cmds" to="torso/torso_cmds"/>
+      <remap from="base_cmds" to="base/base_cmds"/>
+      <param name="controller" value="$(arg controller)"/>
+  </node>
+
+</launch>
+
+<!--
+
+example:
+
+roslaunch v2mini_telop telop.launch use_mega_base:=false use_mega_torso:=false use_uno:=true controller:=gamepad
+
+-->

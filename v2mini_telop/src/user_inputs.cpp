@@ -5,14 +5,14 @@
 #include <stdio.h>
 #include <cmath>
 
-#include "v2mini_motion/robot_controller.h"
+#include "v2mini_telop/user_inputs.h"
 
-namespace v2mini_motion
+namespace v2mini_telop
 {
 
 const Uint8 *keys = SDL_GetKeyboardState(NULL);
 
-RobotController::RobotController()
+UserInputs::UserInputs()
 {
 
 	// Initialize SDL
@@ -41,7 +41,7 @@ RobotController::RobotController()
 			SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 
 			// get the path to the src package dir
-			std::string ros_path = ros::package::getPath("v2mini_motion") + "/robo_icon.jpg";
+			std::string ros_path = ros::package::getPath("v2mini_telop") + "/robo_icon.jpg";
 
 			IMG_Init(IMG_INIT_PNG);
 			SDL_Surface* loadedSurface = IMG_Load(ros_path.c_str());
@@ -57,7 +57,7 @@ RobotController::RobotController()
 	}
 }
 
-RobotController::~RobotController()
+UserInputs::~UserInputs()
 {
 	//Deallocate SDL resources
 	SDL_DestroyTexture(texture);
@@ -78,7 +78,7 @@ RobotController::~RobotController()
 	SDL_Quit();
 }
 
-void RobotController::loadGamepad()
+void UserInputs::loadGamepad()
 {
 	controller = SDL_GameControllerOpen(0);
 
@@ -88,7 +88,7 @@ void RobotController::loadGamepad()
 	}
 }
 
-float* RobotController::getKeyCmds()
+float* UserInputs::getKeyCmds()
 {
 
 	static float key_cmds[] = {0, 0, 0, 0, 0};
@@ -183,7 +183,7 @@ float* RobotController::getKeyCmds()
 	return key_cmds;
 }
 
-float* RobotController::getGamepadCmds()
+float* UserInputs::getGamepadCmds()
 {
 	static float cmds[] = {0, 0, 0, 0, 0};
 	const int max_value = 32769;
@@ -278,7 +278,7 @@ float* RobotController::getGamepadCmds()
 	return cmds;
 }
 
-void RobotController::mapVelocity(float *val_array, int ceiling_value)
+void UserInputs::mapVelocity(float *val_array, int ceiling_value)
 {
 	float velx = val_array[BASE_VELX];
 	float vely = val_array[BASE_VELY];
@@ -298,7 +298,7 @@ void RobotController::mapVelocity(float *val_array, int ceiling_value)
 	val_array[BASE_VELZ] = val_array[BASE_VELZ] * MAX_BASE_ANGULAR_VEL / ceiling_value;
 }
 
-void RobotController::reRenderImage()
+void UserInputs::reRenderImage()
 {
 	SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(renderer);
@@ -306,9 +306,9 @@ void RobotController::reRenderImage()
 	SDL_RenderPresent(renderer);
 }
 
-bool RobotController::checkQuitStatus()
+bool UserInputs::checkQuitStatus()
 {
 	return quit;
 }
 
-} 		// namespace v2mini_motion
+} 		// namespace v2mini_telop

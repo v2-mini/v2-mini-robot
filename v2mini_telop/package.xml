@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-    <name>v2mini_motion</name>
+    <name>v2mini_telop</name>
     <version>0.0.0</version>
-    <description>The v2mini_motion package contains scripts for motion control.</description>
+    <description>The v2mini_telop package contains scripts for v2mini tele-operation.</description>
 
     <maintainer email="intelligence@openrobotics.ca">openrobotics</maintainer>
 

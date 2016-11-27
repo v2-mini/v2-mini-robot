@@ -1,14 +1,16 @@
 <launch>
 
-  <arg name="remote_machine" default="false"/>
+  <arg name="remote_telop" default="false"/><!-- is the telop node running on v2mini? -->
+  <arg name="robot_user" default="v2-mini"/><!-- robot's machine username (for testing) -->
+  <arg name="remote_user" default="jon"/><!-- remote machine username -->
 
-  <group if="$(arg remote_machine)">
+  <group if="$(arg remote_telop)">
     <machine name="v2-mini" address="128.189.228.126" user="v2-mini" env-loader="/home/v2-mini/v2mini_ws/devel/env.sh"/>
-    <machine name="remote" address="128.189.233.33" user="jon" default="true"/>
+    <machine name="remote" address="128.189.233.33" user="$(arg remote_user)" default="true"/>
   </group>
 
-  <group unless="$(arg remote_machine)">
-    <machine name="v2-mini" address="127.0.0.1" user="v2-mini" default="true"/>
+  <group unless="$(arg remote_telop)">
+    <machine name="v2-mini" address="127.0.0.1" user="$(arg robot_user)" default="true"/>
   </group>
 
 </launch>
