@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="v2mini">
+
+  <xacro:property name="pi" value="3.14159" />
+
+  <!-- base properties -->
+  <xacro:property name="base_offset_z" value="0.0132" />
+  <xacro:property name="base_collision_height" value="0.132" />
+  <xacro:property name="base_collision_radius" value="0.175" />
+
+  <!-- wheel properties -->
+  <xacro:property name="wheel_radius" value="0.03" />
+  <xacro:property name="wheel_offset_radial" value="0.15" />
+
+  <!-- materials -->
+  <material name="white">
+    <color rgba="0.7 0.7 0.7 1"/>
+  </material>
+  <material name="black">
+    <color rgba="0 0 0 1"/>
+  </material>
+
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 ${base_offset_z}" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://v2mini_description/meshes/base/base.stl" />
+      </geometry>
+      <material name="white"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 ${base_offset_z}" rpy="0 0 0" />
+      <geometry>
+        <cylinder length="${base_collision_height}" radius="${base_collision_radius}"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Macro for creating base wheels -->
+  <xacro:macro name="wheel" params="prefix reflect rotate">
+
+    <link name="${prefix}_wheel">
+      <visual>
+        <origin xyz="${wheel_offset_radial*-rotate} ${wheel_offset_radial*(1-rotate)} -0.01" rpy="0 0 ${pi/2*rotate}"/>
+        <geometry>
+          <mesh filename="package://v2mini_description/meshes/base/base_wheel.stl" />
+        </geometry>
+        <material name="black"/>
+      </visual>
+    </link>
+
+    <joint name="${prefix}_axel" type="continuous">
+      <parent link="base_link"/>
+      <child link="${prefix}_wheel"/>
+      <origin xyz="${wheel_offset_radial*reflect*rotate} ${wheel_offset_radial*reflect*(1-rotate)} ${wheel_radius}"/>
+      <axis xyz="${rotate} ${1-rotate} 0"/>
+    </joint>
+
+  </xacro:macro>
+
+  <xacro:wheel prefix="back" reflect="1" rotate="0"/>
+  <xacro:wheel prefix="front" reflect="-1" rotate="0"/>
+  <xacro:wheel prefix="left" reflect="1" rotate="1"/>
+  <xacro:wheel prefix="right" reflect="-1" rotate="1"/>
+
+</robot>
