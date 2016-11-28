@@ -1,7 +1,6 @@
 <launch>
 
-  <!-- <arg name="model" default="$(find v2mini_description)/urdf/v2mini.urdf"/> -->
-  <arg name="model" default="$(find v2mini_description)/urdf/v2mini_base.urdf.xacro"/>
+  <arg name="model" default="$(find v2mini_description)/urdf/v2mini_arm.urdf.xacro"/>
   <arg name="gui" default="true" />
   <arg name="rvizconfig" default="$(find v2mini_description)/rviz/urdf.rviz" />
 

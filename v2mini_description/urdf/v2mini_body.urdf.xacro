@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="v2mini">
+
+  <xacro:property name="pi" value="3.14159" />
+
+  <!-- base properties -->
+  <xacro:property name="base_collision_height" value="0.132" />
+  <xacro:property name="base_collision_radius" value="0.175" />
+
+  <!-- wheel properties -->
+  <xacro:property name="wheel_radius" value="0.03" />
+  <xacro:property name="wheel_offset_radial" value="0.1405" />
+
+  <!-- torso properties -->
+  <xacro:property name="torso_offset_z" value="0.175" />
+  <xacro:property name="torso_width" value="0.2373" />
+
+  <!-- head properties -->
+  <xacro:property name="head_offset_z" value="0.2" />
+
+  <!-- arm properties -->
+  <xacro:property name="motor_depth" value="0.04175" />
+
+  <!-- materials -->
+  <material name="white">
+    <color rgba="0.6 0.6 0.6 1"/>
+  </material>
+  <material name="blue">
+    <color rgba="0.3 0.3 0.9 1"/>
+  </material>
+  <material name="black">
+    <color rgba="0.2 0.2 0.2 1"/>
+  </material>
+  <material name="grey">
+    <color rgba="0.4 0.4 0.4 1"/>
+  </material>
+  <material name="yellow">
+    <color rgba="0.5 0.5 0.1 1"/>
+  </material>
+  <material name="red">
+    <color rgba="0.6 0.2 0.2 1"/>
+  </material>
+
+  <!-- **** BASE **** -->
+
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://v2mini_description/meshes/base/base.stl" />
+      </geometry>
+      <material name="yellow"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 ${base_collision_height/2}" rpy="0 0 0" />
+      <geometry>
+        <cylinder length="${base_collision_height}" radius="${base_collision_radius}"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Macro for creating base wheels -->
+  <xacro:macro name="wheel" params="prefix reflect rotate front_set">
+
+    <link name="${prefix}_wheel">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 ${pi/2*rotate}"/>
+        <geometry>
+          <mesh filename="package://v2mini_description/meshes/base/base_wheel.stl" />
+        </geometry>
+        <material name="black"/>
+      </visual>
+    </link>
+
+    <joint name="${prefix}_axel" type="continuous">
+      <parent link="base_link"/>
+      <child link="${prefix}_wheel"/>
+      <origin xyz="${wheel_offset_radial*reflect*(1-front_set)} ${wheel_offset_radial*reflect*front_set} 0"/>
+      <axis xyz="${1-front_set} ${front_set} 0"/>
+    </joint>
+
+  </xacro:macro>
+
+  <xacro:wheel prefix="front" reflect="-1" rotate="0" front_set="1"/>
+  <xacro:wheel prefix="back" reflect="1" rotate="2" front_set="1"/>
+  <xacro:wheel prefix="right" reflect="-1" rotate="-1" front_set="0"/>
+  <xacro:wheel prefix="left" reflect="1" rotate="1" front_set="0"/>
+
+  <!-- **** TORSO **** -->
+
+  <link name="torso_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://v2mini_description/meshes/torso/torso.stl" />
+      </geometry>
+      <material name="blue"/>
+    </visual>
+  </link>
+
+  <joint name="torso_slide" type="prismatic">
+    <parent link="base_link"/>
+    <child link="torso_link"/>
+    <origin xyz="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="1000.0" lower="-0.09" upper="0" velocity="0.5"/>
+  </joint>
+
+</robot>
