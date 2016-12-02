@@ -1,23 +1,15 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="v2mini">
 
-  <material name="black">
-    <color rgba="0.1 0.1 0.1 1"/>
-  </material>
-  <material name="grey">
-    <color rgba="0.4 0.4 0.4 1"/>
-  </material>
-  <material name="red">
-    <color rgba="0.6 0.2 0.2 1"/>
-  </material>
+<xacro:property name="pi" value="3.14159" />
 
-  <xacro:property name="pi" value="3.14159" />
+<xacro:property name="base_offsetx" value="-0.158825" />
+<xacro:property name="base_offsety" value="-0.002" />
+<xacro:property name="base_offsetz" value="0.407507" />
 
-  <xacro:property name="base_offsetx" value="-0.158825" />
-  <xacro:property name="base_offsety" value="-0.002" />
-  <xacro:property name="base_offsetz" value="0.407507" />
+<xacro:macro name="arm">
 
-  <link name="base_link">
+  <link name="arm_link1">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
@@ -39,41 +31,44 @@
     </visual>
   </link>
 
-  <joint name="arm_joint1" type="continuous">
-    <parent link="base_link"/>
+  <joint name="arm_joint1" type="revolute">
+    <parent link="arm_link1"/>
     <child link="arm_link2"/>
     <origin xyz="${base_offsetx} ${base_offsety} ${base_offsetz}"/>
+    <limit effort="1000.0" lower="-3.1" upper="3.1" velocity="0.1"/>
   </joint>
 
-  <!-- macro for the rest of the links -->
+  <xacro:arm_link num="3" mat="black" parent="arm_link2" axis="0 1 0" offset="-0.026 0 0" roll="0" limit_low="-1.7" limit_high="1.7"/>
 
-  <xacro:macro name="arm_link" params="num mat parent axis offset roll">
+  <xacro:arm_link num="4" mat="grey" parent="arm_link3" axis="1 0 0" offset="-0.0855 0 0" roll="0" limit_low="-3.1"  limit_high="3.1"/>
 
-    <link name="arm_link${num}">
-      <visual>
-        <origin xyz="0 0 0" rpy="${roll} 0 0" />
-        <geometry>
-          <mesh filename="package://v2mini_description/meshes/arm/arm_link${num}.stl" />
-        </geometry>
-        <material name="${mat}"/>
-      </visual>
-    </link>
+  <xacro:arm_link num="5" mat="black" parent="arm_link4" axis="0 0 1" offset="-0.026 0 0" roll="${pi}" limit_low="0.05" limit_high="-3"/>
 
-    <joint name="arm_joint${num-1}" type="continuous">
-      <parent link="${parent}"/>
-      <child link="arm_link${num}"/>
-      <origin xyz="${offset}"/>
-      <axis xyz="${axis}"/>
-    </joint>
+  <xacro:arm_link num="6" mat="red" parent="arm_link5" axis="0 1 0" offset="0 -0.0415 0" roll="0" limit_low="-3.1"  limit_high="3.1"/>
 
-  </xacro:macro>
+</xacro:macro>
 
-  <xacro:arm_link num="3" mat="black" parent="arm_link2" axis="0 1 0" offset="-0.026 0 0" roll="0"/>
+<!-- macro for the rest of the links -->
+<xacro:macro name="arm_link" params="num mat parent axis offset roll limit_low limit_high">
 
-  <xacro:arm_link num="4" mat="grey" parent="arm_link3" axis="1 0 0" offset="-0.0855 0 0" roll="0"/>
+  <link name="arm_link${num}">
+    <visual>
+      <origin xyz="0 0 0" rpy="${roll} 0 0" />
+      <geometry>
+        <mesh filename="package://v2mini_description/meshes/arm/arm_link${num}.stl" />
+      </geometry>
+      <material name="${mat}"/>
+    </visual>
+  </link>
 
-  <xacro:arm_link num="5" mat="black" parent="arm_link4" axis="0 0 1" offset="-0.026 0 0" roll="0"/>
+  <joint name="arm_joint${num-1}" type="revolute">
+    <parent link="${parent}"/>
+    <child link="arm_link${num}"/>
+    <origin xyz="${offset}"/>
+    <axis xyz="${axis}"/>
+    <limit effort="1000.0" lower="${limit_low}" upper="${limit_high}" velocity="0.1"/>
+  </joint>
 
-  <xacro:arm_link num="6" mat="red" parent="arm_link5" axis="0 1 0" offset="0 0.0415 0" roll="${pi}"/>
+</xacro:macro>
 
 </robot>

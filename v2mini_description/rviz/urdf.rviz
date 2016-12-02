@@ -60,6 +60,36 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
+        arm_link1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        arm_link2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        arm_link3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        arm_link4:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        arm_link5:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        arm_link6:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         back_wheel:
           Alpha: 1
           Show Axes: false
@@ -81,6 +111,11 @@ Visualization Manager:
           Show Trail: false
           Value: true
         left_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        neck_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -106,6 +141,18 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
+        arm_link1:
+          Value: true
+        arm_link2:
+          Value: true
+        arm_link3:
+          Value: true
+        arm_link4:
+          Value: true
+        arm_link5:
+          Value: true
+        arm_link6:
+          Value: true
         back_wheel:
           Value: true
         base_link:
@@ -115,6 +162,8 @@ Visualization Manager:
         head_link:
           Value: true
         left_wheel:
+          Value: true
+        neck_link:
           Value: true
         right_wheel:
           Value: true
@@ -136,8 +185,16 @@ Visualization Manager:
           right_wheel:
             {}
           torso_link:
-            head_link:
-              {}
+            arm_link1:
+              arm_link2:
+                arm_link3:
+                  arm_link4:
+                    arm_link5:
+                      arm_link6:
+                        {}
+            neck_link:
+              head_link:
+                {}
       Update Interval: 0
       Value: true
   Enabled: true
@@ -164,7 +221,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 1.83557
+      Distance: 1.63447
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
@@ -176,10 +233,10 @@ Visualization Manager:
         Z: 0
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.540202
+      Pitch: 0.960202
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.13669
+      Yaw: 5.4517
     Saved: ~
 Window Geometry:
   Displays:
@@ -197,5 +254,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1216
-  X: 55
-  Y: 14
+  X: 278
+  Y: 90

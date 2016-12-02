@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="v2mini">
+
+<xacro:property name="head_offset_z" value="0.495215" />
+
+<xacro:macro name="head">
+
+  <link name="neck_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://v2mini_description/meshes/head/neck.stl" />
+      </geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+
+  <link name="head_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://v2mini_description/meshes/head/head.stl" />
+      </geometry>
+      <material name="yellow"/>
+    </visual>
+  </link>
+
+  <joint name="neck_tilt" type="revolute">
+    <parent link="neck_link"/>
+    <child link="head_link"/>
+    <axis xyz="1 0 0"/>
+    <origin xyz="0 0 ${head_offset_z}"/>
+    <limit effort="1000.0" lower="0.3" upper="-0.5" velocity="0.1"/>
+  </joint>
+
+</xacro:macro>
+
+</robot>
