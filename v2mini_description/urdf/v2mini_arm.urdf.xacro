@@ -42,7 +42,7 @@
 
   <xacro:arm_link num="4" mat="grey" parent="arm_link3" axis="1 0 0" offset="-0.0855 0 0" roll="0" limit_low="-3.1"  limit_high="3.1"/>
 
-  <xacro:arm_link num="5" mat="black" parent="arm_link4" axis="0 0 1" offset="-0.026 0 0" roll="${pi}" limit_low="0.05" limit_high="-3"/>
+  <xacro:arm_link num="5" mat="black" parent="arm_link4" axis="0 0 1" offset="-0.026 0 0" roll="${pi}" limit_low="-3" limit_high="0.05"/>
 
   <xacro:arm_link num="6" mat="red" parent="arm_link5" axis="0 1 0" offset="0 -0.0415 0" roll="0" limit_low="-3.1"  limit_high="3.1"/>
 

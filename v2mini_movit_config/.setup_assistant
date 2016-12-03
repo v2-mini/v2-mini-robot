@@ -1,0 +1,8 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: v2mini_description
+    relative_path: urdf/v2mini.urdf
+  SRDF:
+    relative_path: config/v2mini.srdf
+  CONFIG:
+    generated_timestamp: 1480804344
