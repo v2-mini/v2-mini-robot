@@ -38,18 +38,18 @@
     <limit effort="1000.0" lower="-3.1" upper="3.1" velocity="0.1"/>
   </joint>
 
-  <xacro:arm_link num="3" mat="black" parent="arm_link2" axis="0 1 0" offset="-0.026 0 0" roll="0" limit_low="-1.7" limit_high="1.7"/>
+  <xacro:arm_link num="3" mat="black" par_num="2" axis="0 1 0" offset="-0.026 0 0" roll="0" limit_low="-1.7" limit_high="1.7"/>
 
-  <xacro:arm_link num="4" mat="grey" parent="arm_link3" axis="1 0 0" offset="-0.0855 0 0" roll="0" limit_low="-3.1"  limit_high="3.1"/>
+  <xacro:arm_link num="4" mat="grey" par_num="3" axis="1 0 0" offset="-0.0855 0 0" roll="0" limit_low="-3.1"  limit_high="3.1"/>
 
-  <xacro:arm_link num="5" mat="black" parent="arm_link4" axis="0 0 1" offset="-0.026 0 0" roll="${pi}" limit_low="-3" limit_high="0.05"/>
+  <xacro:arm_link num="5" mat="black" par_num="4" axis="0 0 1" offset="-0.026 0 0" roll="${pi}" limit_low="-3" limit_high="0.05"/>
 
-  <xacro:arm_link num="6" mat="red" parent="arm_link5" axis="0 1 0" offset="0 -0.0415 0" roll="0" limit_low="-3.1"  limit_high="3.1"/>
+  <xacro:arm_link num="6" mat="red" par_num="5" axis="0 1 0" offset="0 -0.0415 0" roll="0" limit_low="-3.1"  limit_high="3.1"/>
 
 </xacro:macro>
 
 <!-- macro for the rest of the links -->
-<xacro:macro name="arm_link" params="num mat parent axis offset roll limit_low limit_high">
+<xacro:macro name="arm_link" params="num mat par_num axis offset roll limit_low limit_high">
 
   <link name="arm_link${num}">
     <visual>
@@ -61,8 +61,8 @@
     </visual>
   </link>
 
-  <joint name="arm_joint${num-1}" type="revolute">
-    <parent link="${parent}"/>
+  <joint name="arm_joint${par_num}" type="revolute">
+    <parent link="arm_link${par_num}"/>
     <child link="arm_link${num}"/>
     <origin xyz="${offset}"/>
     <axis xyz="${axis}"/>

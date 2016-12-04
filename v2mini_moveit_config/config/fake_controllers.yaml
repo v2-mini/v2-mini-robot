@@ -2,10 +2,10 @@ controller_list:
   - name: fake_right_arm_controller
     joints:
       - arm_joint1
-      - arm_joint2.0
-      - arm_joint3.0
-      - arm_joint4.0
-      - arm_joint5.0
+      - arm_joint2
+      - arm_joint3
+      - arm_joint4
+      - arm_joint5
   - name: fake_right_hand_controller
     joints:
-      - arm_joint5.0
+      - arm_joint5

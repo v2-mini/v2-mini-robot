@@ -172,7 +172,7 @@
       <material name="black"/>
     </visual>
   </link>
-  <joint name="arm_joint2.0" type="revolute">
+  <joint name="arm_joint2" type="revolute">
     <parent link="arm_link2"/>
     <child link="arm_link3"/>
     <origin xyz="-0.026 0 0"/>
@@ -188,7 +188,7 @@
       <material name="grey"/>
     </visual>
   </link>
-  <joint name="arm_joint3.0" type="revolute">
+  <joint name="arm_joint3" type="revolute">
     <parent link="arm_link3"/>
     <child link="arm_link4"/>
     <origin xyz="-0.0855 0 0"/>
@@ -204,7 +204,7 @@
       <material name="black"/>
     </visual>
   </link>
-  <joint name="arm_joint4.0" type="revolute">
+  <joint name="arm_joint4" type="revolute">
     <parent link="arm_link4"/>
     <child link="arm_link5"/>
     <origin xyz="-0.026 0 0"/>
@@ -220,7 +220,7 @@
       <material name="red"/>
     </visual>
   </link>
-  <joint name="arm_joint5.0" type="revolute">
+  <joint name="arm_joint5" type="revolute">
     <parent link="arm_link5"/>
     <child link="arm_link6"/>
     <origin xyz="0 -0.0415 0"/>
