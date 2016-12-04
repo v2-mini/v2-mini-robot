@@ -5,14 +5,14 @@
 #include <stdio.h>
 #include <cmath>
 
-#include "v2mini_telop/user_inputs.h"
+#include "v2mini_teleop/teleop_controller.h"
 
-namespace v2mini_telop
+namespace v2mini_teleop
 {
 
 const Uint8 *keys = SDL_GetKeyboardState(NULL);
 
-UserInputs::UserInputs()
+TeleopController::TeleopController()
 {
 
 	// Initialize SDL
@@ -41,7 +41,7 @@ UserInputs::UserInputs()
 			SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 
 			// get the path to the src package dir
-			std::string ros_path = ros::package::getPath("v2mini_telop") + "/robo_icon.jpg";
+			std::string ros_path = ros::package::getPath("v2mini_teleop") + "/robo_icon.jpg";
 
 			IMG_Init(IMG_INIT_PNG);
 			SDL_Surface* loadedSurface = IMG_Load(ros_path.c_str());
@@ -57,7 +57,7 @@ UserInputs::UserInputs()
 	}
 }
 
-UserInputs::~UserInputs()
+TeleopController::~TeleopController()
 {
 	//Deallocate SDL resources
 	SDL_DestroyTexture(texture);
@@ -78,7 +78,7 @@ UserInputs::~UserInputs()
 	SDL_Quit();
 }
 
-void UserInputs::loadGamepad()
+void TeleopController::loadGamepad()
 {
 	controller = SDL_GameControllerOpen(0);
 
@@ -88,7 +88,7 @@ void UserInputs::loadGamepad()
 	}
 }
 
-float* UserInputs::getKeyCmds()
+float* TeleopController::getKeyCmds()
 {
 
 	static float key_cmds[] = {0, 0, 0, 0, 0};
@@ -183,7 +183,7 @@ float* UserInputs::getKeyCmds()
 	return key_cmds;
 }
 
-float* UserInputs::getGamepadCmds()
+float* TeleopController::getGamepadCmds()
 {
 	static float cmds[] = {0, 0, 0, 0, 0};
 	const int max_value = 32769;
@@ -278,7 +278,7 @@ float* UserInputs::getGamepadCmds()
 	return cmds;
 }
 
-void UserInputs::mapVelocity(float *val_array, int ceiling_value)
+void TeleopController::mapVelocity(float *val_array, int ceiling_value)
 {
 	float velx = val_array[BASE_VELX];
 	float vely = val_array[BASE_VELY];
@@ -298,7 +298,7 @@ void UserInputs::mapVelocity(float *val_array, int ceiling_value)
 	val_array[BASE_VELZ] = val_array[BASE_VELZ] * MAX_BASE_ANGULAR_VEL / ceiling_value;
 }
 
-void UserInputs::reRenderImage()
+void TeleopController::reRenderImage()
 {
 	SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(renderer);
@@ -306,9 +306,9 @@ void UserInputs::reRenderImage()
 	SDL_RenderPresent(renderer);
 }
 
-bool UserInputs::checkQuitStatus()
+bool TeleopController::checkQuitStatus()
 {
 	return quit;
 }
 
-} 		// namespace v2mini_telop
+} 		// namespace v2mini_teleop

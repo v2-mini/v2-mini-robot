@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-    <name>v2mini_telop</name>
+    <name>v2mini_teleop</name>
     <version>0.0.0</version>
     <description>The v2mini_telop package contains scripts for v2mini tele-operation.</description>
 
@@ -13,10 +13,13 @@
     <build_depend>roscpp</build_depend>
     <build_depend>rospy</build_depend>
     <build_depend>std_msgs</build_depend>
-    <build_depend>ncurses++</build_depend>
+    <build_depend>sensor_msgs</build_depend>
+    <build_depend>tf</build_depend>
 
     <run_depend>roscpp</run_depend>
     <run_depend>rospy</run_depend>
+    <run_depend>sensor_msgs</run_depend>
     <run_depend>std_msgs</run_depend>
+    <run_depend>tf</run_depend>
 
 </package>

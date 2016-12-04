@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL.h>
 
-namespace v2mini_telop {
+namespace v2mini_teleop {
 
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
@@ -14,7 +14,7 @@ const float MAX_TORSO_VEL = 0.6;		// cm/s
 
 enum ROBOT_VEL {BASE_VELX, BASE_VELY, BASE_VELZ, TORSO_VEL, FACE, ARM_VELXZ, ARM_VELYZ, ARM_VELXY};
 
-class UserInputs {
+class TeleopController {
 
 	private:
 
@@ -30,8 +30,8 @@ class UserInputs {
 
 	public:
 
-		UserInputs();
-		~UserInputs();
+		TeleopController();
+		~TeleopController();
 
 		float* getKeyCmds();
 		float* getGamepadCmds();
