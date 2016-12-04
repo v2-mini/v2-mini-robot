@@ -46,6 +46,22 @@
 
   <xacro:arm_link num="6" mat="red" par_num="5" axis="0 1 0" offset="0 -0.0415 0" roll="0" limit_low="-3.1"  limit_high="3.1"/>
 
+  <joint name="ee_joint" type="fixed">
+      <parent link="arm_link6"/>
+      <child link="ee_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Add end effector -->
+  <link name="ee_link">
+  <collision>
+      <geometry>
+          <box size="0.01 0.01 0.01"/>
+      </geometry>
+     <origin rpy="0 0 0" xyz="0 0 0"/>
+  </collision>
+  </link>
+
 </xacro:macro>
 
 <!-- macro for the rest of the links -->
