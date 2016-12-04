@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package>
+  <name>v2mini_robot</name>
+  <version>1.0.0</version>
+  <description>The v2mini_robot package</description>
+  <maintainer email="administrator@todo.todo">administrator</maintainer>
+  <license>BSD</license>
+
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>v2mini_init</run_depend>
+  <run_depend>v2mini_description</run_depend>
+  <run_depend>v2mini_teleop</run_depend>
+  <run_depend>v2mini_controllers</run_depend>
+  <run_depend>v2mini_moveit_config</run_depend>
+
+  <export>
+      <metapackage/>
+  </export>
+</package>
