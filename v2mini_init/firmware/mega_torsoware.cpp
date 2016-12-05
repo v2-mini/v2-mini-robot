@@ -5,6 +5,28 @@
 
 ros::NodeHandle nh;
 
+const int TORSO_MAXV = 5; // deg/s
+
+const int servoPin[] = {23,25,27,29,31};
+const int expressions[][8] =  {{100,90,80,90,80,0,50,50},    //neutral
+                              {150,115,90,70,30,0,0,50},     //sad
+                              {20,90,80,90,160,0,50,0},      //happy
+                              {80,65,80,115,100,50,0,0},     //mad
+                              {20,85,150,95,160,50,50,0},    //interested
+                              {20,105,180,75,90,50,0,50}};   //uncertain
+
+const int rgbPins[] = {45,44,46};
+const int rgbScale[] = {120,120,120};
+
+const int TORSO_PIN = 53;
+const int TORSO_MAXH = 95;
+const int TORSO_MINH = 50;
+const int TORSO_AVGH = (TORSO_MAXH + TORSO_MINH) / 2;
+
+const int HEAD_D1 = 1;  // todo get actual pinout
+const int HEAD_D2 = 2;
+const int HEAD_PWM = 3;
+
 Servo s0;
 Servo s1;
 Servo s2;
@@ -12,65 +34,54 @@ Servo s3;
 Servo s4;
 Servo torso;
 
-const int TORSO_MAXV = 5; // deg/s
-
-int servoPin[] = {23,25,27,29,31};
-int expression = 0;
-int expressions[][8] =  {{100,90,80,90,80,0,50,50},    //neutral
-                        {150,115,90,70,30,0,0,50},     //sad
-                        {20,90,80,90,160,0,50,0},      //happy
-                        {80,65,80,115,100,50,0,0},     //mad
-                        {20,85,150,95,160,50,50,0},    //interested
-                        {20,105,180,75,90,50,0,50}};   //uncertain
-
-int rgbPins[] = {45,44,46};
-int rgbScale[] = {120,120,120};
-
-int count = 0;
 int val;
 int lastread;
-Servo myservo;
-
-const int TORSO_PIN = 53;
-const int TORSO_MAXH = 95;
-const int TORSO_MINH = 50;
-
 int face_input = 0;
+int expression = 0;
 int torso_input = 0;
-int torso_current = 75;
+int torso_current = TORSO_AVGH;
+int head_input = 0;
 
 unsigned long prev_time;
 
 void motion_cb(const geometry_msgs::Twist& motion_cmds)
 {
-  // todo msg type to use? probably don't need twist..
+  // todo msg type to use? don't need twist..
   face_input = motion_cmds.linear.x;
   torso_input = motion_cmds.linear.y;
+  head_input = motion_cmds.linear.z;
 }
 
 // Subscribe to ROS topic "/torso_cmds"
 ros::Subscriber<geometry_msgs::Twist> sub_motion(
   "torso_cmds", &motion_cb);
 
+void tilt_head()
+{
+  // 
+
+}
+
+void set_torso_servo(float increm)
+{
+  // value must be within limits
+  if (torso_current < TORSO_MAXH && torso_current > TORSO_MINH)
+  {
+    // move torso up or down
+    torso_current += increm;
+    torso.write(torso_current);
+  }
+}
+
 void move_torso()
 {
   if (torso_input > 0)
   {
-    if (torso_current < TORSO_MAXH && torso_current > TORSO_MINH) // TODO REDUNDANT MOVE TO FCN
-    {
-      // move torso upward
-      torso_current++;
-      torso.write(torso_current);
-    }
+    set_torso_servo(1);
   }
   else if (torso_input < 0)
   {
-    if (torso_current < TORSO_MAXH && torso_current > TORSO_MINH)
-    {
-      // move torso downward
-      torso_current--;
-      torso.write(torso_current);
-    }
+    set_torso_servo(-1);
   }
 }
 
@@ -148,6 +159,8 @@ void setup()
   // setup ros
   nh.initNode();
   nh.subscribe(sub_motion);
+
+  torso.write(TORSO_AVGH);
 }
 
 void loop()
@@ -159,6 +172,8 @@ void loop()
   }
 
   toggle_face();
+
+  tilt_head();
 
   nh.spinOnce();
 }
