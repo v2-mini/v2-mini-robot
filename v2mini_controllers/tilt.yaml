@@ -1,12 +1,64 @@
-tilt_controller:
+arm_joint1_controller:
     controller:
         package: dynamixel_controllers
         module: joint_position_controller
         type: JointPositionController
-    joint_name: tilt_joint
-    joint_speed: 1.17
+    joint_name: arm_joint1
+    joint_speed: 1.0
+    motor:
+        id: 1
+        init: 0
+        min: 0
+        max: 4095
+
+arm_joint2_controller:
+    controller:
+        package: dynamixel_controllers
+        module: joint_position_controller
+        type: JointPositionController
+    joint_name: arm_joint1
+    joint_speed: 1.0
+    motor:
+        id: 2
+        init: 0
+        min: 0
+        max: 4095
+
+arm_joint3_controller:
+    controller:
+        package: dynamixel_controllers
+        module: joint_position_controller
+        type: JointPositionController
+    joint_name: arm_joint3
+    joint_speed: 1.0
+    motor:
+        id: 3
+        init: 0
+        min: 0
+        max: 4095
+
+arm_joint4_controller:
+    controller:
+        package: dynamixel_controllers
+        module: joint_position_controller
+        type: JointPositionController
+    joint_name: arm_joint4
+    joint_speed: 1.0
     motor:
         id: 4
-        init: 512
+        init: 0
         min: 0
-        max: 1023
+        max: 4095
+
+arm_joint5_controller:
+    controller:
+        package: dynamixel_controllers
+        module: joint_position_controller
+        type: JointPositionController
+    joint_name: arm_joint5
+    joint_speed: 1.0
+    motor:
+        id: 5
+        init: 0
+        min: 0
+        max: 4095

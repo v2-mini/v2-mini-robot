@@ -47,7 +47,7 @@ unsigned long prev_time;
 void motion_cb(const geometry_msgs::Twist& motion_cmds)
 {
   // todo msg type to use? don't need twist..
-  face_input = motion_cmds.linear.x;
+    face_input = motion_cmds.linear.x;
   torso_input = motion_cmds.linear.y;
   head_input = motion_cmds.linear.z;
 }
@@ -58,7 +58,7 @@ ros::Subscriber<geometry_msgs::Twist> sub_motion(
 
 void tilt_head()
 {
-  // 
+  //
 
 }
 

@@ -6,6 +6,3 @@ controller_list:
       - arm_joint3
       - arm_joint4
       - arm_joint5
-  - name: fake_right_hand_controller
-    joints:
-      - arm_joint5

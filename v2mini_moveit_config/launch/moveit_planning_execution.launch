@@ -1,0 +1,31 @@
+<launch>
+  <arg name="sim" default="false" />
+  <arg name="debug" default="false" />
+  <arg name="robot_ip" unless="$(arg sim)" />
+
+  <rosparam command="load" file="$(find v2mini_moveit_config)/config/joint_names.yaml"/>
+
+  <!-- Load the URDF, SRDF and other .yaml configuration files on the param server -->
+  <include file="$(find v2mini_moveit_config)/launch/planning_context.launch">
+    <arg name="load_robot_description" value="true"/>
+  </include>
+
+  <node pkg="tf" type="static_transform_publisher" name="virtual_joint_broadcaster" args="0 0 0 0 0 0 world base_link 100"/>
+
+  <!-- publish the robot state (tf transforms) -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
+  <!-- Remap follow_joint_trajectory -->
+  <remap if="$(arg sim)" from="follow_joint_trajectory" to="r_arm_controller/follow_joint_trajectory"/>
+
+  <!-- Launch moveit -->
+  <include file="$(find v2mini_moveit_config)/launch/move_group.launch">
+    <arg name="debug" default="$(arg debug)" />
+    <arg name="publish_monitored_planning_scene" value="true" />
+  </include>
+
+  <include file="$(find v2mini_moveit_config)/launch/moveit_rviz.launch">
+    <arg name="config" value="true"/>
+  </include>
+
+</launch>
