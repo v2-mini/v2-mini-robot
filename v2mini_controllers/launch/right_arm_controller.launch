@@ -1,0 +1,9 @@
+<launch>
+
+  <include file="$(find v2mini_controllers)/launch/controller_manager.launch"/>
+  <include file="$(find v2mini_controllers)/launch/start_meta_controller.launch"/>
+
+  <!-- Start the Dynamixel Joint States Publisher -->
+  <node name="dynamixel_joint_states_publisher" pkg="v2mini_controllers" type="dynamixel_joint_state_publisher.py" output="screen" />
+
+</launch>
