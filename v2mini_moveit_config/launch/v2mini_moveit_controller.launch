@@ -2,8 +2,6 @@
   <arg name="sim" default="false" />
   <arg name="debug" default="false" />
 
-  <rosparam command="load" file="$(find v2mini_moveit_config)/config/joint_names.yaml"/>
-
   <!-- Load the URDF, SRDF and other .yaml configuration files on the param server -->
   <include file="$(find v2mini_moveit_config)/launch/planning_context.launch">
     <arg name="load_robot_description" value="true"/>
@@ -17,7 +15,9 @@
 
   <node pkg="tf" type="static_transform_publisher" name="virtual_joint_broadcaster" args="0 0 0 0 0 0 world base_link 100"/>
 
-  <include file="$(find v2mini_moveit_config)/launch/moveit_planning_execution.launch"/>
+  <include file="$(find v2mini_moveit_config)/launch/moveit_planning_execution.launch">
+    <arg name="sim" value="true"/>
+  </include>
 
   <include file="$(find v2mini_moveit_config)/launch/moveit_rviz.launch">
     <arg name="config" value="true"/>

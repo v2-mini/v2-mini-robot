@@ -22,6 +22,7 @@
 
 import roslib; roslib.load_manifest('dynamixel_msgs')
 import rospy
+import collections
 
 from sensor_msgs.msg import JointState as JointStatePR2
 from dynamixel_msgs.msg import JointState as JointStateDynamixel
@@ -44,14 +45,13 @@ class JointStatePublisher():
         # (The namespace is usually null.)
         namespace = rospy.get_namespace()
         self.joints = rospy.get_param(namespace + '/joints', '')
+        self.controllers = rospy.get_param(namespace + '/joints_controllers', '')
 
         self.servos = list()
-        self.controllers = list()
-        self.joint_states = dict({})
+        self.joint_states = collections.OrderedDict()
 
-        for controller in sorted(self.joints):
-            self.joint_states[controller] = JointStateMessage(controller, 0.0, 0.0, 0.0)
-            self.controllers.append(controller)
+        for joint in self.joints:
+            self.joint_states[joint] = JointStateMessage(joint, 0.0, 0.0, 0.0)
 
         # Start controller state subscribers
         [rospy.Subscriber(c + '/state', JointStateDynamixel, self.controller_state_handler) for c in self.controllers]
@@ -84,7 +84,7 @@ class JointStatePublisher():
             msg.effort.append(joint.effort)
 
         msg.header.stamp = rospy.Time.now()
-        msg.header.frame_id = 'base_link'
+        msg.header.frame_id = ''
         self.joint_states_pub.publish(msg)
 
 if __name__ == '__main__':

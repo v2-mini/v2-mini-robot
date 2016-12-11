@@ -1,4 +1,5 @@
-dynamixels: ['arm_joint1', 'arm_joint2', 'arm_joint3', 'arm_joint4', 'arm_joint5']
+joints: ['arm_joint1', 'arm_joint2', 'arm_joint3', 'arm_joint4', 'arm_joint5']
+joints_controllers: ['arm_joint1_controller', 'arm_joint2_controller', 'arm_joint3_controller', 'arm_joint4_controller', 'arm_joint5_controller']
 
 arm_joint1_controller:
     controller:
