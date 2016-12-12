@@ -43,10 +43,16 @@
     <child link="neck_link"/>
     <axis xyz="0 0 1"/>
     <origin xyz="0 0 0"/>
-    <limit effort="1000.0" lower="-2.9" upper="2.9" velocity="0.1"/>
+    <limit effort="10" lower="-2.9" upper="2.9" velocity="10"/>
   </joint>
   <!-- **** BASE **** -->
   <link name="base_link">
+    <!-- fake inertial values -->
+    <inertial>
+      <mass value="1"/>
+      <inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100"/>
+      <origin/>
+    </inertial>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0.0192"/>
       <geometry>
@@ -123,6 +129,12 @@
   </joint>
   <!-- **** TORSO **** -->
   <link name="torso_link">
+    <!-- fake inertial values -->
+    <inertial>
+      <mass value="1"/>
+      <inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100"/>
+      <origin/>
+    </inertial>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
@@ -136,7 +148,7 @@
     <child link="torso_link"/>
     <origin xyz="0 0 0.0192"/>
     <axis xyz="0 0 1"/>
-    <limit effort="1000.0" lower="-0.09" upper="0" velocity="0.5"/>
+    <limit effort="10" lower="-0.09" upper="0" velocity="0.5"/>
   </joint>
   <link name="arm_link1">
     <visual>
@@ -150,7 +162,7 @@
   <!-- first additional joint at offset -->
   <link name="arm_link2">
     <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <origin rpy="0 3.14159 0" xyz="0 0 0"/>
       <geometry>
         <mesh filename="package://v2mini_description/meshes/arm/arm_link2.stl"/>
       </geometry>
@@ -160,12 +172,12 @@
   <joint name="arm_joint1" type="revolute">
     <parent link="arm_link1"/>
     <child link="arm_link2"/>
-    <origin xyz="-0.158825 -0.002 0.407507"/>
+    <origin rpy="3.14159 3.14159 0" xyz="-0.158825 -0.002 0.407507"/>
     <limit effort="1000.0" lower="-3.1" upper="3.1" velocity="0.1"/>
   </joint>
   <link name="arm_link3">
     <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <origin rpy="0 -1.570795  -1.570795" xyz="0 0 0"/>
       <geometry>
         <mesh filename="package://v2mini_description/meshes/arm/arm_link3.stl"/>
       </geometry>
@@ -175,13 +187,13 @@
   <joint name="arm_joint2" type="revolute">
     <parent link="arm_link2"/>
     <child link="arm_link3"/>
-    <origin xyz="-0.026 0 0"/>
-    <axis xyz="0 1 0"/>
+    <origin rpy="1.570795 0 4.712385" xyz="0.026 0 0"/>
+    <axis xyz="-1 0 0"/>
     <limit effort="1000.0" lower="-1.7" upper="1.7" velocity="0.1"/>
   </joint>
   <link name="arm_link4">
     <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <origin rpy="1.570795 3.14159  0" xyz="0 0 0"/>
       <geometry>
         <mesh filename="package://v2mini_description/meshes/arm/arm_link4.stl"/>
       </geometry>
@@ -191,13 +203,13 @@
   <joint name="arm_joint3" type="revolute">
     <parent link="arm_link3"/>
     <child link="arm_link4"/>
-    <origin xyz="-0.0855 0 0"/>
+    <origin rpy="0 1.570795 0" xyz=" 0 0 -0.0855"/>
     <axis xyz="1 0 0"/>
     <limit effort="1000.0" lower="-3.1" upper="3.1" velocity="0.1"/>
   </joint>
   <link name="arm_link5">
     <visual>
-      <origin rpy="3.14159 0 0" xyz="0 0 0"/>
+      <origin rpy="-1.570795 0 -1.570795" xyz="0 0 0"/>
       <geometry>
         <mesh filename="package://v2mini_description/meshes/arm/arm_link5.stl"/>
       </geometry>
@@ -207,13 +219,13 @@
   <joint name="arm_joint4" type="revolute">
     <parent link="arm_link4"/>
     <child link="arm_link5"/>
-    <origin xyz="-0.026 0 0"/>
-    <axis xyz="0 0 1"/>
-    <limit effort="1000.0" lower="-3" upper="0.05" velocity="0.1"/>
+    <origin rpy=" -1.570795 0 1.570795" xyz="0.026 0 0"/>
+    <axis xyz="-1 0 0"/>
+    <limit effort="1000.0" lower="-3" upper="3" velocity="0.1"/>
   </joint>
   <link name="arm_link6">
     <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <origin rpy="1.570795 1.570795 0" xyz="0 0 0"/>
       <geometry>
         <mesh filename="package://v2mini_description/meshes/arm/arm_link6.stl"/>
       </geometry>
@@ -223,10 +235,24 @@
   <joint name="arm_joint5" type="revolute">
     <parent link="arm_link5"/>
     <child link="arm_link6"/>
-    <origin xyz="0 -0.0415 0"/>
-    <axis xyz="0 1 0"/>
+    <origin rpy="-1.570795 -1.570795 0" xyz="0  0 -0.0415"/>
+    <axis xyz="-1 0 0"/>
     <limit effort="1000.0" lower="-3.1" upper="3.1" velocity="0.1"/>
   </joint>
+  <joint name="ee_joint" type="fixed">
+    <parent link="arm_link6"/>
+    <child link="ee_link"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+  </joint>
+  <!-- Add end effector -->
+  <link name="ee_link">
+    <collision>
+      <geometry>
+        <box size="0.01 0.01 0.01"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </collision>
+  </link>
   <link name="neck_link">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>

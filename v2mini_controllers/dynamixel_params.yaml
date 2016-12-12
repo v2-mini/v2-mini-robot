@@ -7,12 +7,12 @@ arm_joint1_controller:
         module: joint_position_controller
         type: JointPositionController
     joint_name: arm_joint1
-    joint_speed: 1.0
+    joint_speed: 0.5
     motor:
         id: 1
-        init: 0
+        init: 512
         min: 0
-        max: 4095
+        max: 1023
 
 arm_joint2_controller:
     controller:
@@ -20,12 +20,12 @@ arm_joint2_controller:
         module: joint_position_controller
         type: JointPositionController
     joint_name: arm_joint2
-    joint_speed: 1.0
+    joint_speed: 0.5
     motor:
         id: 2
-        init: 0
-        min: 0
-        max: 4095
+        init: 512
+        min: 171
+        max: 785
 
 arm_joint3_controller:
     controller:
@@ -33,12 +33,12 @@ arm_joint3_controller:
         module: joint_position_controller
         type: JointPositionController
     joint_name: arm_joint3
-    joint_speed: 1.0
+    joint_speed: 0.5
     motor:
         id: 3
-        init: 0
+        init: 512
         min: 0
-        max: 4095
+        max: 1023
 
 arm_joint4_controller:
     controller:
@@ -46,12 +46,12 @@ arm_joint4_controller:
         module: joint_position_controller
         type: JointPositionController
     joint_name: arm_joint4
-    joint_speed: 1.0
+    joint_speed: 0.5
     motor:
         id: 4
-        init: 0
+        init: 512
         min: 0
-        max: 4095
+        max: 1023
 
 arm_joint5_controller:
     controller:
@@ -59,9 +59,9 @@ arm_joint5_controller:
         module: joint_position_controller
         type: JointPositionController
     joint_name: arm_joint5
-    joint_speed: 1.0
+    joint_speed: 0.5
     motor:
         id: 5
-        init: 0
+        init: 512
         min: 0
-        max: 4095
+        max: 1023

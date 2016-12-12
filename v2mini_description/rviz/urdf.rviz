@@ -100,6 +100,11 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        ee_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         front_wheel:
           Alpha: 1
           Show Axes: false
@@ -157,6 +162,8 @@ Visualization Manager:
           Value: true
         base_link:
           Value: true
+        ee_link:
+          Value: true
         front_wheel:
           Value: true
         head_link:
@@ -191,7 +198,8 @@ Visualization Manager:
                   arm_link4:
                     arm_link5:
                       arm_link6:
-                        {}
+                        ee_link:
+                          {}
             neck_link:
               head_link:
                 {}
@@ -221,7 +229,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 1.63447
+      Distance: 1.00786
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
@@ -233,10 +241,10 @@ Visualization Manager:
         Z: 0
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.960202
+      Pitch: 0.980202
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 5.4517
+      Yaw: 3.8617
     Saved: ~
 Window Geometry:
   Displays:
@@ -254,5 +262,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1216
-  X: 278
-  Y: 90
+  X: 1962
+  Y: 120

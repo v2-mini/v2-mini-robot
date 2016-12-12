@@ -23,7 +23,7 @@
 
   <link name="arm_link2">
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0" />
+      <origin xyz="0 0 0" rpy="0 ${pi} 0" />
       <geometry>
         <mesh filename="package://v2mini_description/meshes/arm/arm_link2.stl" />
       </geometry>
@@ -34,17 +34,17 @@
   <joint name="arm_joint1" type="revolute">
     <parent link="arm_link1"/>
     <child link="arm_link2"/>
-    <origin xyz="${base_offsetx} ${base_offsety} ${base_offsetz}"/>
+    <origin xyz="${base_offsetx} ${base_offsety} ${base_offsetz}" rpy="${pi} ${pi} 0"/>
     <limit effort="1000.0" lower="-3.1" upper="3.1" velocity="0.1"/>
   </joint>
 
-  <xacro:arm_link num="3" mat="black" par_num="2" axis="0 1 0" offset="-0.026 0 0" roll="0" limit_low="-1.7" limit_high="1.7"/>
+  <xacro:arm_link num="3" mat="black" par_num="2" axis="-1 0 0" offset="0.026 0 0" j_rpy="${pi/2} 0 ${3*pi/2}" l_rpy="0 ${-pi/2}  ${-pi/2}" limit_low="-1.7" limit_high="1.7"/>
 
-  <xacro:arm_link num="4" mat="grey" par_num="3" axis="1 0 0" offset="-0.0855 0 0" roll="0" limit_low="-3.1"  limit_high="3.1"/>
+  <xacro:arm_link num="4" mat="grey" par_num="3" axis="1 0 0" offset=" 0 0 -0.0855" j_rpy="0 ${pi/2} 0" l_rpy="${pi/2} ${pi}  0" limit_low="-3.1"  limit_high="3.1"/>
 
-  <xacro:arm_link num="5" mat="black" par_num="4" axis="0 0 1" offset="-0.026 0 0" roll="${pi}" limit_low="-3" limit_high="0.05"/>
+  <xacro:arm_link num="5" mat="black" par_num="4" axis="-1 0 0" offset="0.026 0 0" j_rpy=" ${-pi/2} 0 ${pi/2}" l_rpy="${-pi/2} 0 ${-pi/2}" limit_low="-3" limit_high="3"/>
 
-  <xacro:arm_link num="6" mat="red" par_num="5" axis="0 1 0" offset="0 -0.0415 0" roll="0" limit_low="-3.1"  limit_high="3.1"/>
+  <xacro:arm_link num="6" mat="red" par_num="5" axis="-1 0 0" offset="0  0 -0.0415" j_rpy="${-pi/2} ${-pi/2} 0" l_rpy="${pi/2} ${pi/2} 0" limit_low="-3.1"  limit_high="3.1"/>
 
   <joint name="ee_joint" type="fixed">
       <parent link="arm_link6"/>
@@ -65,11 +65,11 @@
 </xacro:macro>
 
 <!-- macro for the rest of the links -->
-<xacro:macro name="arm_link" params="num mat par_num axis offset roll limit_low limit_high">
+<xacro:macro name="arm_link" params="num mat par_num axis offset j_rpy l_rpy limit_low limit_high ">
 
   <link name="arm_link${num}">
     <visual>
-      <origin xyz="0 0 0" rpy="${roll} 0 0" />
+      <origin xyz="0 0 0" rpy="${l_rpy}" />
       <geometry>
         <mesh filename="package://v2mini_description/meshes/arm/arm_link${num}.stl" />
       </geometry>
@@ -80,7 +80,7 @@
   <joint name="arm_joint${par_num}" type="revolute">
     <parent link="arm_link${par_num}"/>
     <child link="arm_link${num}"/>
-    <origin xyz="${offset}"/>
+    <origin xyz="${offset}" rpy="${j_rpy}"/>
     <axis xyz="${axis}"/>
     <limit effort="1000.0" lower="${limit_low}" upper="${limit_high}" velocity="0.1"/>
   </joint>
