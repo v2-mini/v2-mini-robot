@@ -19,7 +19,7 @@ const int rgbPins[] = {45,44,46};
 const int rgbScale[] = {120,120,120};
 
 const int TORSO_PIN = 53;
-const int TORSO_MAXH = 95;
+const int TORSO_MAXH = 130;
 const int TORSO_MINH = 50;
 const int TORSO_AVGH = (TORSO_MAXH + TORSO_MINH) / 2;
 
@@ -47,7 +47,7 @@ unsigned long prev_time;
 void motion_cb(const geometry_msgs::Twist& motion_cmds)
 {
   // todo msg type to use? don't need twist..
-    face_input = motion_cmds.linear.x;
+  face_input = motion_cmds.linear.x;
   torso_input = motion_cmds.linear.y;
   head_input = motion_cmds.linear.z;
 }
