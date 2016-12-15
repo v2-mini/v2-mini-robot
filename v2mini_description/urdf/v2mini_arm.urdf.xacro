@@ -17,7 +17,14 @@
       </geometry>
       <material name="black"/>
     </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+         <mesh filename="package://v2mini_description/meshes/arm_link1.stl" />
+      </geometry>
+    </collision>
   </link>
+
 
   <!-- first additional joint at offset -->
 
@@ -29,6 +36,12 @@
       </geometry>
       <material name="grey"/>
     </visual>
+    <collision>
+       <origin xyz="0 0 0" rpy="0 0 0"/>
+       <geometry>
+            <mesh filename="package://v2mini_description/meshes/arm_link2.stl" />
+       </geometry>
+    </collision>
   </link>
 
   <joint name="arm_joint1" type="revolute">
@@ -75,6 +88,12 @@
       </geometry>
       <material name="${mat}"/>
     </visual>
+    <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+            <mesh filename="package://v2mini_description/meshes/arm/arm_link${num}.stl" />
+        </geometry>
+    </collision>
   </link>
 
   <joint name="arm_joint${par_num}" type="revolute">
