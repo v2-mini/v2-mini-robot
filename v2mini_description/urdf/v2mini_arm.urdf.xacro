@@ -37,7 +37,7 @@
       <material name="grey"/>
     </visual>
     <collision>
-       <origin xyz="0 0 0" rpy="0 0 0"/>
+       <origin xyz="0 0 0" rpy="0 ${pi} 0"/>
        <geometry>
             <mesh filename="package://v2mini_description/meshes/arm/arm_link2.stl" />
        </geometry>
@@ -89,7 +89,7 @@
       <material name="${mat}"/>
     </visual>
     <collision>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="0 0 0" rpy="${l_rpy}"/>
         <geometry>
             <mesh filename="package://v2mini_description/meshes/arm/arm_link${num}.stl" />
         </geometry>
