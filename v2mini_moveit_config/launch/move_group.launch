@@ -22,7 +22,7 @@
 
   <!-- Planning Functionality -->
   <include ns="move_group" file="$(find v2mini_moveit_config)/launch/planning_pipeline.launch.xml">
-    <arg name="pipeline" value="ompl" />
+    <arg name="pipeline" value="stomp_moveit" />
   </include>
 
   <!-- Trajectory Execution Functionality -->
@@ -45,6 +45,8 @@
     <param name="allow_trajectory_execution" value="$(arg allow_trajectory_execution)"/>
     <param name="max_safe_path_cost" value="$(arg max_safe_path_cost)"/>
     <param name="jiggle_fraction" value="$(arg jiggle_fraction)" />
+
+    <param name="collision_detector" value="IndustrialFCL" />
 
     <!-- MoveGroup capabilities to load -->
     <param name="capabilities" value="move_group/MoveGroupCartesianPathService
