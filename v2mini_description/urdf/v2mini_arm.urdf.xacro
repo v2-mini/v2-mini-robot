@@ -20,7 +20,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-         <mesh filename="package://v2mini_description/meshes/arm_link1.stl" />
+         <mesh filename="package://v2mini_description/meshes/arm/arm_link1.stl" />
       </geometry>
     </collision>
   </link>
@@ -39,7 +39,7 @@
     <collision>
        <origin xyz="0 0 0" rpy="0 0 0"/>
        <geometry>
-            <mesh filename="package://v2mini_description/meshes/arm_link2.stl" />
+            <mesh filename="package://v2mini_description/meshes/arm/arm_link2.stl" />
        </geometry>
     </collision>
   </link>
