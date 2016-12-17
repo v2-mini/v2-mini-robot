@@ -26,7 +26,7 @@ const int TILT_AVG = (TILT_MAX + TILT_MIN) / 2;
 
 const int TORSO_MAXV = 5; // deg/s
 const int TORSO_PIN = 53;
-const int TORSO_MAXH = 95;
+const int TORSO_MAXH = 130;
 const int TORSO_MINH = 50;
 const int TORSO_AVGH = (TORSO_MAXH + TORSO_MINH) / 2;
 
