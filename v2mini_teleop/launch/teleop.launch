@@ -35,11 +35,6 @@
     <param name="controller" value="$(arg controller)"/>
   </node>
 
-  <!-- Launch rviz with urdf -->
-  <include file="$(find v2mini_description)/launch/display_v2mini.launch">
-    <arg name="use_jsp" value="true"/>
-  </include>
-
 </launch>
 
 <!--

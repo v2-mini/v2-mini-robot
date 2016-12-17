@@ -132,15 +132,17 @@ float* TeleopController::getKeyCmds()
 		key_cmds[BASE_VELY] = 0;
 	}
 
-	// Angular CW & CCW
-	if (keys[SDL_SCANCODE_Q] != keys[SDL_SCANCODE_W])
+	// Base Angular CW & CCW
+	if (keys[SDL_SCANCODE_Z] != keys[SDL_SCANCODE_X])
 	{
-		if (keys[SDL_SCANCODE_Q] == 1)
+		if (keys[SDL_SCANCODE_Z] == 1)
 		{
+			// CCW
 			key_cmds[BASE_VELZ] = max_value;
 		}
 		else
 		{
+			// CW
 			key_cmds[BASE_VELZ] = -max_value;
 		}
 	}
@@ -170,13 +172,50 @@ float* TeleopController::getKeyCmds()
 	// Toggle Face
 	if (keys[SDL_SCANCODE_E] != 0)
 	{
-		key_cmds[FACE] = 1;
+		key_cmds[FACE_TOGGLE] = 1;
 	}
 	else
 	{
-		key_cmds[FACE] = 0;
+		key_cmds[FACE_TOGGLE] = 0;
 	}
 
+	// Tilt Head up and down
+	if (keys[SDL_SCANCODE_W] != keys[SDL_SCANCODE_S])
+	{
+		if (keys[SDL_SCANCODE_W] == 1)
+		{
+			// tilt down
+			key_cmds[HEADTILT_VEL] = -max_value;
+		}
+		else
+		{
+			// tilt up
+			key_cmds[HEADTILT_VEL] = max_value;
+		}
+	}
+	else
+	{
+		key_cmds[HEADTILT_VEL] = 0;
+	}
+
+	// Pan Head CCW & CW
+	if (keys[SDL_SCANCODE_A] != keys[SDL_SCANCODE_D])
+	{
+		if (keys[SDL_SCANCODE_A] == 1)
+		{
+			// pan CCW
+			key_cmds[HEADPAN_VEL] = max_value;
+		}
+		else
+		{
+			// pan CW
+			key_cmds[HEADPAN_VEL] = max_value;
+		}
+	}
+	else
+	{
+		key_cmds[HEADPAN_VEL] = 0;
+	}
 
 	mapVelocity(key_cmds, max_value);
 
@@ -191,12 +230,12 @@ float* TeleopController::getGamepadCmds()
 
 	int axis_leftx;
 	int axis_lefty;
-	int axis_righx;
-	int axis_righy;
+	int axis_rightx;
+	int axis_righty;
 
 	loadGamepad();
 
-	// LEFT JOY STICK X FOR SIDEWAYS TRANSLATION
+	// LEFT JOY STICK X FOR SIDEWAYS BASE TRANSLATION
 	axis_leftx = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX);
 
 	if (std::abs(axis_leftx) > deadzone)
@@ -208,7 +247,7 @@ float* TeleopController::getGamepadCmds()
 		cmds[BASE_VELX] = 0;
 	}
 
-	// LEFT JOY STICK Y FOR FORWARD TRANSLATION
+	// LEFT JOY STICK Y FOR FORWARD BASE TRANSLATION
 	axis_lefty = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY);
 
 	if (std::abs(axis_lefty) > deadzone)
@@ -233,45 +272,31 @@ float* TeleopController::getGamepadCmds()
 	cmds[TORSO_VEL] = torso_up - torso_down;
 
 	// B BUTTON FOR FACE TOGGLING
-	cmds[FACE] = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_B);
+	cmds[FACE_TOGGLE] = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_B);
 
-//	// CONTROL ARM MOTION IN THE YZ PLANE WITH DPAD UP KEYBINDING
-//	if (SDL_CONTROLLER_BUTTON_DPAD_UP)
-//	{
-//		// RIGHT JOY STICK X FOR SIDEWAYS TRANSLATION
-//		axis_righx. = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX);
-//
-//		if (std::abs(axis_leftx) > deadzone)
-//		{
-//			cmds[BASE_VELX] = axis_leftx;
-//		}
-//		else
-//		{
-//			cmds[BASE_VELX] = 0;
-//		}
-//
-//		// RIGHT JOY STICK Y FOR FORWARD TRANSLATION
-//		axis_righy = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_RIGHTY);
-//
-//		if (std::abs(axis_lefty) > deadzone)
-//		{
-//			cmds[ARM_VELYZ] = -axis_lefty;
-//		}
-//		else
-//		{
-//			cmds[ARM_VELYZ] = 0;
-//		}
-//	}
-//	// CONTROL ARM MOTION IN THE XZ PLANE WITH DPAD LEFT KEYBINDING
-//	else if (SDL_CONTROLLER_BUTTON_DPAD_LEFT)
-//	{
-//
-//	}
-//	// CONTROL ARM MOTION IN THE XY PLANE WITH DPAD DOWN KEYBINDING
-//	else if (SDL_CONTROLLER_BUTTON_DPAD_DOWN)
-//	{
-//
-//	}
+	// RIGHT JOY STICK X FOR HEAD PAN
+	axis_rightx = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_RIGHTX);
+
+	if (std::abs(axis_rightx) > deadzone)
+	{
+		cmds[HEADPAN_VEL] = axis_rightx;
+	}
+	else
+	{
+		cmds[HEADPAN_VEL] = 0;
+	}
+
+	// RIGHT JOY STICK Y FOR HEAD TILT
+	axis_righty = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_RIGHTY);
+
+	if (std::abs(axis_righty) > deadzone)
+	{
+		cmds[HEADTILT_VEL] = axis_righty;
+	}
+	else
+	{
+		cmds[HEADTILT_VEL] = 0;
+	}
 
 	mapVelocity(cmds, max_value);
 
@@ -280,6 +305,7 @@ float* TeleopController::getGamepadCmds()
 
 void TeleopController::mapVelocity(float *val_array, int ceiling_value)
 {
+	int base_max;
 	float velx = val_array[BASE_VELX];
 	float vely = val_array[BASE_VELY];
 
@@ -287,15 +313,23 @@ void TeleopController::mapVelocity(float *val_array, int ceiling_value)
 
 	if (velr > ceiling_value)
 	{
-		ceiling_value = velr;
+		base_max = velr;
+	}
+	else
+	{
+		base_max = ceiling_value;
 	}
 
-	// Map value range for x and y
-	val_array[BASE_VELX] = velx * MAX_BASE_RADIAL_VEL / ceiling_value;
-	val_array[BASE_VELY] = vely * MAX_BASE_RADIAL_VEL / ceiling_value;
+	// Map value range for base x and y
+	val_array[BASE_VELX] = velx * MAX_BASE_RADIAL_VEL / base_max;
+	val_array[BASE_VELY] = vely * MAX_BASE_RADIAL_VEL / base_max;
 
-	// Map value range for angular
+	// Map value range for base angular
 	val_array[BASE_VELZ] = val_array[BASE_VELZ] * MAX_BASE_ANGULAR_VEL / ceiling_value;
+
+	// Map value range for head pan & tilt
+	val_array[HEADTILT_VEL] = val_array[HEADTILT_VEL] * MAX_HEADTILT_VEL / ceiling_value;
+	val_array[HEADPAN_VEL] = val_array[HEADPAN_VEL] * MAX_HEADPAN_VEL / ceiling_value;
 }
 
 void TeleopController::reRenderImage()
@@ -311,4 +345,4 @@ bool TeleopController::checkQuitStatus()
 	return quit;
 }
 
-} 		// namespace v2mini_teleop
+}  // namespace v2mini_teleop

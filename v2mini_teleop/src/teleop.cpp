@@ -59,7 +59,7 @@ int main(int argc, char ** argv) {
 		geometry_msgs::Twist base_cmds;
 		geometry_msgs::Twist torso_cmds;
 
-		//update joint_state
+		//update joint_state --> INCOMPLETE
 		joint_state.header.stamp = ros::Time::now();
 		joint_state.name.resize(2);
 		joint_state.position.resize(2);
@@ -68,7 +68,7 @@ int main(int argc, char ** argv) {
 		joint_state.name[1] ="body_with_arm";
 		joint_state.position[1] = 0;
 
-		// update transform
+		// update transform --> INCOMPLETE
 		// (moving in a circle with radius=2)
 		odom_trans.header.stamp = ros::Time::now();
 		odom_trans.transform.translation.x = cos(angle)*2;
@@ -100,8 +100,9 @@ int main(int argc, char ** argv) {
 		base_cmds.linear.y = cmds[v2mini_teleop::BASE_VELY];
 		base_cmds.angular.z = cmds[v2mini_teleop::BASE_VELZ];
 
-		torso_cmds.linear.x = cmds[v2mini_teleop::FACE];
+		torso_cmds.linear.x = cmds[v2mini_teleop::FACE_TOGGLE];
 		torso_cmds.linear.y = cmds[v2mini_teleop::TORSO_VEL];
+		torso_cmds.linear.z = cmds[v2mini_teleop::HEADTILT_VEL];
 
 		//publish the movement commands
 		base_pub.publish(base_cmds);

@@ -11,8 +11,12 @@ const int SCREEN_HEIGHT = 480;
 const int MAX_BASE_RADIAL_VEL = 30;		// cm/s
 const int MAX_BASE_ANGULAR_VEL = 80;	// deg/s
 const float MAX_TORSO_VEL = 0.6;		// cm/s
+const int MAX_HEADTILT_VEL = 10;		// deg/s
+const int MAX_HEADPAN_VEL = 10;		// deg/s
 
-enum ROBOT_VEL {BASE_VELX, BASE_VELY, BASE_VELZ, TORSO_VEL, FACE, ARM_VELXZ, ARM_VELYZ, ARM_VELXY};
+enum ROBOT_VEL {
+	BASE_VELX, BASE_VELY, BASE_VELZ, TORSO_VEL, FACE_TOGGLE, HEADTILT_VEL, HEADPAN_VEL
+};
 
 class TeleopController {
 

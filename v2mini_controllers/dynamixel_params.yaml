@@ -65,3 +65,16 @@ arm_joint5_controller:
         init: 512
         min: 0
         max: 1023
+
+  neck_pan_controller:
+      controller:
+          package: dynamixel_controllers
+          module: joint_position_controller
+          type: JointPositionController
+      joint_name: body_with_head
+      joint_speed: 0.5
+      motor:
+          id: 6
+          init: 512
+          min: 0
+          max: 1023
