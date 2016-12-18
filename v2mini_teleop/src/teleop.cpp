@@ -19,14 +19,13 @@ int main(int argc, char ** argv) {
 	ros::Publisher joint_pub = node.advertise<sensor_msgs::JointState>("joint_states", 1);
 	tf::TransformBroadcaster broadcaster;
 
+	// todo -> publish joint positions for teleoperated parts
+	// and use tf broadcaster to drive virtual teleop joints.
 	geometry_msgs::TransformStamped odom_trans;
 	sensor_msgs::JointState joint_state;
 	odom_trans.header.frame_id = "odom";
 	odom_trans.child_frame_id = "base_link";
-
 	const double degree = M_PI/180;
-
-	// robot state
 	double angle=0;
 
 	// Get type of control from param (auto or remote)
@@ -100,9 +99,11 @@ int main(int argc, char ** argv) {
 		base_cmds.linear.y = cmds[v2mini_teleop::BASE_VELY];
 		base_cmds.angular.z = cmds[v2mini_teleop::BASE_VELZ];
 
+		// todo -> replace Twist msg with custom torso msg (update subscribers too)
 		torso_cmds.linear.x = cmds[v2mini_teleop::FACE_TOGGLE];
 		torso_cmds.linear.y = cmds[v2mini_teleop::TORSO_VEL];
 		torso_cmds.linear.z = cmds[v2mini_teleop::HEADTILT_VEL];
+		torso_cmds.angular.z = cmds[v2mini_teleop::HEADPAN_VEL]; // todo need another node to increm position
 
 		//publish the movement commands
 		base_pub.publish(base_cmds);

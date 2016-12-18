@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <Servo.h>
 #include <ros.h>
+#include <AFMotor.h>
 #include "geometry_msgs/Twist.h"
 
 ros::NodeHandle nh;
@@ -16,10 +17,7 @@ const int EXPRESSION_SET[][8] =  {{100,90,80,90,80,0,50,50},     //neutral
                                   {20,85,150,95,160,50,50,0},    //interested
                                   {20,105,180,75,90,50,0,50}};   //uncertain
 
-const int TILTVEL_PIN = 9;
-const int TILTPOS_PIN = 0;
-const int TILTUP_PIN = 4;
-const int TILTDOWN_PIN = 5;
+const int TILT_APIN = 0;
 const int TILT_MAX = 800;
 const int TILT_MIN = 200;
 const int TILT_AVG = (TILT_MAX + TILT_MIN) / 2;
@@ -37,8 +35,8 @@ int torso_current = TORSO_AVGH;
 unsigned long prev_time;
 
 // head vars
-int head_current = TILT_AVG;
-int head_input = 0;
+AF_DCMotor tilt_motor(2);
+int head_current, head_input = TILT_AVG;
 
 // face vars
 int lastread;
@@ -59,38 +57,43 @@ ros::Subscriber<geometry_msgs::Twist> sub_motion(
 
 void tiltHead()
 {
-  int target_pos;
   int actual_pos;
+  int pos_error;
   int tilt_vel;
 
+  actual_pos = analogRead(TILT_APIN);
+
+  // set limits for input value
   if (head_input > TILT_MAX)
   {
-    target_pos = TILT_MAX;
+    head_input = TILT_MAX;
   }
   else if (head_input < TILT_MIN)
   {
-    target_pos = TILT_MIN;
-  }
-  else
-  {
-    target_pos = head_input;
+    head_input = TILT_MIN;
   }
 
-  actual_pos = analogRead(TILTPOS_PIN);
+  pos_error = abs(actual_pos - head_input);
 
-  if (actual_pos > target_pos)
+  // todo --> replace with PID
+  tilt_vel = min(max(pos_error * 2, 16), 255);
+
+  tilt_motor.setSpeed(tilt_vel);
+
+  if (pos_error < 8)
   {
-    digitalWrite(TILTUP_PIN, HIGH);
-    digitalWrite(TILTDOWN_PIN, LOW);
+    //turns motor off
+    tilt_motor.run(RELEASE);
   }
-  else
+  else if (actual_pos > head_input)
   {
-    digitalWrite(TILTUP_PIN,LOW);
-    digitalWrite(TILTDOWN_PIN,HIGH);
+    tilt_motor.run(FORWARD);
+  }
+  else if(actual_pos < head_input)
+  {
+    tilt_motor.run(BACKWARD);
   }
 
-  tilt_vel = min(abs(actual_pos-target_pos) * 10, 255);
-  analogWrite(TILTVEL_PIN, tilt_vel);
 }
 
 void setTorsoServo(float increm)
@@ -168,14 +171,13 @@ void setup()
   // init pin modes
   pinMode(33, INPUT_PULLUP);
 
-  for (int i = 0; i < 14; i++)
-  {
-    pinMode(i, OUTPUT);
+  // set rx & tx to input
+  pinMode(18, INPUT);
+  pinMode(19, INPUT);
 
-    if (i < 3)
-    {
-      pinMode(EYE_RGB_PINS[i], OUTPUT);
-    }
+  for (int i = 0; i < 3; i++)
+  {
+    pinMode(EYE_RGB_PINS[i], OUTPUT);
   }
 
   // attach servos to pins

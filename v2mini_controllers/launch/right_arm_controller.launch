@@ -1,3 +1,4 @@
+<!-- todo change the name of this file as it launches all dynamixel_controllers -->
 <launch>
 
   <include file="$(find v2mini_controllers)/launch/controller_manager.launch"/>
