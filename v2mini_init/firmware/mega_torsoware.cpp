@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <Servo.h>
 #include <ros.h>
-#include <AFMotor.h>
+#include "AFMotor.h"
 #include "geometry_msgs/Twist.h"
 
 ros::NodeHandle nh;
@@ -24,8 +24,8 @@ const int TILT_AVG = (TILT_MAX + TILT_MIN) / 2;
 
 const int TORSO_MAXV = 5; // deg/s
 const int TORSO_PIN = 53;
-const int TORSO_MAXH = 130;
-const int TORSO_MINH = 50;
+const int TORSO_MAXH = 120;
+const int TORSO_MINH = 70;
 const int TORSO_AVGH = (TORSO_MAXH + TORSO_MINH) / 2;
 
 // torso vars
@@ -36,7 +36,8 @@ unsigned long prev_time;
 
 // head vars
 AF_DCMotor tilt_motor(2);
-int head_current, head_input = TILT_AVG;
+int head_input = 0;
+int prev_head_pos;
 
 // face vars
 int lastread;
@@ -55,32 +56,35 @@ void motion_cb(const geometry_msgs::Twist& motion_cmds)
 ros::Subscriber<geometry_msgs::Twist> sub_motion(
   "torso_cmds", &motion_cb);
 
-geometry_msgs::Twist debug_msg;
-ros::Publisher torso_debugger("torso_debugger", &debug_msg);
+// geometry_msgs::Twist debug_msg;
+// ros::Publisher torso_debugger("torso_debugger", &debug_msg);
 
 void tiltHead()
 {
   int actual_pos;
+  int target_pos;
   int pos_error;
   int tilt_vel;
 
+  // increment the target position up or down each cycle
+  target_pos = prev_head_pos + head_input;
   actual_pos = analogRead(TILT_APIN);
 
   // set limits for input value
-  if (head_input > TILT_MAX)
+  if (target_pos > TILT_MAX)
   {
-    head_input = TILT_MAX;
+    target_pos = TILT_MAX;
   }
-  else if (head_input < TILT_MIN)
+  else if (target_pos < TILT_MIN)
   {
-    head_input = TILT_MIN;
+    target_pos = TILT_MIN;
   }
 
-  pos_error = abs(actual_pos - head_input);
+  pos_error = abs(actual_pos - target_pos);
 
-  debug_msg.linear.x = head_input;
-  debug_msg.linear.y = actual_pos;
-  debug_msg.linear.z = pos_error;
+  // debug_msg.linear.x = target_pos; // ----> comment out
+  // debug_msg.linear.y = actual_pos;
+  // debug_msg.linear.z = pos_error;
 
   // todo --> replace with PID
   tilt_vel = min(max(pos_error * 2, 16), 255);
@@ -92,24 +96,40 @@ void tiltHead()
     //turns motor off
     tilt_motor.run(RELEASE);
   }
-  else if (actual_pos > head_input)
+  else if (actual_pos > target_pos)
   {
     tilt_motor.run(FORWARD);
   }
-  else if(actual_pos < head_input)
+  else if(actual_pos < target_pos)
   {
     tilt_motor.run(BACKWARD);
   }
+
+  prev_head_pos = target_pos;
 
 }
 
 void setTorsoServo(float increm)
 {
-  // value must be within limits
-  if (torso_current < TORSO_MAXH && torso_current > TORSO_MINH)
+  // torso value must be within limits
+  if (torso_current <= TORSO_MAXH && torso_current >= TORSO_MINH)
   {
-    // move torso up or down
-    torso_current += increm;
+    if (torso_current == TORSO_MAXH && increm < 0)
+    {
+      // only allow increment down
+      torso_current += increm;
+    }
+    else if (torso_current == TORSO_MINH && increm > 0)
+    {
+      // only allow increment up
+      torso_current += increm;
+    }
+    else if (torso_current != TORSO_MAXH && torso_current != TORSO_MINH)
+    {
+      // increment up or down
+      torso_current += increm;
+    }
+
     torso.write(torso_current);
   }
 }
@@ -204,7 +224,7 @@ void setup()
   // init ros stuff
   nh.initNode();
   nh.subscribe(sub_motion);
-  nh.advertise(torso_debugger); // comment out when not debugging
+  // nh.advertise(torso_debugger); // comment out when not debugging
 
 }
 
@@ -221,6 +241,6 @@ void loop()
 
   tiltHead();
 
-  torso_debugger.publish(&debug_msg); // comment out when not debugging
+  // torso_debugger.publish(&debug_msg); // comment out when not debugging
   nh.spinOnce();
 }
