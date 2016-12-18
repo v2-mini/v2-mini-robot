@@ -209,7 +209,7 @@ float* TeleopController::getKeyCmds()
 		else
 		{
 			// pan CW
-			key_cmds[HEADPAN_VEL] = max_value;
+			key_cmds[HEADPAN_VEL] = -max_value;
 		}
 	}
 	else

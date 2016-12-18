@@ -55,6 +55,9 @@ void motion_cb(const geometry_msgs::Twist& motion_cmds)
 ros::Subscriber<geometry_msgs::Twist> sub_motion(
   "torso_cmds", &motion_cb);
 
+geometry_msgs::Twist debug_msg;
+ros::Publisher torso_debugger("torso_debugger", &debug_msg);
+
 void tiltHead()
 {
   int actual_pos;
@@ -74,6 +77,10 @@ void tiltHead()
   }
 
   pos_error = abs(actual_pos - head_input);
+
+  debug_msg.linear.x = head_input;
+  debug_msg.linear.y = actual_pos;
+  debug_msg.linear.z = pos_error;
 
   // todo --> replace with PID
   tilt_vel = min(max(pos_error * 2, 16), 255);
@@ -197,6 +204,7 @@ void setup()
   // init ros stuff
   nh.initNode();
   nh.subscribe(sub_motion);
+  nh.advertise(torso_debugger); // comment out when not debugging
 
 }
 
@@ -213,5 +221,6 @@ void loop()
 
   tiltHead();
 
+  torso_debugger.publish(&debug_msg); // comment out when not debugging
   nh.spinOnce();
 }
