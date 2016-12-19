@@ -111,7 +111,7 @@ void tiltHead()
 
 void setTorsoServo(float increm)
 {
-  // torso value must be within limits
+  // values are within allowable range
   if (torso_current <= TORSO_MAXH && torso_current >= TORSO_MINH)
   {
     if (torso_current == TORSO_MAXH && increm < 0)
@@ -129,9 +129,19 @@ void setTorsoServo(float increm)
       // increment up or down
       torso_current += increm;
     }
-
-    torso.write(torso_current);
   }
+
+  // keep value in range for any increment
+  if (torso_current > TORSO_MAXH)
+  {
+    torso_current = TORSO_MAXH;
+  }
+  else if (torso_current < TORSO_MINH)
+  {
+    torso_current = TORSO_MINH;
+  }
+
+  torso.write(torso_current);
 }
 
 void moveTorso()

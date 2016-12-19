@@ -1,3 +1,4 @@
+#include <std_msgs/Float64.h>
 #include <geometry_msgs/Twist.h>
 #include <sensor_msgs/JointState.h>
 #include <tf/transform_broadcaster.h>
@@ -9,13 +10,48 @@
 
 using v2mini_teleop::ROBOT_VEL;
 
-int main(int argc, char ** argv) {
+int setHeadPan(int curr_headpan, int increment)
+{
+	int deg60 = M_PI/3;
+	int target_angle;
 
+	if (abs(curr_headpan) <= deg60)
+	{
+		if (curr_headpan == deg60 && increment < 0)
+		{
+			target_angle = curr_headpan + increment;
+		}
+		else if (curr_headpan == -deg60 && increment > 0)
+		{
+			target_angle = curr_headpan + increment;
+		}
+		else if (abs(curr_headpan) != deg60)
+		{
+			target_angle = curr_headpan + increment;
+		}
+	}
+
+	// limit headpan to +/- 60 deg
+	if (target_angle > deg60)
+	{
+		target_angle = deg60;
+	}
+	else if (target_angle < -deg60)
+	{
+		target_angle = -deg60;
+	}
+
+	return target_angle;
+}
+
+int main(int argc, char ** argv)
+{
 	ros::init(argc, argv, "teleop");
 	ros::NodeHandle node;
 
 	ros::Publisher base_pub = node.advertise<geometry_msgs::Twist>("base_cmds", 1);
 	ros::Publisher torso_pub = node.advertise<geometry_msgs::Twist>("torso_cmds", 1);
+	ros::Publisher headpan_pub = node.advertise<std_msgs::Float64>("headpan_controller/command", 1);
 	ros::Publisher joint_pub = node.advertise<sensor_msgs::JointState>("joint_states", 1);
 	tf::TransformBroadcaster broadcaster;
 
@@ -43,6 +79,8 @@ int main(int argc, char ** argv) {
 
 	printf("Controller: %s\n", controller_type.c_str());
 
+	int headpan_angle = 0;
+
 	float* cmds = NULL;
 	bool quit = false;
 
@@ -57,6 +95,7 @@ int main(int argc, char ** argv) {
 
 		geometry_msgs::Twist base_cmds;
 		geometry_msgs::Twist torso_cmds;
+		std_msgs::Float64 headpan_cmd;
 
 		//update joint_state --> INCOMPLETE
 		joint_state.header.stamp = ros::Time::now();
@@ -103,11 +142,14 @@ int main(int argc, char ** argv) {
 		torso_cmds.linear.x = cmds[v2mini_teleop::FACE_TOGGLE];
 		torso_cmds.linear.y = cmds[v2mini_teleop::TORSO_VEL];
 		torso_cmds.linear.z = cmds[v2mini_teleop::HEADTILT_VEL];
-		torso_cmds.angular.z = cmds[v2mini_teleop::HEADPAN_VEL]; // todo need another node to increm position
+
+		headpan_angle = setHeadPan(headpan_angle, cmds[v2mini_teleop::HEADPAN_VEL]);
+		headpan_cmd.data = headpan_angle;
 
 		//publish the movement commands
 		base_pub.publish(base_cmds);
 		torso_pub.publish(torso_cmds);
+		torso_pub.publish(headpan_cmd);
 		joint_pub.publish(joint_state);
 		broadcaster.sendTransform(odom_trans);
 
