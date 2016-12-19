@@ -10,10 +10,10 @@
 
 using v2mini_teleop::ROBOT_VEL;
 
-int setHeadPan(int curr_headpan, int increment)
+double setHeadPan(double curr_headpan, double increment)
 {
-	int deg60 = M_PI/3;
-	int target_angle;
+	double deg60 = M_PI/3;
+	double target_angle;
 
 	if (abs(curr_headpan) <= deg60)
 	{
@@ -79,7 +79,7 @@ int main(int argc, char ** argv)
 
 	printf("Controller: %s\n", controller_type.c_str());
 
-	int headpan_angle = 0;
+	double headpan_angle = 0;
 
 	float* cmds = NULL;
 	bool quit = false;
@@ -92,7 +92,6 @@ int main(int argc, char ** argv)
 
 	while(ros::ok() && !controller.checkQuitStatus() && !quit)
 	{
-
 		geometry_msgs::Twist base_cmds;
 		geometry_msgs::Twist torso_cmds;
 		std_msgs::Float64 headpan_cmd;
@@ -149,7 +148,7 @@ int main(int argc, char ** argv)
 		//publish the movement commands
 		base_pub.publish(base_cmds);
 		torso_pub.publish(torso_cmds);
-		torso_pub.publish(headpan_cmd);
+		headpan_pub.publish(headpan_cmd);
 		joint_pub.publish(joint_state);
 		broadcaster.sendTransform(odom_trans);
 

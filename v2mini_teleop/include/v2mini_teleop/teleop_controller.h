@@ -12,7 +12,7 @@ const int MAX_BASE_RADIAL_VEL = 30;		// cm/s
 const int MAX_BASE_ANGULAR_VEL = 80;	// deg/s
 const float MAX_TORSO_VEL = 0.6;
 const int MAX_HEADTILT_VEL = 10;
-const int MAX_HEADPAN_VEL = M_PI/180;
+const double MAX_HEADPAN_VEL = M_PI/180;
 
 enum ROBOT_VEL {
 	BASE_VELX, BASE_VELY, BASE_VELZ, TORSO_VEL, FACE_TOGGLE, HEADTILT_VEL, HEADPAN_VEL
