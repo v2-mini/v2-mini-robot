@@ -1,13 +1,15 @@
+#include <AFMotor.h>
 #include <Arduino.h>
 #include <Servo.h>
 #include <ros.h>
-#include "AFMotor.h"
 #include "geometry_msgs/Twist.h"
 
 ros::NodeHandle nh;
 
 const int TOTAL_FACE_SERVOS = 5;
 const int FACE_PINS[] = {23,25,27,29,31};
+const int TOTAL_BUTTON_INS = 7;
+const int BUTTON_INS[] = {37,39,41,43,47,49,51};
 const int EYE_RGB_PINS[] = {45,44,46};
 const int EYE_RGB_SCALE[] = {120,120,120};
 const int EXPRESSION_SET[][8] =  {{100,90,80,90,80,0,50,50},     //neutral
@@ -17,16 +19,21 @@ const int EXPRESSION_SET[][8] =  {{100,90,80,90,80,0,50,50},     //neutral
                                   {20,85,150,95,160,50,50,0},    //interested
                                   {20,105,180,75,90,50,0,50}};   //uncertain
 
-const int TILT_APIN = 0;
-const int TILT_MAX = 800;
-const int TILT_MIN = 200;
-const int TILT_AVG = (TILT_MAX + TILT_MIN) / 2;
+const int LINACT_APIN[] = {10,0,12,11};
+const int LINACT_MAX[] = {800,800,800,800};
+const int LINACT_MIN[] = {200,200,200,200};
+
 
 const int TORSO_MAXV = 5; // deg/s
 const int TORSO_PIN = 53;
 const int TORSO_MAXH = 120;
 const int TORSO_MINH = 70;
 const int TORSO_AVGH = (TORSO_MAXH + TORSO_MINH) / 2;
+
+// button vars
+int button_vals[] = {0,0,0,0,0,0,0};
+int button_last_vals[] = {0,0,0,0,0,0,0};
+int button_active[] = {0,0,0,0,0,0,0};
 
 // torso vars
 Servo torso;
@@ -35,9 +42,16 @@ int torso_current = TORSO_AVGH;
 unsigned long prev_time;
 
 // head vars
+AF_DCMotor wrist_motor(1);
 AF_DCMotor tilt_motor(2);
-int head_input = 0;
-int prev_head_pos;
+AF_DCMotor lh_motor(3);
+AF_DCMotor rh_motor(4);
+
+AF_DCMotor linacts[] = {wrist_motor,tilt_motor,lh_motor,rh_motor};
+
+int linact_inputs[] = {0,0,0,0};
+int prev_linact_pos[] = {512,512,300,300};
+int currentAct = 0;
 
 // face vars
 int lastread;
@@ -47,65 +61,68 @@ Servo face_servos[TOTAL_FACE_SERVOS];
 
 void motion_cb(const geometry_msgs::Twist& motion_cmds)
 {
-  face_input = motion_cmds.linear.x;
-  torso_input = motion_cmds.linear.y;
-  head_input = motion_cmds.linear.z;
+ face_input = motion_cmds.linear.x;
+ torso_input = motion_cmds.linear.y;
+ linact_inputs[1] = motion_cmds.linear.z;
 }
 
 // Subscribe to ROS topic "/torso_cmds"
 ros::Subscriber<geometry_msgs::Twist> sub_motion(
-  "torso_cmds", &motion_cb);
+ "torso_cmds", &motion_cb);
 
 // geometry_msgs::Twist debug_msg;
 // ros::Publisher torso_debugger("torso_debugger", &debug_msg);
 
-void tiltHead()
+void linAct(int actuator_num)
 {
   int actual_pos;
   int target_pos;
   int pos_error;
-  int tilt_vel;
+  int linact_vel;
 
   // increment the target position up or down each cycle
-  target_pos = prev_head_pos + head_input;
-  actual_pos = analogRead(TILT_APIN);
+  target_pos = prev_linact_pos[actuator_num] + linact_inputs[actuator_num];
+  actual_pos = analogRead(LINACT_APIN[actuator_num]);
 
   // set limits for input value
-  if (target_pos > TILT_MAX)
+  if (target_pos > LINACT_MAX[actuator_num])
   {
-    target_pos = TILT_MAX;
+    target_pos = LINACT_MAX[actuator_num];
   }
-  else if (target_pos < TILT_MIN)
+  else if (target_pos < LINACT_MIN[actuator_num])
   {
-    target_pos = TILT_MIN;
+    target_pos = LINACT_MIN[actuator_num];
   }
 
   pos_error = abs(actual_pos - target_pos);
 
-  // debug_msg.linear.x = target_pos; // ----> comment out
-  // debug_msg.linear.y = actual_pos;
-  // debug_msg.linear.z = pos_error;
+  // if(currentAct == actuator_num){
+  //   debug_msg.linear.x = target_pos; // ----> comment out
+  //   debug_msg.linear.y = actual_pos;
+  //   debug_msg.linear.z = actuator_num;
+  // }
+
 
   // todo --> replace with PID
-  tilt_vel = min(max(pos_error * 2, 16), 255);
+  linact_vel = min(max(pos_error * 2, 16), 255);
 
-  tilt_motor.setSpeed(tilt_vel);
+  linacts[actuator_num].setSpeed(linact_vel);
 
   if (pos_error < 8)
   {
     //turns motor off
-    tilt_motor.run(RELEASE);
+    linacts[actuator_num].run(RELEASE);
   }
-  else if (actual_pos > target_pos)
+  else if (actual_pos < target_pos)
   {
-    tilt_motor.run(FORWARD);
+    linacts[actuator_num].run(FORWARD);
   }
-  else if(actual_pos < target_pos)
+  else if(actual_pos >  target_pos)
   {
-    tilt_motor.run(BACKWARD);
+    linacts[actuator_num].run(BACKWARD);
   }
 
-  prev_head_pos = target_pos;
+  prev_linact_pos[actuator_num] = target_pos;
 
 }
 
@@ -156,7 +173,8 @@ void moveTorso()
   }
 }
 
-void setEyeColor(int r,int g,int b){
+void setEyeColor(int r,int g,int b)
+{
   digitalWrite(EYE_RGB_PINS[0], r);
   digitalWrite(EYE_RGB_PINS[1], g);
   digitalWrite(EYE_RGB_PINS[2], b);
@@ -203,6 +221,33 @@ void toggleFace()
   setFacialExpression(expression);
 }
 
+void readButtons()
+{
+  for (int i = 0; i < TOTAL_BUTTON_INS; i++)
+  {
+    button_last_vals[i] = button_vals[i];
+    button_vals[i]=digitalRead(BUTTON_INS[i]);
+    button_active[i]= !button_vals[i] && button_last_vals[i];
+  }
+
+  face_input = button_active[6];
+  setTorsoServo(button_vals[5]-button_vals[4]);
+  currentAct += button_active[3]-button_active[2];
+
+  if(currentAct < 0 )
+  {
+    currentAct = 3;
+  }
+
+  if(currentAct > 3 )
+  {
+    currentAct = 0;
+  }
+
+  linact_inputs[currentAct] = (button_vals[1]-button_vals[0]);
+
+}
+
 void setup()
 {
   // init pin modes
@@ -215,6 +260,11 @@ void setup()
   for (int i = 0; i < 3; i++)
   {
     pinMode(EYE_RGB_PINS[i], OUTPUT);
+  }
+
+  for (int i = 0; i < TOTAL_BUTTON_INS; i++)
+  {
+    pinMode(BUTTON_INS[i], INPUT_PULLUP);
   }
 
   // attach servos to pins
@@ -231,10 +281,10 @@ void setup()
   // init torso to average height
   torso.write(TORSO_AVGH);
 
-  // init ros stuff
-  nh.initNode();
-  nh.subscribe(sub_motion);
-  // nh.advertise(torso_debugger); // comment out when not debugging
+ // init ros stuff
+ nh.initNode();
+ nh.subscribe(sub_motion);
+ // nh.advertise(torso_debugger); // comment out when not debugging
 
 }
 
@@ -246,11 +296,15 @@ void loop()
     moveTorso();
     prev_time = millis();
   }
+  readButtons();
 
   toggleFace();
 
-  tiltHead();
+  linAct(0);
+  linAct(1);
+  linAct(2);
+  linAct(3);
 
-  // torso_debugger.publish(&debug_msg); // comment out when not debugging
-  nh.spinOnce();
+ // torso_debugger.publish(&debug_msg); // comment out when not debugging
+ nh.spinOnce();
 }
