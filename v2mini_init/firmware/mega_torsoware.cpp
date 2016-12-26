@@ -113,11 +113,11 @@ void linAct(int actuator_num)
     //turns motor off
     linacts[actuator_num].run(RELEASE);
   }
-  else if (actual_pos < target_pos)
+  else if (actual_pos > target_pos)
   {
     linacts[actuator_num].run(FORWARD);
   }
-  else if(actual_pos >  target_pos)
+  else if(actual_pos <  target_pos)
   {
     linacts[actuator_num].run(BACKWARD);
   }

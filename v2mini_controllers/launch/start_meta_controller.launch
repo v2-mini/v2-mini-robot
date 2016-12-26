@@ -9,9 +9,11 @@
               arm_joint3_controller
               arm_joint4_controller
               arm_joint5_controller
-              headpan_controller
+
               "
         output="screen"/>
+
+        <!-- headpan_controller -->
 
   <!-- Start joints trajectory controller -->
   <rosparam file="$(find v2mini_controllers)/joints_trajectory_controller.yaml" command="load"/>
@@ -24,7 +26,7 @@
               arm_joint3_controller
               arm_joint4_controller
               arm_joint5_controller
-              headpan_controller
+              
               "
               output="screen"/>
 </launch>
