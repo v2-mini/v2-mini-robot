@@ -10,7 +10,7 @@ Install [ROS Indigo][ros-inst] on Ubuntu.
 
 ### Setting up the Environment
 
-The steps in this section are required for v2mini's machine, or any machine used to directly interface with v2mini's external hardware.
+The steps in this section are required for setting up V2Mini's PC, or any PC that's used to directly interface with external hardware.
 
 #### Install udev Rules
 
@@ -22,21 +22,32 @@ install SDL2 .. what else????  ----< TODO >----- realsense camera drivers
 
 ### Creating a Workspace
 
-A catkin workspace is required to build and run v2mini's packages. This section describes how to setup the workspace for both a dev machine and v2mini itself.
+A catkin workspace is required to build and run v2mini's packages. This section describes how to setup the workspace for V2Mini or a dev machine.
 
 #### General Workspace Setup
 
-1. Create a catkin workspace: </br>
-    `$ mkdir -p ~/v2mini_ws/src && cd v2mini_ws/src` </br>
-2. Initialize the workspace: </br>
-    `$ catkin_init_workspace` </br>
-3. Clone this repository: </br>
-    `$ git clone <v2mini_robot>` </br>
-4. Build the packages </br>
-    `$ cd .. && catkin_make` </br>
-5. Install package dependencies: </br>
-    `$ ----< TODO >-----`
+Create a catkin workspace:
+```
+$ mkdir -p ~/v2mini_ws/src && cd v2mini_ws/src
+```
+Initialize the workspace:
+```
+$ catkin_init_workspace
+```
+Fork the `v2mini_robot` repository (dev only)
 
+Clone the forked repository:
+```
+$ git clone <forked v2mini_robot>
+```
+Build the packages:
+```
+$ cd .. && catkin_make
+```
+Install package dependencies:
+```
+------------TODO
+```
 
 #### Additional Setup for V2Mini
 
@@ -109,42 +120,36 @@ $ catkin_make v2mini_init_firmware_torsoware-upload
 
 ### Source the Workspace
 
-After opening a terminal, the workspace must be sourced to use v2mini's packages:
-
+After opening a terminal, the workspace must be sourced before using custom packages:
 ```
 $ source devel/setup.bash
 ```
 
 ### Teleoping V2Mini
 
-There are two methods of "teleoping" the V2Mini robot. The first method is to use TeamViewer, and the second method is to run the teleop nodes on a remote machine.
+There are two methods of "teleoping" the V2Mini robot. The first method is to have the input device directly connected to the V2Mini; the other is to run the controller nodes on a remote ROS machine.
 
-#### Control via TeamViewer
-
-Using [TeamViewer][teamview] to remote into the V2Mini's PC is easier than setting up a secondary computer with ROS to control the robot. Moreover, it may be the only way if the user only has access to a Windows machine (besides running the robot headless).
-
-Note, controllers such as the keyboard and gamepad must be directly attached to the V2Mini's PC, due to SDL not capturing the inputs from TeamViewer. This is basically remote control, which means the major limitation is range.
-
-[teamview]:https://www.teamviewer.com/en/
-
-#### Control via ROS-Enabled PC
-
-Using a secondary linux machine with ROS, SDL2, and the v2mini_robot package installed allows for real teleop. That means the V2Mini can be controlled via wifi from any location.
-
-Note, the setup for an additional control machine is the same as the V2Mini. Simply follow the setup provided above.  
+SDL2 is the c++ library used to collect events from input devices. When teleop is launched, a small white control window will appear. This window must be focused for inputs to be collected.
 
 #### Launching Teleop
 
-To start Teleoping the V2Mini with a keyboard controller, use the following command:
+To start Teleoping the V2Mini directly with a keyboard controller, use the following command:
 ```
 roslaunch v2mini_teleop teleop.launch control:=keyboard
 ```
-In addition to the `control` argument, there are a number of additional arguments that can be used:
+In addition to the `control` argument, there are a number of additional arguments that can be used.
+
+**arguments:**
 
 `control`
 
 - `keyboard` - control the robot using keyboard commands (default).
 - `gamepad` - control the robot using the logitec gamepad.
+
+`remote`
+
+- `true` - teleop V2Mini from a remote ROS PC.
+- `false` - teleop V2Mini directly using a monitor or TeamViewer for feedback (default).
 
 `use_torso`
 
@@ -156,29 +161,85 @@ In addition to the `control` argument, there are a number of additional argument
 - `false` - ignore the base firmware node. Use this option when you wish to run the robot without the base.
 - `true` - launch the firmware node for the base (default). Note, if the base arduino is not connected, it will result in an error.
 
-The following environment variables must be set to teleop the robot:
+**environment variables:**
 
-`ROS_IP` - the ip address for the machine. </br>
-`USER` - the username for the machine.
+`ROS_IP` - the ip address for the machine. This is required for all machines. </br>
+`V2MINI_ROS_IP` - the ip address for V2Mini's machine. This only needs to be set when teleoping from a remote ROS machine. </br>
 
+#### Direct Control
 
+The V2Mini can be directly controlled by attaching a monitor or via remote desktop. This method of controlling the robot is essentially RC and not real teleop, but it is extremely convenient for quick tests or when you don't have access to another ROS-enabled machine.
 
+The V2Mini is setup with [TeamViewer][teamview] for remote access.
 
+Note, controllers such as the keyboard and gamepad must be directly attached to the V2Mini's PC, due to SDL2 not capturing the inputs from a remote desktop. The major limitation to direct control is the range of the input device.
 
+[teamview]:https://www.teamviewer.com/en/
 
+#### Controlling from a Remote ROS Machine
 
+Using a secondary linux machine with ROS, SDL2, and the v2mini_robot package installed allows for real teleop. That means the V2Mini can be controlled via wifi from any location.
 
+The setup for an additional control machine is the same as the V2Mini. Just follow the setup provided above.  
 
+**remote launch:**
 
+Check that the required environment variables are set:
+```
+$ env | grep ROS
+```
+If `ROS_IP` is missing, find the IP using `$ ifconfig` and set the variable:
+```
+$ export ROS_IP=<your-ip>
+```
+Use the same method to set `V2MINI_ROS_IP`. Note, it is necessary to export environment variables each time a new terminal is opened.
 
+Now, launch teleop with the `remote` argument set to true:
+```
+roslaunch v2mini_teleop teleop.launch remote:=true
+```
 
-d
+#### Controller Key-Bindings
 
-d
+**Keyboard**
 
-d
+asdf
 
-d
+**Logitec Gamepad:**
 
-d
-aa
+asdf
+
+#### Troubleshooting
+
+Assuming teleop launches successfully with no errors, the following steps can be used to isolate malfunctioning components:
+
+**check input collection:**
+
+The teleop node collects user inputs and translates them into robot velocity commands. Check that these commands are being published.
+
+To get a full list of available topics:
+```
+$ rostopic list
+```
+
+Then, check the commands being published to the torso:
+```
+$ rostopic echo /torso/torso_cmds
+```
+
+And, check the commands being published to the torso:
+```
+$ rostopic echo /base/base_cmds
+```
+
+You should expect to see a lot of incoming data, and a value appear when buttons are pressed.
+
+**check arduino firmware**
+
+First check that the arduino nodes are running:
+```
+rosnode list
+```
+If `torsoware` and `baseware` nodes are listed, they are running.
+
+After checking that the data is published and the arduino nodes are up, it's possible that there's an error in the firmware. Debugging the firmware can get quite involved, but to aid you there are commented-out debugger publishers in each.
