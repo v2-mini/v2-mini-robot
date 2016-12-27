@@ -20,12 +20,10 @@ rosserial_configure_client(
   TOOLCHAIN_FILE ${ROSSERIAL_ARDUINO_TOOLCHAIN}
 )
 
-rosserial_add_client_target(firmware uno_headware ALL)
-rosserial_add_client_target(firmware mega_baseware ALL)
-rosserial_add_client_target(firmware mega_torsoware ALL)
-rosserial_add_client_target(firmware uno_headware-upload)
-rosserial_add_client_target(firmware mega_baseware-upload)
-rosserial_add_client_target(firmware mega_torsoware-upload)
+rosserial_add_client_target(firmware baseware ALL)
+rosserial_add_client_target(firmware torsoware ALL)
+rosserial_add_client_target(firmware baseware-upload)
+rosserial_add_client_target(firmware torsoware-upload)
 
 install(DIRECTORY launch
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}

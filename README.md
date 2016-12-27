@@ -44,7 +44,7 @@ asdf
 
 ### Editors & IDEs
 
-The packages in this repository were developed on eclipse and atom with the platformio package.
+The packages in this repository were developed with eclipse and atom.
 
 #### Atom + Platformio
 
@@ -93,6 +93,20 @@ Build the workspace after making changes to the source:
 $ catkin_make
 ```
 
+### Upload the Firmware
+
+Upload arduino firmware after making changes.
+
+To upload to the base controller:
+```
+$ catkin_make v2mini_init_firmware_baseware-upload
+```
+
+To upload to the torso controller:
+```
+$ catkin_make v2mini_init_firmware_torsoware-upload
+```
+
 ### Source the Workspace
 
 After opening a terminal, the workspace must be sourced to use v2mini's packages:
@@ -103,6 +117,65 @@ $ source devel/setup.bash
 
 ### Teleoping V2Mini
 
-asdfasdf
+There are two methods of "teleoping" the V2Mini robot. The first method is to use TeamViewer, and the second method is to run the teleop nodes on a remote machine.
 
-asdfasdf
+#### Control via TeamViewer
+
+Using [TeamViewer][teamview] to remote into the V2Mini's PC is easier than setting up a secondary computer with ROS to control the robot. Moreover, it may be the only way if the user only has access to a Windows machine (besides running the robot headless).
+
+Note, controllers such as the keyboard and gamepad must be directly attached to the V2Mini's PC, due to SDL not capturing the inputs from TeamViewer. This is basically remote control, which means the major limitation is range.
+
+[teamview]:https://www.teamviewer.com/en/
+
+#### Control via ROS-Enabled PC
+
+Using a secondary linux machine with ROS, SDL2, and the v2mini_robot package installed allows for real teleop. That means the V2Mini can be controlled via wifi from any location.
+
+Note, the setup for an additional control machine is the same as the V2Mini. Simply follow the setup provided above.  
+
+#### Launching Teleop
+
+To start Teleoping the V2Mini with a keyboard controller, use the following command:
+```
+roslaunch v2mini_teleop teleop.launch control:=keyboard
+```
+In addition to the `control` argument, there are a number of additional arguments that can be used:
+
+`control`
+- `keyboard` - control the robot using keyboard commands (default).
+- `gamepad` - control the robot using the logitec gamepad.
+
+`use_torso`
+- `false` - ignore the torso firmware node. Use this option when you wish to run the robot without the torso.
+- `true` - launch the firmware node for the torso (default). Note, if the torso arduino is not connected, it will result in an error.
+
+`use_base`
+- `false` - ignore the base firmware node. Use this option when you wish to run the robot without the base.
+- `true` - launch the firmware node for the base (default). Note, if the base arduino is not connected, it will result in an error.
+
+The following environment variables must be set to teleop the robot:
+
+`ROS_IP` - the ip address for the machine. </br>
+`USER` - the username for the machine.
+
+
+
+
+
+
+
+
+
+
+
+
+d
+
+d
+
+d
+
+d
+
+d
+aa
