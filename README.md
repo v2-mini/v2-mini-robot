@@ -8,20 +8,6 @@ Install [ROS Indigo][ros-inst] on Ubuntu.
 
 [ros-inst]:http://wiki.ros.org/indigo/Installation/Ubuntu
 
-### Setting up the Environment
-
-The steps in this section should be completed once for new machines.
-
-#### Install udev Rules
-
-The udev rules are only required for V2Mini's PC, or any PC that aims to directly connect to external hardware such as arduinos or dynamixels. In addition, due to the similarity of devices, rules use the `serial` attribute and are therefore hardware specific (ie. the rules need to be adjusted for each new device).  
-
-asdfasdf ----------->  ----< TODO >-----
-
-#### Install Apt Packages
-
-realsense camera drivers, sdl2, ? ----< TODO >-----
-
 ### Creating a Workspace
 
 A catkin workspace is required to build and run v2mini's packages. This section describes how to setup the workspace for V2Mini or a dev machine.
@@ -53,12 +39,34 @@ $ cd .. && catkin_make
 
 Install package dependencies:
 ```
-------------TODO
+------------TODO .. best way to install all ros dependenies for all v2mini packages?
 ```
 
-#### Additional Setup for V2Mini
+### Setting up the Environment
 
-asdf
+The steps in this section should be completed for all new machines.
+
+#### Install udev Rules
+
+The udev rules are only required for V2Mini's PC, or any PC that aims to directly connect to external hardware such as arduinos or dynamixels. In addition, due to the similarity of devices, rules use the `serial` attribute and are therefore hardware specific (ie. the rules need to be adjusted for each new device).  
+
+To install the udev rules:
+```
+$ sudo cp ~/v2mini_ws/src/v2mini_init/udev/97-v2mini.rules /etc/udev/rules.d/
+```
+
+Then, reboot the machine.
+
+If hardware is exchanged, replace the serial number of the device with the new number (ex. `ATTRS{serial}=="<enter new serial>"`) and reinstall the rules.
+
+The serial number can be found using (select value closest to the top):
+```
+$ lsusb -v | grep iSerial
+```
+
+#### Install Apt Packages
+
+realsense camera drivers, sdl2, ? ----< TODO >----- what is the best way to install all binaries in one go?
 
 ### Editors & IDEs
 
