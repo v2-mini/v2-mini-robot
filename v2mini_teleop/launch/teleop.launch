@@ -6,6 +6,8 @@
    <arg name="controller" default="keyboard"/><!-- 'gamepad' or 'keyboard' -->
    <arg name="use_base" default="true"/><!-- launch base MCU node -->
    <arg name="use_torso" default="true"/><!-- launch torso MCU node -->
+   <arg name="use_arm" default="true"/><!-- launch arm dynamixels -->
+   <arg name="use_camera" default="true"/><!-- launch r200 camera -->
 
    <include file="$(find v2mini_init)/v2mini.machine">
       <arg name="remote" value="$(arg remote)"/>
@@ -26,5 +28,13 @@
       <remap from="base_cmds" to="base/base_cmds"/>
       <param name="controller" value="$(arg controller)"/>
    </node>
+
+   <!-- Launch the realsense r200 camera -->
+   
+
+   <!-- Launch moveit for arm control and rviz urdf -->
+   <include file="$(find v2mini_moveit_config)/v2mini_moveit_controller.launch">
+      <arg name="use_arm" value="$(arg use_arm)"/>
+   </include>
 
 </launch>

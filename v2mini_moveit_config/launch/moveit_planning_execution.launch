@@ -1,14 +1,15 @@
 <launch>
-  <arg name="sim" default="false" />
   <arg name="debug" default="false" />
+  <arg name="use_arm" default="true" />
 
   <!-- Remap follow_joint_trajectory -->
-  <remap if="$(arg sim)" from="follow_joint_trajectory" to="r_arm_controller/follow_joint_trajectory"/>
+  <remap if="$(arg use_arm)" from="follow_joint_trajectory" to="r_arm_controller/follow_joint_trajectory"/>
 
   <!-- Launch moveit -->
   <include file="$(find v2mini_moveit_config)/launch/move_group.launch">
     <arg name="debug" default="$(arg debug)" />
     <arg name="publish_monitored_planning_scene" value="true" />
+    <arg name="fake_execution" value="true" unless="$(arg use_arm)" />
   </include>
 
 </launch>

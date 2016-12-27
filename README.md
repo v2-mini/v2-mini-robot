@@ -14,11 +14,7 @@ realsense camera drivers, sdl2, ? ----< TODO >----- what is the best way to inst
 
 ### Create a Workspace
 
-A catkin workspace is required to build and run v2mini's packages. This section describes how to setup the workspace for V2Mini or a dev machine.
-
-#### General Workspace Setup
-
-Create a catkin workspace:
+Create a catkin workspace for V2Mini or dev machine:
 ```
 $ mkdir -p ~/v2mini_ws/src
 ```
@@ -91,7 +87,7 @@ $ rosrun rosserial_arduino make_libraries.py .
 Usage Notes:
 
 - for platformio to work, you must open the v2mini_ws root directory in atom.
-- copy additional third-party arduino libraries into the /lib directory so that platformio can identify syntax.
+- copy additional third-party arduino libraries into the lib/ directory so that platformio can identify syntax.
 
 [Atom]:http://flight-manual.atom.io/getting-started/sections/installing-atom/#platform-linux
 
@@ -235,9 +231,9 @@ The following describes the controller buttons and the resulting actions:
 
 `a & d` - pan the robot head left or right.
 
-`e` - toggle robot emotions.
-
 `r & f` - move the torso up or down.
+
+`e` - toggle robot emotions.
 
 **logitec gamepad:**
 
@@ -247,9 +243,9 @@ The following describes the controller buttons and the resulting actions:
 
 `right-joystick` - tilt the robot head up or down, and pan left or right with varying speed.
 
-`B` - toggle robot emotions.
-
 `A & Y` - move the torso up or down.
+
+`B` - toggle robot emotions.
 
 #### Troubleshooting
 
