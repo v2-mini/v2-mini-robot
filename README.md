@@ -142,14 +142,17 @@ roslaunch v2mini_teleop teleop.launch control:=keyboard
 In addition to the `control` argument, there are a number of additional arguments that can be used:
 
 `control`
+
 - `keyboard` - control the robot using keyboard commands (default).
 - `gamepad` - control the robot using the logitec gamepad.
 
 `use_torso`
+
 - `false` - ignore the torso firmware node. Use this option when you wish to run the robot without the torso.
 - `true` - launch the firmware node for the torso (default). Note, if the torso arduino is not connected, it will result in an error.
 
 `use_base`
+
 - `false` - ignore the base firmware node. Use this option when you wish to run the robot without the base.
 - `true` - launch the firmware node for the base (default). Note, if the base arduino is not connected, it will result in an error.
 

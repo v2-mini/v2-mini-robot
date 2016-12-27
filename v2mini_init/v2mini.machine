@@ -1,19 +1,6 @@
 <launch>
 
-  <!-- <arg name="remote_teleop" default="false"/><!-- is the teleop node running on v2mini? -->
-  <arg name="v2mini_ip" default="127.0.0.1"/><!-- ip for v2mini's PC -->
-
-  <arg name="robot_user" default="v2-mini"/><!-- robot's machine username (for testing only) -->
-
   <machine name="remote" address="$(env ROS_IP)" user="$(env USER)" default="true"/>
-  <machine name="v2-mini" address="$(arg v2mini_ip)" user="v2-mini"/>
-
-  <!-- <group if="$(arg remote_teleop)">
-
-  </group>
-
-  <group unless="$(arg remote_teleop)">
-    <machine name="v2-mini" address="127.0.0.1" user="$(arg robot_user)" default="true"/>
-  </group> -->
+  <machine name="v2-mini" address="$(optenv V2MINI_IP 127.0.0.1)" user="v2-mini" env-loader="/home/v2-mini/v2mini_ws/devel/env.sh"/>
 
 </launch>

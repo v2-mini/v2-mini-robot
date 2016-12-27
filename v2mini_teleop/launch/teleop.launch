@@ -2,30 +2,17 @@
 
 <launch>
 
-  <!-- <arg name="remote_teleop" default="false"/> -->
-  <!-- is the teleop node running on v2mini? -->
-
   <arg name="controller" default="keyboard"/><!-- 'gamepad' or 'keyboard' -->
   <arg name="use_base" default="true"/><!-- launch base MCU node -->
   <arg name="use_torso" default="true"/><!-- launch torso MCU node -->
 
-  <!-- <arg name="robot_user" default="v2-mini"/> -->
-  <!-- robot's machine username (for testing only) -->
-
-  <include file="$(find v2mini_init)/v2mini.machine">
-    <!-- <arg name="remote_teleop" value="$(arg remote_teleop)"/> -->
-    <!-- <arg name="robot_user" value="$(arg robot_user)"/> -->
-
-  </include>
+  <include file="$(find v2mini_init)/v2mini.machine"/>
 
   <!-- Launch the MCU nodes -->
   <include file="$(find v2mini_init)/launch/devices.launch">
     <arg name="use_base" value="$(arg use_base)"/>
     <arg name="use_torso" value="$(arg use_torso)"/>
   </include>
-
-  <!-- <arg name="control_machine" if="$(arg remote_teleop)" value="remote"/>
-  <arg name="control_machine" unless="$(arg remote_teleop)" value="v2-mini"/> -->
 
   <!-- Launch the controller node -->
   <node name="controller" machine="remote" pkg="v2mini_teleop" type="teleop" respawn="false" >
