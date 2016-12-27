@@ -1,6 +1,6 @@
 # v2mini_robot
 
-ROS stack for the V2Mini robot...
+This repository is a ROS stack for the V2Mini robot.
 
 ## 1. Setup
 
@@ -10,15 +10,17 @@ Install [ROS Indigo][ros-inst] on Ubuntu.
 
 ### Setting up the Environment
 
-The steps in this section are required for setting up V2Mini's PC, or any PC that's used to directly interface with external hardware.
+The steps in this section should be completed once for new machines.
 
 #### Install udev Rules
+
+The udev rules are only required for V2Mini's PC, or any PC that aims to directly connect to external hardware such as arduinos or dynamixels. In addition, due to the similarity of devices, rules use the `serial` attribute and are therefore hardware specific (ie. the rules need to be adjusted for each new device).  
 
 asdfasdf ----------->  ----< TODO >-----
 
 #### Install Apt Packages
 
-install SDL2 .. what else????  ----< TODO >----- realsense camera drivers
+realsense camera drivers, sdl2, ? ----< TODO >-----
 
 ### Creating a Workspace
 
@@ -28,22 +30,27 @@ A catkin workspace is required to build and run v2mini's packages. This section 
 
 Create a catkin workspace:
 ```
-$ mkdir -p ~/v2mini_ws/src && cd v2mini_ws/src
+$ mkdir -p ~/v2mini_ws/src
 ```
+
 Initialize the workspace:
 ```
+$ cd ~/v2mini_ws/src
 $ catkin_init_workspace
 ```
-Fork the `v2mini_robot` repository (dev only)
 
-Clone the forked repository:
+Fork the `v2mini_robot` repository (dev only).
+
+Then clone the forked repository:
 ```
 $ git clone <forked v2mini_robot>
 ```
+
 Build the packages:
 ```
 $ cd .. && catkin_make
 ```
+
 Install package dependencies:
 ```
 ------------TODO
@@ -61,16 +68,24 @@ The packages in this repository were developed with eclipse and atom.
 
 The platformio package for atom provide a linter while developing arduino firmware. This is much better than the arduino IDE because you'll have syntax feedback. The following is a list of steps for setup:   
 
-1. Install the [atom][Atom] editor
-2. Install the [Platformio][plat] package.
-3. Create the config file: </br>
-    `$ cd ~/v2mini_ws` </br>
-    `$ touch platformio.ini` </br>
-4. Install the 'ros_lib' package into the /lib directory: </br>
-    `$ mkdir lib && cd lib` </br>
-    `$ rosrun rosserial_arduino make_libraries.py .` </br>
+Install the [atom][Atom] editor.
+
+Install the [Platformio][plat] package.
+
+Create the config file:
+```
+$ cd ~/v2mini_ws
+$ touch platformio.ini
+```
+
+Install the 'ros_lib' package into the lib/ directory:
+```
+$ mkdir lib && cd lib
+$ rosrun rosserial_arduino make_libraries.py .
+```
 
 Usage Notes:
+
 - for platformio to work, you must open the v2mini_ws root directory in atom.
 - copy additional third-party arduino libraries into the /lib directory so that platformio can identify syntax.
 
@@ -82,9 +97,11 @@ Usage Notes:
 
 Eclipse is useful when developing nodes in c++. The following is a list of steps to get it working with ROS:
 
-1. follow this tutorial to install [eclipse][ecli] on ubuntu.
-2. run these [catkin elipse commands][ros-ecli] in section '2.2 Catkin-y approach' to enable ROS syntax in eclipse.
-3. open eclipse and import the `v2mini_ws/build/` directory as a general existing project.
+Install [eclipse][ecli] on ubuntu.
+
+Run these [catkin elipse commands][ros-ecli] in section '2.2 Catkin-y approach' to enable ROS syntax in eclipse.
+
+Open eclipse and import the `v2mini_ws/build/` directory as `General Project -> Existing Project`
 
 You should now be able to edit the packages under `[Source directory]` in the eclipse editor.
 
@@ -94,12 +111,11 @@ You should now be able to edit the packages under `[Source directory]` in the ec
 
 ## 2. Instructions on Use
 
-All steps must be performed from workspace (ie. `$ cd ~/v2mini_ws` before running commands).
+All steps listed in this section must be performed from within a workspace (ie. `$ cd ~/v2mini_ws` before running commands).
 
 ### Build the Workspace
 
 Build the workspace after making changes to the source:
-
 ```
 $ catkin_make
 ```
@@ -127,9 +143,9 @@ $ source devel/setup.bash
 
 ### Teleoping V2Mini
 
-There are two methods of "teleoping" the V2Mini robot. The first method is to have the input device directly connected to the V2Mini; the other is to run the controller nodes on a remote ROS machine.
+There are two methods of "teleoping" the V2Mini robot. The first method is to have input device directly connected to the V2Mini, and the other is to run the controller nodes on a remote ROS machine.
 
-SDL2 is the c++ library used to collect events from input devices. When teleop is launched, a small white control window will appear. This window must be focused for inputs to be collected.
+SDL2 is the c++ library used to collect event data from input devices. When teleop is launched, a small white control window will appear. This window must be focused for inputs to be collected.
 
 #### Launching Teleop
 
@@ -178,9 +194,9 @@ Note, controllers such as the keyboard and gamepad must be directly attached to 
 
 #### Controlling from a Remote ROS Machine
 
-Using a secondary linux machine with ROS, SDL2, and the v2mini_robot package installed allows for real teleop. That means the V2Mini can be controlled via wifi from any location.
+Using a secondary linux machine with ROS, SDL2, and the v2mini_robot package installed allows for true teleop. This means that V2Mini can be controlled via wifi from any location.
 
-The setup for an additional control machine is the same as the V2Mini. Just follow the setup provided above.  
+The setup for an additional control machine is the same for V2Mini. Just follow the setup provided above.  
 
 **remote launch:**
 
@@ -188,10 +204,12 @@ Check that the required environment variables are set:
 ```
 $ env | grep ROS
 ```
+
 If `ROS_IP` is missing, find the IP using `$ ifconfig` and set the variable:
 ```
 $ export ROS_IP=<your-ip>
 ```
+
 Use the same method to set `V2MINI_ROS_IP`. Note, it is necessary to export environment variables each time a new terminal is opened.
 
 Now, launch teleop with the `remote` argument set to true:
@@ -201,13 +219,33 @@ roslaunch v2mini_teleop teleop.launch remote:=true
 
 #### Controller Key-Bindings
 
-**Keyboard**
+The following describes the controller buttons and the resulting actions:
 
-asdf
+**keyboard controller:**
 
-**Logitec Gamepad:**
+`arrows` - move the robot base forward, backward, left, right, or at a 45 degree angle.
 
-asdf
+`z & x` - rotate the robot base clockwise or counter-clockwise.
+
+`w & s` - tilt the robot head up or down.
+
+`a & d` - pan the robot head left or right.
+
+`e` - toggle robot emotions.
+
+`r & f` - move the torso up or down.
+
+**logitec gamepad:**
+
+`left-joystick` - move the robot base at any angle with varying speed.
+
+`bottom-triggers` - rotate the robot base clockwise or counter-clockwise with varying speed.
+
+`right-joystick` - tilt the robot head up or down, and pan left or right with varying speed.
+
+`B` - toggle robot emotions.
+
+`A & Y` - move the torso up or down.
 
 #### Troubleshooting
 
@@ -222,24 +260,25 @@ To get a full list of available topics:
 $ rostopic list
 ```
 
-Then, check the commands being published to the torso:
+Then, check torso commands are being published:
 ```
 $ rostopic echo /torso/torso_cmds
 ```
 
-And, check the commands being published to the torso:
+And, check base commands are being published:
 ```
 $ rostopic echo /base/base_cmds
 ```
 
 You should expect to see a lot of incoming data, and a value appear when buttons are pressed.
 
-**check arduino firmware**
+**check arduino firmware:**
 
 First check that the arduino nodes are running:
 ```
 rosnode list
 ```
+
 If `torsoware` and `baseware` nodes are listed, they are running.
 
-After checking that the data is published and the arduino nodes are up, it's possible that there's an error in the firmware. Debugging the firmware can get quite involved, but to aid you there are commented-out debugger publishers in each.
+After checking that the data is published and the arduino nodes are up, it's possible that there's an error in the firmware. Debugging the firmware can get quite involved, but to aid you there are commented-out debugger publishers in each. Just publish the data you wish to confirm, and check it using the described method.
