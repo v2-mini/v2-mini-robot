@@ -28,7 +28,7 @@
   <arg name="control_machine" unless="$(arg remote_teleop)" value="v2-mini"/> -->
 
   <!-- Launch the controller node -->
-  <node name="controller" machine="$(env USER)" pkg="v2mini_teleop" type="teleop" respawn="false" >
+  <node name="controller" machine="remote" pkg="v2mini_teleop" type="teleop" respawn="false" >
     <remap from="torso_cmds" to="torso/torso_cmds"/>
     <remap from="base_cmds" to="base/base_cmds"/>
     <param name="controller" value="$(arg controller)"/>
