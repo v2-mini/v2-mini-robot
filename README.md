@@ -8,7 +8,11 @@ Install [ROS Indigo][ros-inst] on Ubuntu.
 
 [ros-inst]:http://wiki.ros.org/indigo/Installation/Ubuntu
 
-### Creating a Workspace
+### Install Binaries
+
+realsense camera drivers, sdl2, ? ----< TODO >----- what is the best way to install all binaries in one go?
+
+### Create a Workspace
 
 A catkin workspace is required to build and run v2mini's packages. This section describes how to setup the workspace for V2Mini or a dev machine.
 
@@ -37,16 +41,12 @@ Build the packages:
 $ cd .. && catkin_make
 ```
 
-Install package dependencies:
+Install v2mini_robot ROS dependencies:
 ```
 ------------TODO .. best way to install all ros dependenies for all v2mini packages?
 ```
 
-### Setting up the Environment
-
-The steps in this section should be completed for all new machines.
-
-#### Install udev Rules
+### Install udev Rules
 
 The udev rules are only required for V2Mini's PC, or any PC that aims to directly connect to external hardware such as arduinos or dynamixels. In addition, due to the similarity of devices, rules use the `serial` attribute and are therefore hardware specific (ie. the rules need to be adjusted for each new device).  
 
@@ -63,10 +63,6 @@ The serial number can be found using (select value closest to the top):
 ```
 $ lsusb -v | grep iSerial
 ```
-
-#### Install Apt Packages
-
-realsense camera drivers, sdl2, ? ----< TODO >----- what is the best way to install all binaries in one go?
 
 ### Editors & IDEs
 
