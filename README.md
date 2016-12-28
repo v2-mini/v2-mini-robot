@@ -8,9 +8,16 @@ Install [ROS Indigo][ros-inst] on Ubuntu.
 
 [ros-inst]:http://wiki.ros.org/indigo/Installation/Ubuntu
 
-### Install Binaries
+### Install Dependencies
 
-realsense camera drivers, sdl2, ? ----< TODO >----- what is the best way to install all binaries in one go?
+Install [intel realsense][r200] camera drivers and ROS packages.
+
+Install the following Apt packages:
+```
+$ sudo apt-get install libsdl2-images-dev libsdl2-dev
+```
+
+[r200]:http://wiki.ros.org/RealSense
 
 ### Create a Workspace
 
@@ -39,7 +46,8 @@ $ cd .. && catkin_make
 
 Install v2mini_robot ROS dependencies:
 ```
-------------TODO .. best way to install all ros dependenies for all v2mini packages?
+source devel/setup.bash
+rosdep install -a
 ```
 
 ### Install udev Rules
@@ -191,6 +199,11 @@ In addition to the `control` argument, there are a number of additional argument
 - `false` - ignore the base firmware node. Use this option when you wish to run the robot without the base.
 - `true` - launch the firmware node for the base (default). Note, if the base arduino is not connected, it will result in an error.
 
+`use_arm`
+
+- `false` - ignore dynamixels for arm. Use this option when you wish to run the robot without the arm.
+- `true` - launch moveit and dynamixel manager for the arm (default). Note, if the arm is not connected, it will result in an error.
+
 **environment variables:**
 
 `ROS_IP` - the ip address for the machine. This is required for all machines. </br>
@@ -306,3 +319,11 @@ $ rosnode list
 If `torsoware` and `baseware` nodes are listed, they are running.
 
 After checking that the data is published and the arduino nodes are up, it's possible that there's an error in the firmware. Debugging the firmware can get quite involved, but to aid you there are commented-out debugger publishers in each. Just publish the data you wish to confirm, and check it using the described method.
+
+### Controlling V2Mini's Arm with Moveit!
+
+ ----< TODO >-----
+
+## Additional Resources
+
+----< TODO >-----
