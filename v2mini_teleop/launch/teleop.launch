@@ -19,8 +19,8 @@
       <arg name="use_torso" value="$(arg use_torso)"/>
    </include>
 
-   <arg name="control_machine" if="remote" value="remote"/>
-   <arg name="control_machine" unless="remote" value="v2-mini"/>
+   <arg name="control_machine" if="$(arg remote)" value="remote"/>
+   <arg name="control_machine" unless="$(arg remote)" value="v2-mini"/>
 
    <!-- Launch the controller node -->
    <node name="controller" machine="$(arg control_machine)" pkg="v2mini_teleop" type="teleop" respawn="false" >
@@ -30,10 +30,9 @@
    </node>
 
    <!-- Launch the realsense r200 camera -->
-   
 
    <!-- Launch moveit for arm control and rviz urdf -->
-   <include file="$(find v2mini_moveit_config)/v2mini_moveit_controller.launch">
+   <include file="$(find v2mini_moveit_config)/launch/v2mini_moveit_controller.launch">
       <arg name="use_arm" value="$(arg use_arm)"/>
    </include>
 

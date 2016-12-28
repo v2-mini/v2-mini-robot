@@ -5,8 +5,8 @@
 
 namespace v2mini_teleop {
 
-const int SCREEN_WIDTH = 180;
-const int SCREEN_HEIGHT = 180;
+const int SCREEN_WIDTH = 280;
+const int SCREEN_HEIGHT = 200;
 
 const int MAX_BASE_RADIAL_VEL = 30;		// cm/s
 const int MAX_BASE_ANGULAR_VEL = 80;	// deg/s
