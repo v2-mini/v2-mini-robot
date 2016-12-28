@@ -1,21 +1,6 @@
 <launch>
 
-   <arg name="remote" default="false"/>
-
-   <!-- run core on remote machine -->
-   <!-- <group if="$(arg remote)">
-      <machine name="remote" address="$(env ROS_IP)" user="$(env USER)" default="true"/>
-      <machine name="v2-mini" address="$(optenv V2MINI_ROS_IP 127.0.0.1)" user="v2-mini" env-loader="/home/v2-mini/v2mini_ws/devel/env.sh"/>
-   </group> -->
-
-   <group if="$(arg remote)">
-      <machine name="remote" address="$(env ROS_IP)" user="$(env USER)" env-loader="/home/v2-mini/v2mini_ws/devel/env.sh"/>
-      <machine name="v2-mini" address="$(optenv V2MINI_ROS_IP 127.0.0.1)" user="v2-mini" default="true" />
-   </group>
-
-   <!-- run core on localhost when only using v2mini -->
-   <group unless="$(arg remote)">
-      <machine name="v2-mini" address="127.0.0.1" user="v2-mini" default="true"/>
-   </group>
+   <machine name="remote" address="$(env ROS_IP)" user="$(env USER)" env-loader="/home/$(env USER)/v2mini_ws/devel/env.sh"/>
+   <machine name="v2-mini" address="$(optenv V2MINI_ROS_IP 127.0.0.1)" user="v2-mini" default="true" />
 
 </launch>

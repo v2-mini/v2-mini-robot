@@ -7,14 +7,14 @@
 
     <!-- launch arduino mega node (robot base) -->
     <group if="$(arg use_base)"  ns="base">
-      <node name="baseware" machine="v2-mini" pkg="rosserial_python" type="serial_node.py" respawn="true">
+      <node name="baseware" pkg="rosserial_python" type="serial_node.py" respawn="true">
         <param name="port" value="/dev/arduino_mega_base"/>
       </node>
     </group>
 
     <!-- launch arduino mega node (robot torso/face) -->
     <group if="$(arg use_torso)" ns="torso">
-      <node name="torsoware" machine="v2-mini" pkg="rosserial_python" type="serial_node.py" respawn="true">
+      <node name="torsoware" pkg="rosserial_python" type="serial_node.py" respawn="true">
         <param name="port" value="/dev/arduino_mega_head"/>
       </node>
     </group>

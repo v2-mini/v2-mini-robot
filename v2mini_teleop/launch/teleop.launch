@@ -2,16 +2,13 @@
 
 <launch>
 
-   <arg name="remote" default="false"/><!-- control directly from v2mini when false -->
    <arg name="controller" default="keyboard"/><!-- 'gamepad' or 'keyboard' -->
    <arg name="use_base" default="true"/><!-- launch base MCU node -->
    <arg name="use_torso" default="true"/><!-- launch torso MCU node -->
    <arg name="use_arm" default="true"/><!-- launch arm dynamixels -->
    <arg name="use_camera" default="true"/><!-- launch r200 camera -->
 
-   <include file="$(find v2mini_init)/v2mini.machine">
-      <arg name="remote" value="$(arg remote)"/>
-   </include>
+   <include file="$(find v2mini_init)/v2mini.machine"/>
 
    <!-- Launch the MCU nodes -->
    <include file="$(find v2mini_init)/launch/devices.launch">
@@ -19,18 +16,15 @@
       <arg name="use_torso" value="$(arg use_torso)"/>
    </include>
 
-   <arg name="control_machine" if="$(arg remote)" value="remote"/>
-   <arg name="control_machine" unless="$(arg remote)" value="v2-mini"/>
-
    <!-- Launch the controller node -->
-   <node name="controller" machine="$(arg control_machine)" pkg="v2mini_teleop" type="teleop" respawn="false" >
+   <node name="controller" machine="remote" pkg="v2mini_teleop" type="teleop" respawn="false" >
       <remap from="torso_cmds" to="torso/torso_cmds"/>
       <remap from="base_cmds" to="base/base_cmds"/>
       <param name="controller" value="$(arg controller)"/>
    </node>
 
    <!-- Launch the realsense r200 camera -->
-   <!-- <include file="$(find realsense_camera)/launch/r200_nodelet_rgbd.launch"/> -->
+   <include file="$(find realsense_camera)/launch/r200_nodelet_rgbd.launch"/>
 
    <!-- Launch moveit for arm control and rviz urdf -->
    <!-- <include file="$(find v2mini_moveit_config)/launch/v2mini_moveit_controller.launch">
