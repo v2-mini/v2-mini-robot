@@ -20,7 +20,7 @@
   </include>
 
   <include file="$(find v2mini_moveit_config)/launch/moveit_rviz.launch">
-    <arg name="config" value="false"/>
+    <arg name="config" value="true"/>
   </include>
 
 </launch>

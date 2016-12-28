@@ -109,6 +109,20 @@ You should now be able to edit the packages under `[Source directory]` in the ec
 
 [ros-ecli]: http://wiki.ros.org/IDEs
 
+### Additional Setup
+
+To automatically set `ROS_IP` for all bash terminals, run the following command once:
+```
+$ echo 'export ROS_IP=$( ifconfig | fgrep -v 127.0.0.1 | egrep -o 'addr:[0-9.]+' | sed 's/^addr://' )' >> ~/.bashrc
+```
+
+To automatically set `ROS_MASTER_URI` for all bash terminals, run the following command once:
+```
+echo 'export ROS_MASTER_URI="http://${ROS_IP}:11311"' >> ~/.bashrc
+```
+
+Note, the `ROS_IP` must be appended to .bashrc before `ROS_MASTER_URI` or this will not work.
+
 ## 2. Instructions on Use
 
 All steps listed in this section must be performed from within a workspace (ie. `$ cd ~/v2mini_ws` before running commands).
@@ -180,6 +194,7 @@ In addition to the `control` argument, there are a number of additional argument
 **environment variables:**
 
 `ROS_IP` - the ip address for the machine. This is required for all machines. </br>
+`ROS_MASTER_URI` - this only needs to be set on the remote ROS machine to teleop. </br>
 `V2MINI_ROS_IP` - the ip address for V2Mini's machine. This only needs to be set when teleoping from a remote ROS machine. </br>
 
 #### Direct Control
@@ -205,12 +220,16 @@ Check that the required environment variables are set:
 $ env | grep ROS
 ```
 
-If `ROS_IP` is missing, find the IP using `$ ifconfig` and set the variable:
+If any of the environment variables are missing on the remote machine, you must set them before launching:  
 ```
 $ export ROS_IP=<your-ip>
+$ export V2MINI_ROS_IP=<v2minis-ip>
+$ export ROS_MASTER_URI="http://${ROS_IP}:11311"
 ```
 
-Use the same method to set `V2MINI_ROS_IP`. Note, it is necessary to export environment variables each time a new terminal is opened.
+(The IP for each machine can be found using `$ ifconfig`)
+
+Note, it is necessary to export environment variables each time a new terminal is opened.
 
 Now, launch teleop with the `remote` argument set to true:
 ```
@@ -249,7 +268,12 @@ The following describes the controller buttons and the resulting actions:
 
 #### Troubleshooting
 
-Assuming teleop launches successfully with no errors, the following steps can be used to isolate malfunctioning components:
+If you get this error when launching from a remote ROS machine (`123.123.21.21 is not in your SSH known_hosts file`), then you must either add the hostname/ip to `known_hosts` file,  or set the following environment variable:
+```
+$ export ROSLAUNCH_SSH_UNKNOWN=1
+```
+
+After teleop launches successfully with no errors, the following steps can be used to isolate malfunctioning components:
 
 **check input collection:**
 
@@ -276,7 +300,7 @@ You should expect to see a lot of incoming data, and a value appear when buttons
 
 First check that the arduino nodes are running:
 ```
-rosnode list
+$ rosnode list
 ```
 
 If `torsoware` and `baseware` nodes are listed, they are running.
