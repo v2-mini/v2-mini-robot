@@ -6,6 +6,7 @@
    <arg name="use_base" default="true"/><!-- launch base MCU node -->
    <arg name="use_torso" default="true"/><!-- launch torso MCU node -->
    <arg name="use_arm" default="true"/><!-- launch arm dynamixels -->
+   <arg name="use_rviz" default="true"/><!-- launch rviz -->
    <arg name="use_camera" default="true"/><!-- launch r200 camera -->
 
    <include file="$(find v2mini_init)/v2mini.machine"/>
@@ -24,12 +25,10 @@
    </node>
 
    <!-- Launch the realsense r200 camera -->
-   <include file="$(find realsense_camera)/launch/r200_nodelet_rgbd.launch">
-      <arg name="publish_tf" value="true"/>
-   </include>
+   <include file="$(find realsense_camera)/launch/r200_nodelet_rgbd.launch"/>
 
    <!-- Launch moveit for arm control and rviz urdf -->
-   <include file="$(find v2mini_moveit_config)/launch/v2mini_moveit_controller.launch">
+   <include if="$(arg use_rviz)" file="$(find v2mini_moveit_config)/launch/v2mini_moveit_controller.launch">
       <arg name="use_arm" value="$(arg use_arm)"/>
    </include>
 

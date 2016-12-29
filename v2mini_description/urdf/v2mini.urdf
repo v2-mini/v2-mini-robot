@@ -34,13 +34,13 @@
   <!-- r200 sensor -->
   <!-- THE CAMERA FRAME VALUES BELOW MAY BE INACCURATE -->
   <!-- join the body with arm -->
-  <joint name="body_with_arm" type="fixed">
+  <joint name="shoulder" type="fixed">
     <parent link="torso_link"/>
     <child link="arm_link1"/>
     <origin xyz="0 0 0"/>
   </joint>
   <!-- join the body with head -->
-  <joint name="body_with_head" type="revolute">
+  <joint name="neckpan" type="revolute">
     <parent link="torso_link"/>
     <child link="neck_link"/>
     <axis xyz="0 0 1"/>

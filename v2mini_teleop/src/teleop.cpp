@@ -100,9 +100,9 @@ int main(int argc, char ** argv)
 		joint_state.header.stamp = ros::Time::now();
 		joint_state.name.resize(2);
 		joint_state.position.resize(2);
-		joint_state.name[0] ="body_with_head";
+		joint_state.name[0] ="neckpan";
 		joint_state.position[0] = 0;
-		joint_state.name[1] ="body_with_arm";
+		joint_state.name[1] ="shoulder";
 		joint_state.position[1] = 0;
 
 		// update transform --> INCOMPLETE
