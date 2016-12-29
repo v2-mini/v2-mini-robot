@@ -30,6 +30,9 @@
   <!-- v2mini head -->
   <include filename="$(find v2mini_description)/urdf/v2mini_head.urdf.xacro" />
 
+  <!-- r200 sensor -->
+  <include filename="$(find v2mini_description)/urdf/r200.urdf.xacro" />
+
   <!-- join the body with arm -->
   <joint name="body_with_arm" type="fixed">
     <parent link="torso_link"/>
@@ -49,5 +52,6 @@
   <xacro:body/>
   <xacro:arm/>
   <xacro:head/>
+  <xacro:sensor_r200 parent="head_link"/>
 
 </robot>

@@ -31,6 +31,8 @@
   <!-- v2mini arm -->
   <!-- macro for the rest of the links -->
   <!-- v2mini head -->
+  <!-- r200 sensor -->
+  <!-- THE CAMERA FRAME VALUES BELOW MAY BE INACCURATE -->
   <!-- join the body with arm -->
   <joint name="body_with_arm" type="fixed">
     <parent link="torso_link"/>
@@ -44,6 +46,11 @@
     <axis xyz="0 0 1"/>
     <origin xyz="0 0 0"/>
     <limit effort="10" lower="-2.9" upper="2.9" velocity="10"/>
+  </joint>
+  <joint name="camera_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 -0.0668 0.0877"/>
+    <parent link="head_link"/>
+    <child link="camera_link"/>
   </joint>
   <!-- **** BASE **** -->
   <link name="base_link">
@@ -158,6 +165,12 @@
       </geometry>
       <material name="black"/>
     </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://v2mini_description/meshes/arm/arm_link1.stl"/>
+      </geometry>
+    </collision>
   </link>
   <!-- first additional joint at offset -->
   <link name="arm_link2">
@@ -168,6 +181,12 @@
       </geometry>
       <material name="grey"/>
     </visual>
+    <collision>
+      <origin rpy="0 3.14159 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://v2mini_description/meshes/arm/arm_link2.stl"/>
+      </geometry>
+    </collision>
   </link>
   <joint name="arm_joint1" type="revolute">
     <parent link="arm_link1"/>
@@ -183,6 +202,12 @@
       </geometry>
       <material name="black"/>
     </visual>
+    <collision>
+      <origin rpy="0 -1.570795  -1.570795" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://v2mini_description/meshes/arm/arm_link3.stl"/>
+      </geometry>
+    </collision>
   </link>
   <joint name="arm_joint2" type="revolute">
     <parent link="arm_link2"/>
@@ -199,6 +224,12 @@
       </geometry>
       <material name="grey"/>
     </visual>
+    <collision>
+      <origin rpy="1.570795 3.14159  0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://v2mini_description/meshes/arm/arm_link4.stl"/>
+      </geometry>
+    </collision>
   </link>
   <joint name="arm_joint3" type="revolute">
     <parent link="arm_link3"/>
@@ -215,6 +246,12 @@
       </geometry>
       <material name="black"/>
     </visual>
+    <collision>
+      <origin rpy="-1.570795 0 -1.570795" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://v2mini_description/meshes/arm/arm_link5.stl"/>
+      </geometry>
+    </collision>
   </link>
   <joint name="arm_joint4" type="revolute">
     <parent link="arm_link4"/>
@@ -231,6 +268,12 @@
       </geometry>
       <material name="red"/>
     </visual>
+    <collision>
+      <origin rpy="1.570795 1.570795 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://v2mini_description/meshes/arm/arm_link6.stl"/>
+      </geometry>
+    </collision>
   </link>
   <joint name="arm_joint5" type="revolute">
     <parent link="arm_link5"/>
@@ -277,6 +320,63 @@
     <axis xyz="1 0 0"/>
     <origin xyz="0 0 0.495215"/>
     <limit effort="1000.0" lower="0.3" upper="-0.5" velocity="0.1"/>
+  </joint>
+  <link name="camera_link">
+    <visual>
+      <origin rpy="1.570795 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.102 0.0095 0.0038"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+  </link>
+  <link name="camera_rgb_frame"/>
+  <link name="camera_rgb_optical_frame"/>
+  <link name="camera_depth_optical_frame"/>
+  <link name="camera_depth_frame"/>
+  <link name="camera_ir_optical_frame"/>
+  <link name="camera_ir_frame"/>
+  <link name="camera_ir2_optical_frame"/>
+  <link name="camera_ir2_frame"/>
+  <joint name="camera_rgb_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <parent link="camera_link"/>
+    <child link="camera_rgb_frame"/>
+  </joint>
+  <joint name="camera_rgb_optical_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <parent link="camera_rgb_frame"/>
+    <child link="camera_rgb_optical_frame"/>
+  </joint>
+  <joint name="camera_depth_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <parent link="camera_rgb_frame"/>
+    <child link="camera_depth_frame"/>
+  </joint>
+  <joint name="camera_depth_optical_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <parent link="camera_depth_frame"/>
+    <child link="camera_depth_optical_frame"/>
+  </joint>
+  <joint name="camera_ir_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <parent link="camera_rgb_frame"/>
+    <child link="camera_ir_frame"/>
+  </joint>
+  <joint name="camera_ir_optical_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <parent link="camera_ir_frame"/>
+    <child link="camera_ir_optical_frame"/>
+  </joint>
+  <joint name="camera_ir2_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <parent link="camera_rgb_frame"/>
+    <child link="camera_ir2_frame"/>
+  </joint>
+  <joint name="camera_ir2_optical_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <parent link="camera_ir2_frame"/>
+    <child link="camera_ir2_optical_frame"/>
   </joint>
 </robot>
 

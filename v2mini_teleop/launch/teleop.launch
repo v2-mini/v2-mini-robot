@@ -24,7 +24,9 @@
    </node>
 
    <!-- Launch the realsense r200 camera -->
-   <include file="$(find realsense_camera)/launch/r200_nodelet_rgbd.launch"/>
+   <include file="$(find realsense_camera)/launch/r200_nodelet_rgbd.launch">
+      <arg name="publish_tf" value="true"/>
+   </include>
 
    <!-- Launch moveit for arm control and rviz urdf -->
    <include file="$(find v2mini_moveit_config)/launch/v2mini_moveit_controller.launch">
