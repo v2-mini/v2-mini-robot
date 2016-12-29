@@ -1,5 +1,5 @@
-joints: ['arm_joint1', 'arm_joint2', 'arm_joint3', 'arm_joint4', 'arm_joint5', 'body_with_head']
-joints_controllers: ['arm_joint1_controller', 'arm_joint2_controller', 'arm_joint3_controller', 'arm_joint4_controller', 'arm_joint5_controller', 'headpan_controller']
+joints: ['arm_joint1', 'arm_joint2', 'arm_joint3', 'arm_joint4', 'arm_joint5']
+joints_controllers: ['arm_joint1_controller', 'arm_joint2_controller', 'arm_joint3_controller', 'arm_joint4_controller', 'arm_joint5_controller']
 
 arm_joint1_controller:
     controller:
@@ -62,19 +62,6 @@ arm_joint5_controller:
     joint_speed: 0.5
     motor:
         id: 5
-        init: 512
-        min: 0
-        max: 1023
-
-headpan_controller:
-    controller:
-        package: dynamixel_controllers
-        module: joint_position_controller
-        type: JointPositionController
-    joint_name: body_with_head
-    joint_speed: 0.5
-    motor:
-        id: 6
         init: 512
         min: 0
         max: 1023

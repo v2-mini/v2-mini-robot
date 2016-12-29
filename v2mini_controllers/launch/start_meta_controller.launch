@@ -9,7 +9,6 @@
               arm_joint3_controller
               arm_joint4_controller
               arm_joint5_controller
-
               "
         output="screen"/>
 
@@ -26,7 +25,6 @@
               arm_joint3_controller
               arm_joint4_controller
               arm_joint5_controller
-              
               "
               output="screen"/>
 </launch>
