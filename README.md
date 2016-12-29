@@ -184,11 +184,6 @@ In addition to the `control` argument, there are a number of additional argument
 - `keyboard` - control the robot using keyboard commands (default).
 - `gamepad` - control the robot using the logitec gamepad.
 
-`remote`
-
-- `true` - teleop V2Mini from a remote ROS PC.
-- `false` - teleop V2Mini directly using a monitor or TeamViewer for feedback (default).
-
 `use_torso`
 
 - `false` - ignore the torso firmware node. Use this option when you wish to run the robot without the torso.
@@ -242,12 +237,7 @@ $ export ROS_MASTER_URI="http://${ROS_IP}:11311"
 
 (The IP for each machine can be found using `$ ifconfig`)
 
-Note, it is necessary to export environment variables each time a new terminal is opened.
-
-Now, launch teleop with the `remote` argument set to true:
-```
-roslaunch v2mini_teleop teleop.launch remote:=true
-```
+Note, it's necessary to export environment variables each time a new terminal is opened.
 
 #### Controller Key-Bindings
 
