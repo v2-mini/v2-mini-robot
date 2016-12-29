@@ -56,6 +56,7 @@ int currentAct = 0;
 // face vars
 int lastread;
 int face_input = 0;
+int face_input_button = 0;
 int expression = 0;
 Servo face_servos[TOTAL_FACE_SERVOS];
 
@@ -200,7 +201,7 @@ void setFacialExpression(int exp)
 
 void toggleFace()
 {
-  if(face_input != 0)
+  if(face_input != 0 || face_input_button != 0)
   {
     if(!lastread)
     {
@@ -230,7 +231,7 @@ void readButtons()
     button_active[i]= !button_vals[i] && button_last_vals[i];
   }
 
-  face_input = button_active[6];
+  face_input_button = button_active[6];
   setTorsoServo(button_vals[5]-button_vals[4]);
   currentAct += button_active[3]-button_active[2];
 
@@ -296,6 +297,7 @@ void loop()
     moveTorso();
     prev_time = millis();
   }
+  
   readButtons();
 
   toggleFace();
