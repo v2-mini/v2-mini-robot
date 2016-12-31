@@ -2,6 +2,7 @@
 #include <Servo.h>
 #include <ros.h>
 #include "AFMotor.h"
+#include "XL320.h"
 #include "geometry_msgs/Twist.h"
 
 ros::NodeHandle nh;
@@ -22,7 +23,6 @@ const int EXPRESSION_SET[][8] =  {{100,90,80,90,80,0,50,50},     //neutral
 const int LINACT_APIN[] = {10,0,12,11};
 const int LINACT_MAX[] = {800,800,800,800};
 const int LINACT_MIN[] = {200,200,200,200};
-
 
 const int TORSO_MAXV = 5; // deg/s
 const int TORSO_PIN = 53;
@@ -49,6 +49,11 @@ AF_DCMotor rh_motor(4);
 
 AF_DCMotor linacts[] = {wrist_motor,tilt_motor,lh_motor,rh_motor};
 
+XL320 headpan;
+int headpanID = 6;
+int headpan_input = 0;
+int headpanPosition = 0;
+
 int linact_inputs[] = {0,0,0,0};
 int prev_linact_pos[] = {512,512,300,300};
 int currentAct = 0;
@@ -65,6 +70,7 @@ void motion_cb(const geometry_msgs::Twist& motion_cmds)
  face_input = motion_cmds.linear.x;
  torso_input = motion_cmds.linear.y;
  linact_inputs[1] = motion_cmds.linear.z;
+ headpan_input = motion_cmds.angular.x;
 }
 
 // Subscribe to ROS topic "/torso_cmds"
@@ -102,7 +108,6 @@ void linAct(int actuator_num)
   //   debug_msg.linear.y = actual_pos;
   //   debug_msg.linear.z = actuator_num;
   // }
-
 
   // todo --> replace with PID
   linact_vel = min(max(pos_error * 2, 16), 255);
@@ -249,6 +254,12 @@ void readButtons()
 
 }
 
+void panHead()
+{
+  // TODO convert headpan_input degs to 8 bit headpanPosition
+  headpan.moveJoint(headpanID, random(0, headpan_input));
+}
+
 void setup()
 {
   // init pin modes
@@ -287,6 +298,11 @@ void setup()
  nh.subscribe(sub_motion);
  // nh.advertise(torso_debugger); // comment out when not debugging
 
+ // init headpan
+ Serial1.begin(1000000);
+ headpan.begin(Serial1);
+ headpan.setJointSpeed(headpanID, 500);
+
 }
 
 void loop()
@@ -297,10 +313,12 @@ void loop()
     moveTorso();
     prev_time = millis();
   }
-  
+
   readButtons();
 
   toggleFace();
+
+  panHead();
 
   linAct(0);
   linAct(1);
