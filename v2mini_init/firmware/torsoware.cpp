@@ -49,7 +49,6 @@ AF_DCMotor rh_motor(4);
 
 AF_DCMotor linacts[] = {wrist_motor,tilt_motor,lh_motor,rh_motor};
 
-XL320 headpan;
 int headpanID = 6;
 int headpan_input = 0;
 int headpanPosition = 0;
@@ -256,8 +255,7 @@ void readButtons()
 
 void panHead()
 {
-  // TODO convert headpan_input degs to 8 bit headpanPosition
-  headpan.moveJoint(headpanID, random(0, headpan_input));
+  // todo
 }
 
 void setup()
@@ -297,11 +295,6 @@ void setup()
  nh.initNode();
  nh.subscribe(sub_motion);
  // nh.advertise(torso_debugger); // comment out when not debugging
-
- // init headpan
- Serial1.begin(1000000);
- headpan.begin(Serial1);
- headpan.setJointSpeed(headpanID, 500);
 
 }
 
