@@ -111,6 +111,8 @@ Run these [catkin elipse commands][ros-ecli] in section '2.2 Catkin-y approach' 
 
 Open eclipse and import the `v2mini_ws/build/` directory as `General Project -> Existing Project`
 
+Sometimes eclipse has issues resolving includes. If you experience this issue try importing the entire workspace.
+
 You should now be able to edit the packages under `[Source directory]` in the eclipse editor.
 
 [ecli]:http://ubuntuhandbook.org/index.php/2016/01/how-to-install-the-latest-eclipse-in-ubuntu-16-04-15-10/

@@ -10,7 +10,7 @@
 
 using v2mini_teleop::ROBOT_VEL;
 
-double setHeadPan(double curr_headpan, double increment)
+double setHeadPanPosition(double curr_headpan, double increment)
 {
 	double deg60 = M_PI/3;
 	double target_angle;
@@ -40,6 +40,15 @@ double setHeadPan(double curr_headpan, double increment)
 	{
 		target_angle = -deg60;
 	}
+
+	return target_angle;
+}
+
+double setArmJointPosition(double curr_pos, double increment)
+{
+	double target_angle;
+
+	target_angle = 0;
 
 	return target_angle;
 }
@@ -141,8 +150,9 @@ int main(int argc, char ** argv)
 		torso_cmds.linear.x = cmds[v2mini_teleop::FACE_TOGGLE];
 		torso_cmds.linear.y = cmds[v2mini_teleop::TORSO_VEL];
 		torso_cmds.linear.z = cmds[v2mini_teleop::HEADTILT_VEL];
+		torso_cmds.angular.x = cmds[v2mini_teleop::GRIPPER_VEL];
 
-		headpan_angle = setHeadPan(headpan_angle, cmds[v2mini_teleop::HEADPAN_VEL]);
+		headpan_angle = setHeadPanPosition(headpan_angle, cmds[v2mini_teleop::HEADPAN_VEL]);
 		headpan_cmd.data = headpan_angle;
 
 		//publish the movement commands

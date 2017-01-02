@@ -1,7 +1,6 @@
 <launch>
 
   <arg name="debug" default="false" />
-  <arg name="use_arm" default="true" />
 
   <!-- Load the URDF, SRDF and other .yaml configuration files on the param server -->
   <include file="$(find v2mini_moveit_config)/launch/planning_context.launch">
@@ -12,13 +11,11 @@
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
   <!-- spawn dynamixel controllers -->
-  <include if="$(arg use_arm)" file="$(find v2mini_controllers)/launch/right_arm_controller.launch"/>
+  <include file="$(find v2mini_controllers)/launch/right_arm_controller.launch"/>
 
   <node pkg="tf" type="static_transform_publisher" name="virtual_joint_broadcaster" args="0 0 0 0 0 0 world base_link 100"/>
 
-  <include file="$(find v2mini_moveit_config)/launch/moveit_planning_execution.launch">
-     <arg name="use_arm" value="$(arg use_arm)"/>
-  </include>
+  <include file="$(find v2mini_moveit_config)/launch/moveit_planning_execution.launch"/>
 
   <include file="$(find v2mini_moveit_config)/launch/moveit_rviz.launch">
     <arg name="config" value="true"/>
