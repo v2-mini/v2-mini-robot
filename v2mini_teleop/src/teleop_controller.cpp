@@ -236,8 +236,6 @@ float* TeleopController::getKeyCmds()
 		key_cmds[GRIPPER_VEL] = 0;
 	}
 
-	// -------_> TODO ADD KEY BINDING TO TOGGLE THROUGH JOINTS
-
 	// Rotate Arm Joint CW or CCW
 	if (keys[SDL_SCANCODE_K] != keys[SDL_SCANCODE_L])
 	{
@@ -255,6 +253,16 @@ float* TeleopController::getKeyCmds()
 	else
 	{
 		key_cmds[ARM_JOINT_VEL] = 0;
+	}
+
+	// Toggle the arm joint to control
+	if (keys[SDL_SCANCODE_J])
+	{
+		key_cmds[ARM_JOINT_TOGGLE] = 1;
+	}
+	else
+	{
+		key_cmds[ARM_JOINT_TOGGLE] = 0;
 	}
 
 	mapVelocity(key_cmds, max_value);
