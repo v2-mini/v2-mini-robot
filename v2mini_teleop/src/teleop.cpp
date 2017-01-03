@@ -111,13 +111,11 @@ int main(int argc, char ** argv)
 			node.advertise<std_msgs::Float64>("arm_joint5_controller/command", 1),
 	};
 
-	ros::Subscriber arm_subs[] = {
-			node.subscribe("arm_joint1_controller/state", 1, arm_joint1_cb),
-			node.subscribe("arm_joint2_controller/state", 1, arm_joint2_cb),
-			node.subscribe("arm_joint3_controller/state", 1, arm_joint3_cb),
-			node.subscribe("arm_joint4_controller/state", 1, arm_joint4_cb),
-			node.subscribe("arm_joint5_controller/state", 1, arm_joint5_cb)
-	};
+	ros::Subscriber arm1_sub = node.subscribe("arm_joint1_controller/state", 1, arm_joint1_cb);
+	ros::Subscriber arm2_sub = node.subscribe("arm_joint2_controller/state", 1, arm_joint2_cb);
+	ros::Subscriber arm3_sub = node.subscribe("arm_joint3_controller/state", 1, arm_joint3_cb);
+	ros::Subscriber arm4_sub = node.subscribe("arm_joint4_controller/state", 1, arm_joint4_cb);
+	ros::Subscriber arm5_sub = node.subscribe("arm_joint5_controller/state", 1, arm_joint5_cb);
 
 	// todo -> publish joint positions for teleoperated parts
 	// and use tf broadcaster to update state of urdf.
