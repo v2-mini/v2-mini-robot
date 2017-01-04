@@ -246,20 +246,17 @@ void moveTorso()
 
 void panHead()
 {
+  int target_pos = pan_input;
 
-  neckPan.moveJoint(servoID, pan_input);
-
-  // int target_pos = pan_input;
-  //
-  // // set limits for input value
-  // if (pan_input > PAN_MAX)
-  // {
-  //   target_pos = PAN_MAX;
-  // }
-  // else if (target_pos < PAN_MIN)
-  // {
-  //   target_pos = PAN_MIN;
-  // }
+  // set limits for input value
+  if (pan_input > PAN_MAX)
+  {
+    target_pos = PAN_MAX;
+  }
+  else if (target_pos < PAN_MIN)
+  {
+    target_pos = PAN_MIN;
+  }
 
 }
 
@@ -345,10 +342,8 @@ void setup()
   // init neck dynamixel
   Serial1.begin(57600);
   neckPan.begin(Serial1); // Hand in the serial object you're using
-  // Set joint speed
-  neckPan.setJointSpeed(servoID, 100);
-  // Center the neck
-  neckPan.moveJoint(servoID, PAN_CENTER);
+  neckPan.setJointSpeed(servoID, 100); // set head pan speed
+  neckPan.moveJoint(servoID, PAN_CENTER); // center head position 
   // Uncommemt if using the usb2dynamixel for neck panning
   //  pinMode(18, INPUT);
   //  pinMode(19, INPUT);
@@ -417,9 +412,7 @@ void loop()
       // readButtons();
       toggleFace();
       moveTorso();
-      // panHead();
-
-      // neckPan.moveJoint(servoID, 600);
+      panHead();
 
       linAct(0);
       linAct(1);
