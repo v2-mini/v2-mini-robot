@@ -8,7 +8,7 @@ namespace v2mini_teleop {
 const int SCREEN_WIDTH = 280;
 const int SCREEN_HEIGHT = 200;
 
-const int MAX_BASE_RADIAL_VEL = 30;		// cm/s
+const int MAX_BASE_RADIAL_VEL = 32;		// cm/s
 const int MAX_BASE_ANGULAR_VEL = 80;	// deg/s
 const int MAX_HEADTILT_VEL = 10;
 const int MAX_HEADPAN_VEL = 10;
@@ -25,8 +25,7 @@ enum ROBOT_VEL {
 	HEADTILT_VEL,
 	HEADPAN_VEL,
 	GRIPPER_VEL,
-	ARM_JOINT_VEL,
-	ARM_JOINT_TOGGLE
+	ARM_JOINT_VEL
 };
 
 class TeleopController {
@@ -34,6 +33,7 @@ class TeleopController {
 	private:
 
 		bool quit = false;
+		bool arm_joint_toggle = false;
 
 		SDL_Window* window = NULL;
 		SDL_Surface* surface = NULL;
@@ -51,6 +51,8 @@ class TeleopController {
 		float* getKeyCmds();
 		float* getGamepadCmds();
 		bool checkQuitStatus();
+		bool armToggled();
+		void resetArmToggle();
 		void reRenderImage();
 		void mapVelocity(float*, int);
 

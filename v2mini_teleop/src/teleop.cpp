@@ -11,13 +11,6 @@
 using v2mini_teleop::ROBOT_VEL;
 
 const int TOTAL_ARM_JOINTS = 5;
-double arm_joint_positions[TOTAL_ARM_JOINTS] = {0};
-
-void arm_joint1_cb(const std_msgs::Float64& joint_pos){arm_joint_positions[0] = joint_pos.data;}
-void arm_joint2_cb(const std_msgs::Float64& joint_pos){arm_joint_positions[1] = joint_pos.data;}
-void arm_joint3_cb(const std_msgs::Float64& joint_pos){arm_joint_positions[2] = joint_pos.data;}
-void arm_joint4_cb(const std_msgs::Float64& joint_pos){arm_joint_positions[3] = joint_pos.data;}
-void arm_joint5_cb(const std_msgs::Float64& joint_pos){arm_joint_positions[4] = joint_pos.data;}
 
 double incrementPosition(double current_position, double increment, double neg_lim, double pos_lim)
 /*
@@ -111,12 +104,6 @@ int main(int argc, char ** argv)
 			node.advertise<std_msgs::Float64>("arm_joint5_controller/command", 1),
 	};
 
-	ros::Subscriber arm1_sub = node.subscribe("arm_joint1_controller/state", 1, arm_joint1_cb);
-	ros::Subscriber arm2_sub = node.subscribe("arm_joint2_controller/state", 1, arm_joint2_cb);
-	ros::Subscriber arm3_sub = node.subscribe("arm_joint3_controller/state", 1, arm_joint3_cb);
-	ros::Subscriber arm4_sub = node.subscribe("arm_joint4_controller/state", 1, arm_joint4_cb);
-	ros::Subscriber arm5_sub = node.subscribe("arm_joint5_controller/state", 1, arm_joint5_cb);
-
 	// todo -> publish joint positions for teleoperated parts
 	// and use tf broadcaster to update state of urdf.
 	geometry_msgs::TransformStamped odom_trans;
@@ -127,7 +114,10 @@ int main(int argc, char ** argv)
 	double angle;
 
 	int headpan_pos = 511;
+	int headpan_max = 665;
+	int headpan_min = 357;
 	int current_joint = 0;
+	double arm_joint_positions[TOTAL_ARM_JOINTS] = {0.11, 1.3, -0.12, -0.25, 0.16};
 	double arm_joint_lims[TOTAL_ARM_JOINTS][2] = {
 			{-0.2, 2.85},
 			{-0.3, 1.6},
@@ -164,8 +154,6 @@ int main(int argc, char ** argv)
 		geometry_msgs::Twist base_cmds;
 		geometry_msgs::Twist torso_cmds;
 		std_msgs::Float64 arm_cmds[TOTAL_ARM_JOINTS];
-
-		// arm_joint_pos[] = ... ; // -------------------> subscribe to dynamixel state topic...
 
 		//update joint_state --> INCOMPLETE
 		joint_state.header.stamp = ros::Time::now();
@@ -209,7 +197,7 @@ int main(int argc, char ** argv)
 		base_cmds.angular.z = cmds[v2mini_teleop::BASE_VELZ];
 
 		// temporary workaround for ros controller not supporting XL-320 is to use arduino ...
-		headpan_pos = incrementPosition(headpan_pos, cmds[v2mini_teleop::HEADPAN_VEL], 0, 1023);
+		headpan_pos = incrementPosition(headpan_pos, cmds[v2mini_teleop::HEADPAN_VEL], headpan_min, headpan_max);
 
 		torso_cmds.angular.x = headpan_pos;
 		torso_cmds.linear.x = cmds[v2mini_teleop::FACE_TOGGLE];
@@ -218,9 +206,10 @@ int main(int argc, char ** argv)
 		torso_cmds.angular.y = cmds[v2mini_teleop::GRIPPER_VEL];
 
 		// toggle controlled joint on button press
-		if (cmds[v2mini_teleop::ARM_JOINT_TOGGLE] == 1)
+		if (controller.armToggled())
 		{
 			current_joint = toggleArmJoint(current_joint, TOTAL_ARM_JOINTS);
+			controller.resetArmToggle();
 		}
 
 		// set the target value for each joint dynamixel and publish
@@ -228,9 +217,11 @@ int main(int argc, char ** argv)
 		{
 			if (current_joint == joint)
 			{
-				arm_cmds[joint].data = incrementPosition(
+				arm_joint_positions[joint] = incrementPosition(
 						arm_joint_positions[joint], cmds[v2mini_teleop::ARM_JOINT_VEL],
 						arm_joint_lims[joint][0], arm_joint_lims[joint][1]);
+
+				arm_cmds[joint].data = arm_joint_positions[joint];
 
 			}
 			else
@@ -247,7 +238,6 @@ int main(int argc, char ** argv)
 		joint_pub.publish(joint_state);
 		broadcaster.sendTransform(odom_trans);
 
-		ros::spinOnce();
 		loop_rate.sleep();
 	}
 

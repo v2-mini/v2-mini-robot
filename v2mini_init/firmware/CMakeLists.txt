@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=gnu++0x -fpermissive")
+
 include_directories(${ROS_LIB_DIR})
 
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libraries)

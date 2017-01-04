@@ -1,4 +1,5 @@
 <launch>
+
     <rosparam file="$(find v2mini_controllers)/dynamixel_params.yaml" command="load"/>
     <node name="dynamixel_manager" pkg="dynamixel_controllers" type="controller_manager.py" required="true" output="screen">
         <rosparam>
@@ -12,4 +13,5 @@
                     update_rate: 20
         </rosparam>
     </node>
+
 </launch>

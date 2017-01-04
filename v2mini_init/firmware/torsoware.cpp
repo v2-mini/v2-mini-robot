@@ -1,10 +1,16 @@
+#include <Arduino.h>
+#include <Servo.h>
+#include <ros.h>
+#include "XL320.h"
+#include "PID_v1.h"
+#include "AFMotor.h"
+#include "AFMotor.h"
+#include "geometry_msgs/Twist.h"
 
-//Neck Pan Section
-#include <XL320.h>
 XL320 neckPan;
 
 // Set some variables for incrementing position & LED colour
-const char RGB[] = "rgbypcwo";
+char RGB[] = "rgbypcwo";
 const int COLORS[][3] = {{1,0,0},
                    {0,1,0},
                    {0,0,1},
@@ -19,15 +25,6 @@ int ledColour = 0;
 
 // Set the servoID to talk to
 int servoID = 6;
-
-#include <PID_v1.h>
-#include <AFMotor.h>
-#include <Arduino.h>
-#include <Servo.h>
-#include <ros.h>
-#include "AFMotor.h"
-#include "geometry_msgs/Twist.h"
-
 
 ros::NodeHandle nh;
 
@@ -48,10 +45,11 @@ const int LINACT_APIN[] = {10,0,12,11};
 const int LINACT_MAX[] = {800,800,800,800};
 const int LINACT_MIN[] = {200,200,200,200};
 
-const int PAN_MAX = 511+100;
-const int PAN_MIN = 511-100;
+const int PAN_CENTER = 511;
+const int PAN_CENTER_DEV = 154;
+const int PAN_MAX = PAN_CENTER + PAN_CENTER_DEV;
+const int PAN_MIN = PAN_CENTER - PAN_CENTER_DEV;
 
-const int TORSO_MAXV = 5; // deg/s
 const int TORSO_PIN = 53;
 const int TORSO_MAXH = 120;
 const int TORSO_MINH = 70;
@@ -84,16 +82,16 @@ double PIDSet[4], PIDIn[4], PIDOut[4];
 double p[] = {1,1.25,1,1};
 double i[] = {1,1.25,1,1};
 double d[] = {0,0,0,0};
+
 PID linactPIDs[] = {
- PID(&PIDIn[0], &PIDOut[0], &PIDSet[0],p[0],i[0],d[0], DIRECT),
- PID(&PIDIn[1], &PIDOut[1], &PIDSet[1],p[1],i[1],d[1], DIRECT),
- PID(&PIDIn[2], &PIDOut[2], &PIDSet[2],p[2],i[2],d[2], DIRECT),
- PID(&PIDIn[3], &PIDOut[3], &PIDSet[3],p[3],i[3],d[3], DIRECT)
+  PID(&PIDIn[0], &PIDOut[0], &PIDSet[0],p[0],i[0],d[0], DIRECT),
+  PID(&PIDIn[1], &PIDOut[1], &PIDSet[1],p[1],i[1],d[1], DIRECT),
+  PID(&PIDIn[2], &PIDOut[2], &PIDSet[2],p[2],i[2],d[2], DIRECT),
+  PID(&PIDIn[3], &PIDOut[3], &PIDSet[3],p[3],i[3],d[3], DIRECT)
 };
 
 const long numAvg = 10; //number of running average samples for the linear actuator pot
 int indexAvg = 0; //index for running averages
-
 
 int linact_inputs[] = {0,0,0,0};
 int linact_stall_counts[] = {0,0,0,0};
@@ -101,11 +99,9 @@ long linact_sensors[4][numAvg];
 long linact_sum[4];
 int prev_linact_pos[] = {512,512,300,300};
 
-int pan_input = 0;
-int prev_pan_pos = 511;
+int pan_input = PAN_CENTER;
 
 int currentAct = 0;
-
 
 // face vars
 int lastread;
@@ -116,10 +112,13 @@ Servo face_servos[TOTAL_FACE_SERVOS];
 
 void motion_cb(const geometry_msgs::Twist& motion_cmds)
 {
-face_input = motion_cmds.linear.x;
-torso_input = motion_cmds.linear.y;
-linact_inputs[1] = motion_cmds.linear.z;
-pan_input = motion_cmds.angular.x;
+  face_input = motion_cmds.linear.x;
+  torso_input = motion_cmds.linear.y;
+  linact_inputs[1] = motion_cmds.linear.z;
+  pan_input = motion_cmds.angular.x;
+  linact_inputs[0] = motion_cmds.angular.y;
+  linact_inputs[2] = motion_cmds.angular.z;
+  linact_inputs[3] = linact_inputs[2];
 }
 
 // Subscribe to ROS topic "/torso_cmds"
@@ -133,8 +132,6 @@ void linAct(int actuator_num)
 {
   int actual_pos;
   int target_pos;
-  int pos_error;
-  int linact_vel;
 
   // increment the target position up or down each cycle
   target_pos = prev_linact_pos[actuator_num] + linact_inputs[actuator_num];
@@ -155,21 +152,28 @@ void linAct(int actuator_num)
   linact_sensors[actuator_num][indexAvg]=actual_pos;
   linact_sum[actuator_num] +=  actual_pos;
 
-  if (actuator_num == 3){
+  if (actuator_num == 3)
+  {
     indexAvg ++;
-    if (indexAvg == numAvg){
+
+    if (indexAvg == numAvg)
+    {
       indexAvg = 0;
     }
   }
 
   PIDSet[actuator_num] = target_pos;
   PIDIn[actuator_num] = linact_sum[actuator_num]/numAvg;
-  if ( abs(PIDSet[actuator_num]-PIDIn[actuator_num]) < 5 || (linact_stall_counts[actuator_num] > 40 && linact_inputs[actuator_num] == 0)){
+  if ( abs(PIDSet[actuator_num]-PIDIn[actuator_num]) < 5 || (linact_stall_counts[actuator_num] > 40 && linact_inputs[actuator_num] == 0))
+  {
     linacts[actuator_num].run(RELEASE);
-  }else{
+  }
+  else
+  {
 
-      linactPIDs[actuator_num].Compute();
-      linacts[actuator_num].setSpeed(abs(PIDOut[actuator_num]));
+    linactPIDs[actuator_num].Compute();
+    linacts[actuator_num].setSpeed(abs(PIDOut[actuator_num]));
+
     if (PIDOut[actuator_num] < 0)
     {
       linacts[actuator_num].run(FORWARD);
@@ -180,12 +184,14 @@ void linAct(int actuator_num)
     }
   }
 
-  if(abs(PIDOut[actuator_num]) == 255 && linact_inputs[actuator_num] == 0 ){
+  if (abs(PIDOut[actuator_num]) == 255 && linact_inputs[actuator_num] == 0 )
+  {
     linact_stall_counts[actuator_num] ++;
-  } else {
+  }
+  else
+  {
     linact_stall_counts[actuator_num] = 0;
   }
-
 
   prev_linact_pos[actuator_num] = target_pos;
 
@@ -241,21 +247,21 @@ void moveTorso()
 void panHead()
 {
 
-  int target_pos = prev_pan_pos + pan_input;
-  // set limits for input value
-  if (target_pos > PAN_MAX)
-  {
-    target_pos = PAN_MAX;
-  }
-  else if (target_pos < PAN_MIN)
-  {
-    target_pos = PAN_MIN;
-  }
+  neckPan.moveJoint(servoID, pan_input);
 
-   neckPan.moveJoint(servoID, target_pos);
-   prev_pan_pos = target_pos;
+  // int target_pos = pan_input;
+  //
+  // // set limits for input value
+  // if (pan_input > PAN_MAX)
+  // {
+  //   target_pos = PAN_MAX;
+  // }
+  // else if (target_pos < PAN_MIN)
+  // {
+  //   target_pos = PAN_MIN;
+  // }
+
 }
-
 
 void setEyeColor(int color)
 {
@@ -263,7 +269,7 @@ void setEyeColor(int color)
   digitalWrite(EYE_RGB_PINS[1], COLORS[color][1]);
   digitalWrite(EYE_RGB_PINS[2], COLORS[color][2]);
 
-  neckPan.LED(servoID, &RGB[color] );
+  //neckPan.LED(servoID, &RGB[color]);
 }
 
 void setFacialExpression(int exp)
@@ -310,7 +316,7 @@ void readButtons()
 
   face_input += button_active[6];
   torso_input += (button_vals[5]-button_vals[4]);
-  currentAct += button_active[3]-button_active[2];
+  currentAct = (button_active[3]-button_active[2]);
 
   if(currentAct < 0 )
   {
@@ -322,12 +328,14 @@ void readButtons()
     currentAct = 0;
   }
 
-  if(currentAct ==4){
-    pan_input += 5*(button_vals[1]-button_vals[0]);
-  }else{
-    linact_inputs[currentAct] += 5*(button_vals[1]-button_vals[0]);
+  if(currentAct ==4)
+  {
+    pan_input += 5 * (button_vals[1] - button_vals[0]);
   }
-
+  else
+  {
+    linact_inputs[currentAct] += 5 * (button_vals[1] - button_vals[0]);
+  }
 
 }
 
@@ -340,21 +348,18 @@ void setup()
   // Set joint speed
   neckPan.setJointSpeed(servoID, 100);
   // Center the neck
-  neckPan.moveJoint(servoID, 511);
+  neckPan.moveJoint(servoID, PAN_CENTER);
   // Uncommemt if using the usb2dynamixel for neck panning
   //  pinMode(18, INPUT);
   //  pinMode(19, INPUT);
-
   // init pin modes
   pinMode(33, INPUT_PULLUP);
-
 
   // initialize eye color pins
   for (int i = 0; i < 3; i++)
   {
     pinMode(EYE_RGB_PINS[i], OUTPUT);
   }
-
 
   //initialize linact PID
   for (int i = 0; i < 4; i++)
@@ -371,8 +376,6 @@ void setup()
     linactPIDs[i].SetOutputLimits(-255, 255);
     linactPIDs[i].SetSampleTime(50);
   }
-
-  double PIDSet[4], PIDIn[4], PIDOut[4];
 
   for (int i = 0; i < TOTAL_BUTTON_INS; i++)
   {
@@ -395,9 +398,10 @@ void setup()
   torso.write(TORSO_AVGH);
 
   setFacialExpression(0);
+
  // init ros stuff
-nh.initNode();
-nh.subscribe(sub_motion);
+ nh.initNode();
+ nh.subscribe(sub_motion);
  // nh.advertise(torso_debugger); // comment out when not debugging
 
 }
@@ -405,35 +409,26 @@ nh.subscribe(sub_motion);
 void loop()
 {
   cur_time = millis();
-  // control torso speed by limiting occurrance (replace with timer interrupt)
-  if ((millis() - prev_time) > (1000.0 / TORSO_MAXV))
-  {
-    moveTorso();
-    prev_torso_time =  cur_time;
-  }
 
   // ensure minimum time for control loops
-  if((cur_time - prev_time)>25){
+  if((cur_time - prev_time) > 100)
+  {
       prev_time = cur_time;
-      torso_input = 0;
-      face_input= 0;
-      pan_input = 0;
-      linact_inputs[0]=0;
-      linact_inputs[1]=0;
-      linact_inputs[2]=0;
-      linact_inputs[3]=0;
-
-       nh.spinOnce();
-      readButtons();
+      // readButtons();
       toggleFace();
-      panHead();
+      moveTorso();
+      // panHead();
+
+      // neckPan.moveJoint(servoID, 600);
+
       linAct(0);
       linAct(1);
       linAct(2);
       linAct(3);
   }
 
+  nh.spinOnce();
 
- // torso_debugger.publish(&debug_msg); // comment out when not debugging
+  // torso_debugger.publish(&debug_msg); // comment out when not debugging
 
 }

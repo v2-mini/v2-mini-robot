@@ -258,11 +258,7 @@ float* TeleopController::getKeyCmds()
 	// Toggle the arm joint to control
 	if (keys[SDL_SCANCODE_J])
 	{
-		key_cmds[ARM_JOINT_TOGGLE] = 1;
-	}
-	else
-	{
-		key_cmds[ARM_JOINT_TOGGLE] = 0;
+		arm_joint_toggle = true;
 	}
 
 	mapVelocity(key_cmds, max_value);
@@ -403,6 +399,16 @@ void TeleopController::reRenderImage()
 bool TeleopController::checkQuitStatus()
 {
 	return quit;
+}
+
+bool TeleopController::armToggled()
+{
+	return arm_joint_toggle;
+}
+
+void TeleopController::resetArmToggle()
+{
+	arm_joint_toggle = false;
 }
 
 }  // namespace v2mini_teleop
