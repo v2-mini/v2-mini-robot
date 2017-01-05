@@ -347,3 +347,7 @@ After the command is run, rviz will display the URDF (virtual V2-Mini) and a pan
 4. if the motion looks good, click "execute".
 
 The robot arm should now move to the planned position.
+
+## Bugs
+
+See GitHub issues for bug tracking.
