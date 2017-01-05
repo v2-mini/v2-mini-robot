@@ -236,6 +236,25 @@ float* TeleopController::getKeyCmds()
 		key_cmds[GRIPPER_VEL] = 0;
 	}
 
+	// Wrist Up & Down
+	if (keys[SDL_SCANCODE_N] != keys[SDL_SCANCODE_M])
+	{
+		if (keys[SDL_SCANCODE_N] == 1)
+		{
+			// open claws
+			key_cmds[WRIST_VEL] = 1;
+		}
+		else
+		{
+			// close claws
+			key_cmds[WRIST_VEL] = -1;
+		}
+	}
+	else
+	{
+		key_cmds[WRIST_VEL] = 0;
+	}
+
 	// Rotate Arm Joint CW or CCW
 	if (keys[SDL_SCANCODE_K] != keys[SDL_SCANCODE_L])
 	{
@@ -385,6 +404,7 @@ void TeleopController::mapVelocity(float *val_array, int ceiling_value)
 
 	// Map value range for arm & gripper
 	val_array[GRIPPER_VEL] = val_array[GRIPPER_VEL] * MAX_GRIPPER_VEL;
+	val_array[WRIST_VEL] = val_array[WRIST_VEL] * MAX_WRIST_VEL;
 	val_array[ARM_JOINT_VEL] = val_array[ARM_JOINT_VEL] * MAX_ARM_JOINT_VEL / ceiling_value;
 }
 

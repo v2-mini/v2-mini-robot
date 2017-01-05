@@ -13,6 +13,7 @@ const int MAX_BASE_ANGULAR_VEL = 80;	// deg/s
 const int MAX_HEADTILT_VEL = 10;
 const int MAX_HEADPAN_VEL = 10;
 const int MAX_GRIPPER_VEL = 10;
+const int MAX_WRIST_VEL = 10;
 const float MAX_TORSO_VEL = 1.2;
 const double MAX_ARM_JOINT_VEL = M_PI/180;
 
@@ -25,6 +26,7 @@ enum ROBOT_VEL {
 	HEADTILT_VEL,
 	HEADPAN_VEL,
 	GRIPPER_VEL,
+	WRIST_VEL,
 	ARM_JOINT_VEL
 };
 

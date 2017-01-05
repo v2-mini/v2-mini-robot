@@ -258,6 +258,8 @@ void panHead()
     target_pos = PAN_MIN;
   }
 
+  neckPan.moveJoint(servoID, target_pos);
+
 }
 
 void setEyeColor(int color)
@@ -266,7 +268,7 @@ void setEyeColor(int color)
   digitalWrite(EYE_RGB_PINS[1], COLORS[color][1]);
   digitalWrite(EYE_RGB_PINS[2], COLORS[color][2]);
 
-  //neckPan.LED(servoID, &RGB[color]);
+  neckPan.LED(servoID, &RGB[color]);
 }
 
 void setFacialExpression(int exp)
@@ -343,7 +345,7 @@ void setup()
   Serial1.begin(57600);
   neckPan.begin(Serial1); // Hand in the serial object you're using
   neckPan.setJointSpeed(servoID, 100); // set head pan speed
-  neckPan.moveJoint(servoID, PAN_CENTER); // center head position 
+  neckPan.moveJoint(servoID, PAN_CENTER); // center head position
   // Uncommemt if using the usb2dynamixel for neck panning
   //  pinMode(18, INPUT);
   //  pinMode(19, INPUT);
@@ -406,7 +408,7 @@ void loop()
   cur_time = millis();
 
   // ensure minimum time for control loops
-  if((cur_time - prev_time) > 100)
+  if((cur_time - prev_time) > 25)
   {
       prev_time = cur_time;
       // readButtons();

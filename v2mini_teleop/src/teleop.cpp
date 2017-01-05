@@ -203,7 +203,8 @@ int main(int argc, char ** argv)
 		torso_cmds.linear.x = cmds[v2mini_teleop::FACE_TOGGLE];
 		torso_cmds.linear.y = cmds[v2mini_teleop::TORSO_VEL];
 		torso_cmds.linear.z = cmds[v2mini_teleop::HEADTILT_VEL];
-		torso_cmds.angular.y = cmds[v2mini_teleop::GRIPPER_VEL];
+		torso_cmds.angular.y = cmds[v2mini_teleop::WRIST_VEL];
+		torso_cmds.angular.z = cmds[v2mini_teleop::GRIPPER_VEL];
 
 		// toggle controlled joint on button press
 		if (controller.armToggled())
