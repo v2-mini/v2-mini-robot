@@ -199,7 +199,12 @@ In addition to the `control` argument, there are a number of additional argument
 `use_arm`
 
 - `false` - ignore dynamixels for arm. Use this option when you wish to run the robot without the arm.
-- `true` - launch moveit and dynamixel manager for the arm (default). Note, if the arm is not connected, it will result in an error.
+- `true` - launch dynamixel manager for the arm (default). Note, if the arm is not connected, it will result in an error.
+
+`use_camera`
+
+- `false` - ignore realsense_camera. Use this option when you wish to run the robot without the camera.
+- `true` - launch realsense_camera for the r200 camera and an rqt display window (default). Note, if the camera is not connected, it will result in an error.
 
 **environment variables:**
 
@@ -257,6 +262,14 @@ The following describes the controller buttons and the resulting actions:
 
 `r & f` - move the torso up or down.
 
+`i & o` - open or close the gripper.
+
+`n & m` - rotate the wrist up or down.
+
+`k & l` - rotate the arm joint clockwise or counter-clockwise.
+
+`j & ;` - toggle or reverse toggle the arm joint to control.
+
 `e` - toggle robot emotions.
 
 **logitec gamepad:**
@@ -269,7 +282,15 @@ The following describes the controller buttons and the resulting actions:
 
 `A & Y` - move the torso up or down.
 
-`B` - toggle robot emotions.
+`X & B` - rotate the wrist up or down.
+
+`top-triggers` - open or close the gripper.
+
+`D-Pad Left & Right` - rotate the arm joint clockwise or counter-clockwise.
+
+`D-Pad Up & Down` - toggle or reverse toggle the arm joint to control.
+
+`start` - toggle robot emotions.
 
 #### Troubleshooting
 
@@ -314,8 +335,15 @@ After checking that the data is published and the arduino nodes are up, it's pos
 
 ### Controlling V2Mini's Arm with Moveit!
 
- ----< TODO >-----
+Another method of controlling V2-Mini's arm is to use moveit!. To launch the dynamixel manager, rviz, and moveit! use the following command:
+```
+roslaunch v2mini_moveit_config v2mini_moveit_controller.launch
+```
+After the command is run, rviz will display the URDF (virtual V2-Mini) and a panel on the left-hand side of the window for motion planning. To move the arm, do the following:
 
-## Additional Resources
+1. check the "Approximate IK Solutions" checkbox.
+2. drag-and-drop the arm's end-effector ball to the desired position.
+3. select the planning tab and click the "plan" button.
+4. if the motion looks good, click "execute".
 
-----< TODO >-----
+The robot arm should now move to the planned position.

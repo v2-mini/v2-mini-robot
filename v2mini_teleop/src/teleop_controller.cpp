@@ -372,7 +372,7 @@ float* TeleopController::getGamepadCmds()
 	cmds[GRIPPER_VEL] = grip_open - grip_close;
 
 	// Wrist Up & Down
-	if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_A))
+	if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_X))
 	{
 		cmds[WRIST_VEL] = 1;
 	}
