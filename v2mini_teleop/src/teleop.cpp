@@ -68,18 +68,30 @@ double incrementPosition(double current_position, double increment, double neg_l
 	return target_position;
 }
 
-int toggleArmJoint(int current_joint, int TOTAL_ARM_JOINTS)
+int toggleArmJoint(int current_joint, int TOTAL_ARM_JOINTS, bool reverse_toggle)
 {
 	int next_joint;
 	int joint_indices = TOTAL_ARM_JOINTS - 1;
 
-	if (current_joint >= joint_indices)
+	if (current_joint >= joint_indices && !reverse_toggle)
 	{
 		next_joint = 0;
 	}
-	else
+	else if (current_joint <= 0 && reverse_toggle)
+	{
+		next_joint = joint_indices;
+	}
+	else if (current_joint >= joint_indices && reverse_toggle)
+	{
+		next_joint = current_joint - 1;
+	}
+	else if (!reverse_toggle)
 	{
 		next_joint = current_joint + 1;
+	}
+	else
+	{
+		next_joint = current_joint - 1;
 	}
 
 	return next_joint;
@@ -207,9 +219,14 @@ int main(int argc, char ** argv)
 		torso_cmds.angular.z = cmds[v2mini_teleop::GRIPPER_VEL];
 
 		// toggle controlled joint on button press
-		if (controller.armToggled())
+		if (controller.armToggled() == 1)
 		{
-			current_joint = toggleArmJoint(current_joint, TOTAL_ARM_JOINTS);
+			current_joint = toggleArmJoint(current_joint, TOTAL_ARM_JOINTS, false);
+			controller.resetArmToggle();
+		}
+		else if (controller.armToggled() == -1)
+		{
+			current_joint = toggleArmJoint(current_joint, TOTAL_ARM_JOINTS, true);
 			controller.resetArmToggle();
 		}
 

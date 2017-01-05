@@ -25,6 +25,7 @@
 
    <!-- Launch the realsense r200 camera -->
    <include if="$(arg use_camera)" file="$(find realsense_camera)/launch/r200_nodelet_rgbd.launch"/>
+   <node if="$(arg use_camera)" name="image_window" machine="remote" pkg="rqt_image_view" type="rqt_image_view" respawn="false"/>
 
    <!-- Launch moveit for arm control and rviz urdf -->
    <include if="$(arg use_arm)" file="$(find v2mini_controllers)/launch/right_arm_controller.launch"/>

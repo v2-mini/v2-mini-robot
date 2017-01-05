@@ -277,7 +277,11 @@ float* TeleopController::getKeyCmds()
 	// Toggle the arm joint to control
 	if (keys[SDL_SCANCODE_J])
 	{
-		arm_joint_toggle = true;
+		arm_joint_toggle = 1;
+	}
+	else if (keys[SDL_SCANCODE_SEMICOLON])
+	{
+		arm_joint_toggle = -1;
 	}
 
 	mapVelocity(key_cmds, max_value);
@@ -334,8 +338,8 @@ float* TeleopController::getGamepadCmds()
 
 	cmds[TORSO_VEL] = torso_up - torso_down;
 
-	// B BUTTON FOR FACE TOGGLING
-	cmds[FACE_TOGGLE] = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_B);
+	// START BUTTON FOR FACE TOGGLING
+	cmds[FACE_TOGGLE] = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_START);
 
 	// RIGHT JOY STICK X FOR HEAD PAN
 	axis_rightx = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_RIGHTX);
@@ -366,6 +370,44 @@ float* TeleopController::getGamepadCmds()
 	int grip_open = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER);
 
 	cmds[GRIPPER_VEL] = grip_open - grip_close;
+
+	// Wrist Up & Down
+	if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_A))
+	{
+		cmds[WRIST_VEL] = 1;
+	}
+	else if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_B))
+	{
+		cmds[WRIST_VEL] = -1;
+	}
+	else
+	{
+		cmds[WRIST_VEL] = 0;
+	}
+
+	// Rotate Arm Joint CW or CCW
+	if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_LEFT))
+	{
+		cmds[ARM_JOINT_VEL] = max_value;
+	}
+	else if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_RIGHT))
+	{
+		cmds[ARM_JOINT_VEL] = -max_value;
+	}
+	else
+	{
+		cmds[ARM_JOINT_VEL] = 0;
+	}
+
+	// Toggle the arm joint to control
+	if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_UP))
+	{
+		arm_joint_toggle = 1;
+	}
+	else if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_DOWN))
+	{
+		arm_joint_toggle = -1;
+	}
 
 	mapVelocity(cmds, max_value);
 
@@ -421,14 +463,18 @@ bool TeleopController::checkQuitStatus()
 	return quit;
 }
 
-bool TeleopController::armToggled()
+int TeleopController::armToggled()
+/*
+ * Returns:
+ * 	arm_joint_toggle: -1 for reverse toggle, 1 for forward toggle, 0 for not toggled
+ */
 {
 	return arm_joint_toggle;
 }
 
 void TeleopController::resetArmToggle()
 {
-	arm_joint_toggle = false;
+	arm_joint_toggle = 0;
 }
 
 }  // namespace v2mini_teleop

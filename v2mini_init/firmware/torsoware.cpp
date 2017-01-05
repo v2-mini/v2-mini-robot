@@ -55,6 +55,8 @@ const int TORSO_MAXH = 120;
 const int TORSO_MINH = 70;
 const int TORSO_AVGH = (TORSO_MAXH + TORSO_MINH) / 2;
 
+const enum ROBOT_PARTS {WRIST, HEADTILT, GRIPPER_L, GRIPPER_R};
+
 // button vars
 int button_vals[] = {0,0,0,0,0,0,0};
 int button_last_vals[] = {0,0,0,0,0,0,0};
@@ -114,11 +116,11 @@ void motion_cb(const geometry_msgs::Twist& motion_cmds)
 {
   face_input = motion_cmds.linear.x;
   torso_input = motion_cmds.linear.y;
-  linact_inputs[1] = motion_cmds.linear.z;
+  linact_inputs[HEADTILT] = motion_cmds.linear.z;
   pan_input = motion_cmds.angular.x;
-  linact_inputs[0] = motion_cmds.angular.y;
-  linact_inputs[2] = motion_cmds.angular.z;
-  linact_inputs[3] = linact_inputs[2];
+  linact_inputs[WRIST] = motion_cmds.angular.y;
+  linact_inputs[GRIPPER_L] = motion_cmds.angular.z;
+  linact_inputs[GRIPPER_R] = linact_inputs[GRIPPER_L];
 }
 
 // Subscribe to ROS topic "/torso_cmds"
@@ -236,11 +238,11 @@ void moveTorso()
 {
   if (torso_input > 0)
   {
-    setTorsoServo(1);
+    setTorsoServo(0.5);
   }
   else if (torso_input < 0)
   {
-    setTorsoServo(-1);
+    setTorsoServo(-0.5);
   }
 }
 
@@ -399,6 +401,7 @@ void setup()
  // init ros stuff
  nh.initNode();
  nh.subscribe(sub_motion);
+
  // nh.advertise(torso_debugger); // comment out when not debugging
 
 }
