@@ -55,7 +55,7 @@ const int TORSO_MAXH = 120;
 const int TORSO_MINH = 70;
 const int TORSO_AVGH = (TORSO_MAXH + TORSO_MINH) / 2;
 
-const enum ROBOT_PARTS {WRIST, HEADTILT, GRIPPER_L, GRIPPER_R};
+enum ROBOT_PARTS {WRIST, HEADTILT, GRIPPER_L, GRIPPER_R};
 
 // button vars
 int button_vals[] = {0,0,0,0,0,0,0};
