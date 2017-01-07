@@ -2,7 +2,7 @@
 
 This repository is a ROS stack for the V2Mini robot.
 
-## 1. Setup
+## Setup
 
 Install [ROS Indigo][ros-inst] on Ubuntu.
 
@@ -133,7 +133,7 @@ echo 'export ROS_MASTER_URI="http://${ROS_IP}:11311"' >> ~/.bashrc
 
 Note, the `ROS_IP` must be appended to .bashrc before `ROS_MASTER_URI` or this will not work.
 
-## 2. Instructions on Use
+## Instructions on Use
 
 All steps listed in this section must be performed from within a workspace (ie. `$ cd ~/v2mini_ws` before running commands).
 
