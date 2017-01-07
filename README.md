@@ -1,4 +1,4 @@
-# v2mini_robot
+# Software Usage and Setup Instruction for V2-Mini
 
 This repository is a ROS stack for the V2Mini robot.
 
