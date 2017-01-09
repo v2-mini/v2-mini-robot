@@ -12,6 +12,9 @@ Install [ROS Indigo][ros-inst] on Ubuntu.
 
 Install [intel realsense][r200] camera drivers and ROS packages.
 
+```
+$ sudo apt-get install ros-indigo-rosserial-*
+
 Install the following Apt packages:
 ```
 $ sudo apt-get install libsdl2-images-dev libsdl2-dev
