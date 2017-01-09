@@ -35,7 +35,7 @@ class TeleopController {
 	private:
 
 		bool quit = false;
-		bool arm_joint_toggle = 0;
+		int arm_joint_toggle = 0;
 
 		SDL_Window* window = NULL;
 		SDL_Surface* surface = NULL;

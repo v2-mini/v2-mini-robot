@@ -220,14 +220,14 @@ float* TeleopController::getKeyCmds()
 	// Gripper Open & Close
 	if (keys[SDL_SCANCODE_I] != keys[SDL_SCANCODE_O])
 	{
-		if (keys[SDL_SCANCODE_O] == 1)
+		if (keys[SDL_SCANCODE_I] == 1)
 		{
-			// open claws
+			// close claws
 			key_cmds[GRIPPER_VEL] = 1;
 		}
 		else
 		{
-			// close claws
+			// open claws
 			key_cmds[GRIPPER_VEL] = -1;
 		}
 	}

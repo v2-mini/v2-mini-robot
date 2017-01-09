@@ -28,34 +28,42 @@ int servoID = 6;
 
 ros::NodeHandle nh;
 
+// How often to run the control loops
+const int loopTime = 25;
+
 const int TOTAL_FACE_SERVOS = 5;
 const int FACE_PINS[] = {23,25,27,29,31};
 const int TOTAL_BUTTON_INS = 7;
 const int BUTTON_INS[] = {37,39,41,43,47,49,51};
 const int EYE_RGB_PINS[] = {45,44,46};
 const int EYE_RGB_SCALE[] = {120,120,120};
-const int EXPRESSION_SET[][6] =  {{100,90,80,90,80,5},     //neutral
+const int EXPRESSION_SET[][6] =  {{100,90,80,90,80,4},     //neutral
                                   {150,115,90,70,30,2},     //sad
-                                  {20,90,80,90,160,1},      //happy
+                                  {20,90,80,90,160,4},      //happy
                                   {80,65,80,115,100,0},     //mad
-                                  {20,85,150,95,160,3},    //interested
-                                  {20,105,180,75,90,4}};   //uncertain
+                                  {20,85,150,95,160,6},    //interested
+                                  {20,105,180,75,90,5}};   //uncertain
 
 const int LINACT_APIN[] = {10,0,12,11};
 const int LINACT_MAX[] = {800,800,800,800};
 const int LINACT_MIN[] = {200,200,200,200};
 
 const int PAN_CENTER = 511;
-const int PAN_CENTER_DEV = 154;
+const int PAN_CENTER_DEV = 154; //90deg*3.4count/deg
 const int PAN_MAX = PAN_CENTER + PAN_CENTER_DEV;
 const int PAN_MIN = PAN_CENTER - PAN_CENTER_DEV;
 
 const int TORSO_PIN = 53;
+const float TORSO_VEL = 2*180/140000; //2mm/s*180deg/140mm*1s/1000ms
 const int TORSO_MAXH = 120;
 const int TORSO_MINH = 70;
 const int TORSO_AVGH = (TORSO_MAXH + TORSO_MINH) / 2;
 
 enum ROBOT_PARTS {WRIST, HEADTILT, GRIPPER_L, GRIPPER_R};
+
+//loop vars
+unsigned long prev_time;
+unsigned long cur_time;
 
 // button vars
 int button_vals[] = {0,0,0,0,0,0,0};
@@ -65,13 +73,12 @@ int button_active[] = {0,0,0,0,0,0,0};
 // torso vars
 Servo torso;
 int torso_input = 0;
-int torso_current = TORSO_AVGH;
-unsigned long prev_time;
-unsigned long cur_time;
+float torso_current = TORSO_AVGH;
+float torso_inc = loopTime*TORSO_VEL;
 unsigned long prev_torso_time;
-unsigned long last_neck_move;
 
-// head vars
+
+// linact vars
 AF_DCMotor wrist_motor(1);
 AF_DCMotor tilt_motor(2);
 AF_DCMotor lh_motor(3);
@@ -81,8 +88,8 @@ AF_DCMotor linacts[] = {wrist_motor,tilt_motor,lh_motor,rh_motor};
 
 //Define PID Variables
 double PIDSet[4], PIDIn[4], PIDOut[4];
-double p[] = {1,1.25,1,1};
-double i[] = {1,1.25,1,1};
+double p[] = {1,1,1,1};
+double i[] = {1,1,1,1};
 double d[] = {0,0,0,0};
 
 PID linactPIDs[] = {
@@ -201,25 +208,10 @@ void linAct(int actuator_num)
 
 void setTorsoServo(float increm)
 {
-  // values are within allowable range
-  if (torso_current <= TORSO_MAXH && torso_current >= TORSO_MINH)
-  {
-    if (torso_current == TORSO_MAXH && increm < 0)
-    {
-      // only allow increment down
-      torso_current += increm;
-    }
-    else if (torso_current == TORSO_MINH && increm > 0)
-    {
-      // only allow increment up
-      torso_current += increm;
-    }
-    else if (torso_current != TORSO_MAXH && torso_current != TORSO_MINH)
-    {
-      // increment up or down
-      torso_current += increm;
-    }
-  }
+
+  // increment up or down
+  torso_current += increm;
+
 
   // keep value in range for any increment
   if (torso_current > TORSO_MAXH)
@@ -231,18 +223,18 @@ void setTorsoServo(float increm)
     torso_current = TORSO_MINH;
   }
 
-  torso.write(torso_current);
+  torso.write(ceil(torso_current));
 }
 
 void moveTorso()
 {
   if (torso_input > 0)
   {
-    setTorsoServo(0.5);
+    setTorsoServo(0.2);
   }
   else if (torso_input < 0)
   {
-    setTorsoServo(-0.5);
+    setTorsoServo(-0.2);
   }
 }
 
@@ -270,7 +262,8 @@ void setEyeColor(int color)
   digitalWrite(EYE_RGB_PINS[1], COLORS[color][1]);
   digitalWrite(EYE_RGB_PINS[2], COLORS[color][2]);
 
-  neckPan.LED(servoID, &RGB[color]);
+  //neckPan.LED(servoID, &RGB[color]);
+  neckPan.LED(servoID, &RGB[4]);
 }
 
 void setFacialExpression(int exp)
@@ -389,8 +382,10 @@ void setup()
     face_servos[i].attach(FACE_PINS[i]);
   }
 
-  // init timer for torso speed
+  // init timer for loop speed
   prev_time = millis();
+
+  //init timer for torso speed
   prev_torso_time = prev_time;
 
   // init torso to average height
@@ -411,7 +406,7 @@ void loop()
   cur_time = millis();
 
   // ensure minimum time for control loops
-  if((cur_time - prev_time) > 25)
+  if((cur_time - prev_time) > loopTime)
   {
       prev_time = cur_time;
       // readButtons();
@@ -423,6 +418,7 @@ void loop()
       linAct(1);
       linAct(2);
       linAct(3);
+
   }
 
   nh.spinOnce();
