@@ -15,7 +15,9 @@ Install [intel realsense][r200] camera drivers and ROS packages.
 ```
 $ sudo apt-get install ros-indigo-rosserial-*
 ```
+
 Install the following Apt packages:
+
 ```
 $ sudo apt-get install libsdl2-images-dev libsdl2-dev
 ```
@@ -25,11 +27,13 @@ $ sudo apt-get install libsdl2-images-dev libsdl2-dev
 ### Create a Workspace
 
 Create a catkin workspace for V2Mini or dev machine:
+
 ```
 $ mkdir -p ~/v2mini_ws/src
 ```
 
 Initialize the workspace:
+
 ```
 $ cd ~/v2mini_ws/src
 $ catkin_init_workspace
@@ -38,16 +42,19 @@ $ catkin_init_workspace
 Fork the `v2mini_robot` repository (dev only).
 
 Then clone the forked repository:
+
 ```
 $ git clone <forked v2mini_robot>
 ```
 
 Build the packages:
+
 ```
 $ cd .. && catkin_make
 ```
 
 Install v2mini_robot ROS dependencies:
+
 ```
 $ source devel/setup.bash
 $ rosdep install -a
@@ -58,6 +65,7 @@ $ rosdep install -a
 The udev rules are only required for V2Mini's PC, or any PC that aims to directly connect to external hardware such as arduinos or dynamixels. In addition, due to the similarity of devices, rules use the `serial` attribute and are therefore hardware specific (ie. the rules need to be adjusted for each new device).  
 
 To install the udev rules:
+
 ```
 $ sudo cp ~/v2mini_ws/src/v2mini_init/udev/97-v2mini.rules /etc/udev/rules.d/
 ```
@@ -67,6 +75,7 @@ Then, reboot the machine.
 If hardware is exchanged, replace the serial number of the device with the new number (ex. `ATTRS{serial}=="<enter new serial>"`) and reinstall the rules.
 
 The serial number can be found using (select value closest to the top):
+
 ```
 $ lsusb -v | grep iSerial
 ```
@@ -84,12 +93,14 @@ Install the [atom][Atom] editor.
 Install the [Platformio][plat] package.
 
 Create the config file:
+
 ```
 $ cd ~/v2mini_ws
 $ touch platformio.ini
 ```
 
 Install the 'ros_lib' package into the lib/ directory:
+
 ```
 $ mkdir lib && cd lib
 $ rosrun rosserial_arduino make_libraries.py .
@@ -125,6 +136,7 @@ You should now be able to edit the packages under `[Source directory]` in the ec
 ### Additional Setup
 
 To automatically set `ROS_IP` for all bash terminals, run the following command once:
+
 ```
 $ echo 'export ROS_IP=$( ifconfig | fgrep -v 127.0.0.1 | egrep -o 'addr:[0-9.]+' | sed 's/^addr://' )' >> ~/.bashrc
 ```
@@ -143,6 +155,7 @@ All steps listed in this section must be performed from within a workspace (ie. 
 ### Build the Workspace
 
 Build the workspace after making changes to the source:
+
 ```
 $ catkin_make
 ```
@@ -152,11 +165,13 @@ $ catkin_make
 Upload arduino firmware after making changes.
 
 To upload to the base controller:
+
 ```
 $ catkin_make v2mini_init_firmware_baseware-upload
 ```
 
 To upload to the torso controller:
+
 ```
 $ catkin_make v2mini_init_firmware_torsoware-upload
 ```
@@ -164,6 +179,7 @@ $ catkin_make v2mini_init_firmware_torsoware-upload
 ### Source the Workspace
 
 After opening a terminal, the workspace must be sourced before using custom packages:
+
 ```
 $ source devel/setup.bash
 ```
@@ -177,9 +193,11 @@ SDL2 is the c++ library used to collect event data from input devices. When tele
 #### Launching Teleop
 
 To start Teleoping the V2Mini directly with a keyboard controller, use the following command:
+
 ```
 $ roslaunch v2mini_teleop teleop.launch control:=keyboard
 ```
+
 In addition to the `control` argument, there are a number of additional arguments that can be used.
 
 **arguments:**
@@ -234,11 +252,13 @@ The setup for an additional control machine is the same for V2Mini. Just follow 
 **remote launch:**
 
 Check that the required environment variables are set:
+
 ```
 $ env | grep ROS
 ```
 
 If any of the environment variables are missing on the remote machine, you must set them before launching:  
+
 ```
 $ export ROS_IP=<your-ip>
 $ export V2MINI_ROS_IP=<v2minis-ip>
@@ -298,6 +318,7 @@ The following describes the controller buttons and the resulting actions:
 #### Troubleshooting
 
 If you get this error when launching from a remote ROS machine (`123.123.21.21 is not in your SSH known_hosts file`), then you must either add the hostname/ip to `known_hosts` file,  or set the following environment variable:
+
 ```
 $ export ROSLAUNCH_SSH_UNKNOWN=1
 ```
@@ -309,16 +330,19 @@ After teleop launches successfully with no errors, the following steps can be us
 The teleop node collects user inputs and translates them into robot velocity commands. Check that these commands are being published.
 
 To get a full list of available topics:
+
 ```
 $ rostopic list
 ```
 
 Then, check torso commands are being published:
+
 ```
 $ rostopic echo /torso/torso_cmds
 ```
 
 And, check base commands are being published:
+
 ```
 $ rostopic echo /base/base_cmds
 ```
@@ -328,6 +352,7 @@ You should expect to see a lot of incoming data, and a value appear when buttons
 **check arduino firmware:**
 
 First check that the arduino nodes are running:
+
 ```
 $ rosnode list
 ```
@@ -339,6 +364,7 @@ After checking that the data is published and the arduino nodes are up, it's pos
 ### Controlling V2Mini's Arm with Moveit!
 
 Another method of controlling V2-Mini's arm is to use moveit!. To launch the dynamixel manager, rviz, and moveit! use the following command:
+
 ```
 $ roslaunch v2mini_moveit_config v2mini_moveit_controller.launch
 ```
