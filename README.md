@@ -138,12 +138,14 @@ You should now be able to edit the packages under `[Source directory]` in the ec
 To automatically set `ROS_IP` for all bash terminals, run the following command once:
 
 ```
-$ echo 'export ROS_IP=$( ifconfig | fgrep -v 127.0.0.1 | egrep -o 'addr:[0-9.]+' | sed 's/^addr://' )' >> ~/.bashrc
+$ echo 'export ROS_IP=$( ifconfig | fgrep -v 127.0.0.1 |
+egrep -o 'addr:[0-9.]+' | sed 's/^addr://' )' >> ~/.bashrc
 ```
 
 To automatically set `ROS_MASTER_URI` for all bash terminals, run the following command once:
 ```
-$ echo 'export ROS_MASTER_URI="http://${ROS_IP}:11311"' >> ~/.bashrc
+$ echo 'export ROS_MASTER_URI="http://${ROS_IP}:11311"'
+>> ~/.bashrc
 ```
 
 Note, the `ROS_IP` must be appended to .bashrc before `ROS_MASTER_URI` or this will not work.
@@ -366,7 +368,8 @@ After checking that the data is published and the arduino nodes are up, it's pos
 Another method of controlling V2-Mini's arm is to use moveit!. To launch the dynamixel manager, rviz, and moveit! use the following command:
 
 ```
-$ roslaunch v2mini_moveit_config v2mini_moveit_controller.launch
+$ roslaunch v2mini_moveit_config 
+v2mini_moveit_controller.launch
 ```
 After the command is run, rviz will display the URDF (virtual V2-Mini) and a panel on the left-hand side of the window for motion planning. To move the arm, do the following:
 
