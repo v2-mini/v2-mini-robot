@@ -14,7 +14,7 @@ Install [intel realsense][r200] camera drivers and ROS packages.
 
 ```
 $ sudo apt-get install ros-indigo-rosserial-*
-
+```
 Install the following Apt packages:
 ```
 $ sudo apt-get install libsdl2-images-dev libsdl2-dev
@@ -49,8 +49,8 @@ $ cd .. && catkin_make
 
 Install v2mini_robot ROS dependencies:
 ```
-source devel/setup.bash
-rosdep install -a
+$ source devel/setup.bash
+$ rosdep install -a
 ```
 
 ### Install udev Rules
@@ -131,7 +131,7 @@ $ echo 'export ROS_IP=$( ifconfig | fgrep -v 127.0.0.1 | egrep -o 'addr:[0-9.]+'
 
 To automatically set `ROS_MASTER_URI` for all bash terminals, run the following command once:
 ```
-echo 'export ROS_MASTER_URI="http://${ROS_IP}:11311"' >> ~/.bashrc
+$ echo 'export ROS_MASTER_URI="http://${ROS_IP}:11311"' >> ~/.bashrc
 ```
 
 Note, the `ROS_IP` must be appended to .bashrc before `ROS_MASTER_URI` or this will not work.
@@ -178,7 +178,7 @@ SDL2 is the c++ library used to collect event data from input devices. When tele
 
 To start Teleoping the V2Mini directly with a keyboard controller, use the following command:
 ```
-roslaunch v2mini_teleop teleop.launch control:=keyboard
+$ roslaunch v2mini_teleop teleop.launch control:=keyboard
 ```
 In addition to the `control` argument, there are a number of additional arguments that can be used.
 
@@ -340,7 +340,7 @@ After checking that the data is published and the arduino nodes are up, it's pos
 
 Another method of controlling V2-Mini's arm is to use moveit!. To launch the dynamixel manager, rviz, and moveit! use the following command:
 ```
-roslaunch v2mini_moveit_config v2mini_moveit_controller.launch
+$ roslaunch v2mini_moveit_config v2mini_moveit_controller.launch
 ```
 After the command is run, rviz will display the URDF (virtual V2-Mini) and a panel on the left-hand side of the window for motion planning. To move the arm, do the following:
 
