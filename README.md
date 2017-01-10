@@ -67,7 +67,8 @@ The udev rules are only required for V2Mini's PC, or any PC that aims to directl
 To install the udev rules:
 
 ```
-$ sudo cp ~/v2mini_ws/src/v2mini_init/udev/97-v2mini.rules /etc/udev/rules.d/
+$ sudo cp ~/v2mini_ws/src/v2mini_init/udev/97-v2mini.rules
+/etc/udev/rules.d/
 ```
 
 Then, reboot the machine.
