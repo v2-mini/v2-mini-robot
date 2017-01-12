@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="http://ros.org/wiki/xacro">
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="v2mini">
 
   <!-- Includes -->
-  <xacro:include filename="$(find v2mini_description)/urdf/gazebo/transmission/v2mini_arm.transmission.xacro"/>  
+  <xacro:include filename="$(find v2mini_gazebo)/urdf/transmission/v2mini_arm.transmission.xacro"/>  
   <xacro:include filename="$(find v2mini_description)/urdf/v2mini_robot.urdf.xacro"/>
 
   <!-- Add the gazebo plugins here -->

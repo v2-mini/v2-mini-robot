@@ -23,6 +23,11 @@
          <mesh filename="package://v2mini_description/meshes/arm/arm_link1.stl" />
       </geometry>
     </collision>
+    <inertial> 
+       <origin xyz="0 0 0" rpy="0 0 0"/>
+       <mass value="1"/> 
+       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/> 
+    </inertial>  
   </link>
 
   <!-- first additional joint at offset -->
@@ -41,6 +46,12 @@
             <mesh filename="package://v2mini_description/meshes/arm/arm_link2.stl" />
        </geometry>
     </collision>
+   <inertial>
+       <origin xyz="0 0 0" rpy="0 0 0"/>
+       <mass value="1"/>
+       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+
   </link>
 
   <joint name="arm_joint1" type="revolute">
@@ -72,6 +83,11 @@
       </geometry>
      <origin rpy="0 0 0" xyz="0 0 0"/>
   </collision>
+   <inertial>
+       <origin xyz="0 0 0" rpy="0 0 0"/>
+       <mass value="1"/>
+       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
   </link>
 
 </xacro:macro>
@@ -93,6 +109,11 @@
             <mesh filename="package://v2mini_description/meshes/arm/arm_link${num}.stl" />
         </geometry>
     </collision>
+    <inertial>
+       <origin xyz="0 0 0" rpy="0 0 0"/>
+       <mass value="1"/>
+       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
   </link>
 
   <joint name="arm_joint${par_num}" type="revolute">
