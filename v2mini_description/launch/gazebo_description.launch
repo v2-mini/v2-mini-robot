@@ -1,4 +1,0 @@
-<launch>
-  <param name="robot_description"
-         command="$(find xacro)/xacro $(find v2mini_description)/urdf/v2mini_robot.gazebo.xacro" />
-</launch>
