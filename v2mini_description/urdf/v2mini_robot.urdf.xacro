@@ -1,12 +1,6 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="v2mini">
 
-  <gazebo>
-    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-      <robotNamespace>/</robotNamespace>
-    </plugin>
-  </gazebo>
-
   <!-- materials -->
   <material name="white">
     <color rgba="0.7 0.7 0.7 1"/>
