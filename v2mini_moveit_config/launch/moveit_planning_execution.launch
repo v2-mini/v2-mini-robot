@@ -1,9 +1,8 @@
 <launch>
-  <arg name="sim" default="false" />
   <arg name="debug" default="false" />
 
   <!-- Remap follow_joint_trajectory -->
-  <remap if="$(arg sim)" from="follow_joint_trajectory" to="r_arm_controller/follow_joint_trajectory"/>
+  <remap from="follow_joint_trajectory" to="r_arm_controller/follow_joint_trajectory"/>
 
   <!-- Launch moveit -->
   <include file="$(find v2mini_moveit_config)/launch/move_group.launch">

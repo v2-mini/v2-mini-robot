@@ -1,51 +1,33 @@
-<!-- Start V2Mini and a Controller -->
+<!-- Teleop V2Mini with a Controller -->
 
 <launch>
 
-  <arg name="remote_teleop" default="false"/><!-- is the teleop node running on v2mini? -->
-  <arg name="robot_user" default="v2-mini"/><!-- robot's machine username (for testing) -->
-  <arg name="remote_user" default="jon"/><!-- remote machine username -->
+   <arg name="controller" default="keyboard"/><!-- 'gamepad' or 'keyboard' -->
+   <arg name="use_base" default="true"/><!-- launch base MCU node -->
+   <arg name="use_torso" default="true"/><!-- launch torso MCU node -->
+   <arg name="use_camera" default="true"/><!-- launch realsense r200 camera -->
+   <arg name="use_arm" default="true"/><!-- launch the arm dynamixel manager and rviz urdf -->
 
-  <arg name="controller" default="keyboard"/><!-- 'gamepad' or 'keyboard' -->
+   <include file="$(find v2mini_init)/v2mini.machine"/>
 
-  <arg name="use_mega_base" default="true"/><!-- launch base MCU node -->
-  <arg name="use_mega_torso" default="true"/><!-- launch torso MCU node -->
-  <arg name="use_uno" default="true"/><!-- launch head MCU node -->
+   <!-- Launch the MCU nodes -->
+   <include file="$(find v2mini_init)/launch/devices.launch">
+      <arg name="use_base" value="$(arg use_base)"/>
+      <arg name="use_torso" value="$(arg use_torso)"/>
+   </include>
 
-  <include file="$(find v2mini_init)/v2mini.machine">
-    <arg name="remote_teleop" value="$(arg remote_teleop)"/>
-    <arg name="robot_user" value="$(arg robot_user)"/>
-    <arg name="remote_user" value="$(arg remote_user)"/>
-  </include>
+   <!-- Launch the controller node -->
+   <node name="controller" machine="remote" pkg="v2mini_teleop" type="teleop" respawn="false" >
+      <remap from="torso_cmds" to="torso/torso_cmds"/>
+      <remap from="base_cmds" to="base/base_cmds"/>
+      <param name="controller" value="$(arg controller)"/>
+   </node>
 
-  <!-- Launch the MCU nodes -->
-  <include file="$(find v2mini_init)/launch/devices.launch">
-    <arg name="use_mega_base" value="$(arg use_mega_base)"/>
-    <arg name="use_mega_torso" value="$(arg use_mega_torso)"/>
-    <arg name="use_uno" value="$(arg use_uno)"/>
-  </include>
+   <!-- Launch the realsense r200 camera -->
+   <include if="$(arg use_camera)" file="$(find realsense_camera)/launch/r200_nodelet_rgbd.launch"/>
+   <node if="$(arg use_camera)" name="image_window" machine="remote" pkg="rqt_image_view" type="rqt_image_view" respawn="false"/>
 
-  <arg name="control_machine" if="$(arg remote_teleop)" value="remote"/>
-  <arg name="control_machine" unless="$(arg remote_teleop)" value="v2-mini"/>
-
-  <!-- Launch the controller node -->
-  <node name="controller" machine="$(arg control_machine)" pkg="v2mini_teleop" type="teleop" respawn="false" >
-    <remap from="torso_cmds" to="torso/torso_cmds"/>
-    <remap from="base_cmds" to="base/base_cmds"/>
-    <param name="controller" value="$(arg controller)"/>
-  </node>
-
-  <!-- Launch rviz with urdf -->
-  <include file="$(find v2mini_description)/launch/display_v2mini.launch">
-    <arg name="use_jsp" value="true"/>
-  </include>
+   <!-- Launch moveit for arm control and rviz urdf -->
+   <include if="$(arg use_arm)" file="$(find v2mini_controllers)/launch/right_arm_controller.launch"/>
 
 </launch>
-
-<!--
-
-example:
-
-roslaunch v2mini_teleop teleop.launch use_mega_base:=false use_mega_torso:=false use_uno:=true controller:=gamepad
-
--->

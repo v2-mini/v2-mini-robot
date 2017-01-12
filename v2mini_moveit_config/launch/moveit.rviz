@@ -4,10 +4,11 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
+        - /Global Options1
         - /MotionPlanning1
-        - /MotionPlanning1/Planning Request1
+        - /Camera1
       Splitter Ratio: 0.74256
-    Tree Height: 162
+    Tree Height: 156
   - Class: rviz/Help
     Name: Help
   - Class: rviz/Views
@@ -56,6 +57,7 @@ Visualization Manager:
           Z: 2
       Name: MotionPlanning
       Planned Path:
+        Color Enabled: false
         Interrupt Display: false
         Links:
           All Links Enabled: true
@@ -103,6 +105,27 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
+          camera_depth_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          camera_depth_optical_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          camera_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          camera_rgb_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          camera_rgb_optical_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
           ee_link:
             Alpha: 1
             Show Axes: false
@@ -140,6 +163,7 @@ Visualization Manager:
             Value: true
         Loop Animation: true
         Robot Alpha: 0.5
+        Robot Color: 150; 50; 150
         Show Robot Collision: false
         Show Robot Visual: true
         Show Trail: false
@@ -159,7 +183,7 @@ Visualization Manager:
         Interactive Marker Size: 0
         Joint Violation Color: 255; 0; 255
         Planning Group: right_arm
-        Query Goal State: false
+        Query Goal State: true
         Query Start State: false
         Show Workspace: false
         Start State Alpha: 1
@@ -221,6 +245,27 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
+          camera_depth_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          camera_depth_optical_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          camera_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          camera_rgb_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          camera_rgb_optical_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
           ee_link:
             Alpha: 1
             Show Axes: false
@@ -260,6 +305,21 @@ Visualization Manager:
         Show Robot Collision: false
         Show Robot Visual: true
       Value: true
+    - Class: rviz/Camera
+      Enabled: false
+      Image Rendering: background and overlay
+      Image Topic: /camera/rgb/image_raw
+      Name: Camera
+      Overlay Alpha: 0.5
+      Queue Size: 2
+      Transport Hint: raw
+      Unreliable: false
+      Value: false
+      Visibility:
+        Grid: true
+        MotionPlanning: true
+        Value: true
+      Zoom Factor: 1
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -275,7 +335,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/XYOrbit
-      Distance: 1.44562
+      Distance: 1.4191
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
@@ -287,24 +347,26 @@ Visualization Manager:
         Z: 2.23518e-07
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.264797
+      Pitch: 0.329796
       Target Frame: base_link
       Value: XYOrbit (rviz)
-      Yaw: 4.27493
+      Yaw: 3.79493
     Saved: ~
 Window Geometry:
+  Camera:
+    collapsed: false
   Displays:
     collapsed: false
-  Height: 774
+  Height: 768
   Help:
     collapsed: false
   Hide Left Dock: false
   Hide Right Dock: false
   Motion Planning:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd0000000100000000000002ab000002c0fc0200000005fb000000100044006900730070006c0061007900730100000028000000e3000000e300fffffffb0000000800480065006c00700000000342000000bb0000007900fffffffb0000000a0056006900650077007300000003b0000000b0000000b300fffffffb0000000c00430061006d00650072006100000002ff000001610000000000000000fb0000001e004d006f00740069006f006e00200050006c0061006e006e0069006e00670100000111000001d7000001cc00ffffff00000302000002c000000001000000020000000100000002fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000200000000000002ab000002bafc0200000004fb000000100044006900730070006c0061007900730100000028000000dd000000dd00fffffffb0000001e004d006f00740069006f006e00200050006c0061006e006e0069006e0067010000010b000001d7000001d700fffffffb0000000800480065006c00700000000342000000bb0000007600fffffffb0000000a0056006900650077007300000003b0000000b0000000b000ffffff000000020000020e000000d3fc0100000002fb0000000c00430061006d00650072006100000002b10000020e0000006500fffffffb0000000c00430061006d00650072006101000002a8000002cc00000000000000000000020e000002ba00000001000000020000000100000002fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Views:
     collapsed: false
-  Width: 1459
-  X: 119
-  Y: 128
+  Width: 1215
+  X: 54
+  Y: 98

@@ -132,15 +132,17 @@ float* TeleopController::getKeyCmds()
 		key_cmds[BASE_VELY] = 0;
 	}
 
-	// Angular CW & CCW
-	if (keys[SDL_SCANCODE_Q] != keys[SDL_SCANCODE_W])
+	// Base Angular CW & CCW
+	if (keys[SDL_SCANCODE_Z] != keys[SDL_SCANCODE_X])
 	{
-		if (keys[SDL_SCANCODE_Q] == 1)
+		if (keys[SDL_SCANCODE_Z] == 1)
 		{
+			// CCW
 			key_cmds[BASE_VELZ] = max_value;
 		}
 		else
 		{
+			// CW
 			key_cmds[BASE_VELZ] = -max_value;
 		}
 	}
@@ -170,13 +172,117 @@ float* TeleopController::getKeyCmds()
 	// Toggle Face
 	if (keys[SDL_SCANCODE_E] != 0)
 	{
-		key_cmds[FACE] = 1;
+		key_cmds[FACE_TOGGLE] = 1;
 	}
 	else
 	{
-		key_cmds[FACE] = 0;
+		key_cmds[FACE_TOGGLE] = 0;
 	}
 
+	// Tilt Head up and down
+	if (keys[SDL_SCANCODE_W] != keys[SDL_SCANCODE_S])
+	{
+		if (keys[SDL_SCANCODE_W] == 1)
+		{
+			// tilt down
+			key_cmds[HEADTILT_VEL] = -max_value;
+		}
+		else
+		{
+			// tilt up
+			key_cmds[HEADTILT_VEL] = max_value;
+		}
+	}
+	else
+	{
+		key_cmds[HEADTILT_VEL] = 0;
+	}
+
+	// Pan Head CCW & CW
+	if (keys[SDL_SCANCODE_A] != keys[SDL_SCANCODE_D])
+	{
+		if (keys[SDL_SCANCODE_A] == 1)
+		{
+			// pan CCW
+			key_cmds[HEADPAN_VEL] = max_value;
+		}
+		else
+		{
+			// pan CW
+			key_cmds[HEADPAN_VEL] = -max_value;
+		}
+	}
+	else
+	{
+		key_cmds[HEADPAN_VEL] = 0;
+	}
+
+	// Gripper Open & Close
+	if (keys[SDL_SCANCODE_I] != keys[SDL_SCANCODE_O])
+	{
+		if (keys[SDL_SCANCODE_I] == 1)
+		{
+			// close claws
+			key_cmds[GRIPPER_VEL] = 1;
+		}
+		else
+		{
+			// open claws
+			key_cmds[GRIPPER_VEL] = -1;
+		}
+	}
+	else
+	{
+		key_cmds[GRIPPER_VEL] = 0;
+	}
+
+	// Wrist Up & Down
+	if (keys[SDL_SCANCODE_N] != keys[SDL_SCANCODE_M])
+	{
+		if (keys[SDL_SCANCODE_N] == 1)
+		{
+			// open claws
+			key_cmds[WRIST_VEL] = 1;
+		}
+		else
+		{
+			// close claws
+			key_cmds[WRIST_VEL] = -1;
+		}
+	}
+	else
+	{
+		key_cmds[WRIST_VEL] = 0;
+	}
+
+	// Rotate Arm Joint CW or CCW
+	if (keys[SDL_SCANCODE_K] != keys[SDL_SCANCODE_L])
+	{
+		if (keys[SDL_SCANCODE_K] == 1)
+		{
+			// rotate joint CCW
+			key_cmds[ARM_JOINT_VEL] = max_value;
+		}
+		else
+		{
+			// rotate joint CW
+			key_cmds[ARM_JOINT_VEL] = -max_value;
+		}
+	}
+	else
+	{
+		key_cmds[ARM_JOINT_VEL] = 0;
+	}
+
+	// Toggle the arm joint to control
+	if (keys[SDL_SCANCODE_J])
+	{
+		arm_joint_toggle = 1;
+	}
+	else if (keys[SDL_SCANCODE_SEMICOLON])
+	{
+		arm_joint_toggle = -1;
+	}
 
 	mapVelocity(key_cmds, max_value);
 
@@ -191,12 +297,12 @@ float* TeleopController::getGamepadCmds()
 
 	int axis_leftx;
 	int axis_lefty;
-	int axis_righx;
-	int axis_righy;
+	int axis_rightx;
+	int axis_righty;
 
 	loadGamepad();
 
-	// LEFT JOY STICK X FOR SIDEWAYS TRANSLATION
+	// LEFT JOY STICK X FOR SIDEWAYS BASE TRANSLATION
 	axis_leftx = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX);
 
 	if (std::abs(axis_leftx) > deadzone)
@@ -208,7 +314,7 @@ float* TeleopController::getGamepadCmds()
 		cmds[BASE_VELX] = 0;
 	}
 
-	// LEFT JOY STICK Y FOR FORWARD TRANSLATION
+	// LEFT JOY STICK Y FOR FORWARD BASE TRANSLATION
 	axis_lefty = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY);
 
 	if (std::abs(axis_lefty) > deadzone)
@@ -232,46 +338,76 @@ float* TeleopController::getGamepadCmds()
 
 	cmds[TORSO_VEL] = torso_up - torso_down;
 
-	// B BUTTON FOR FACE TOGGLING
-	cmds[FACE] = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_B);
+	// START BUTTON FOR FACE TOGGLING
+	cmds[FACE_TOGGLE] = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_START);
 
-//	// CONTROL ARM MOTION IN THE YZ PLANE WITH DPAD UP KEYBINDING
-//	if (SDL_CONTROLLER_BUTTON_DPAD_UP)
-//	{
-//		// RIGHT JOY STICK X FOR SIDEWAYS TRANSLATION
-//		axis_righx. = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX);
-//
-//		if (std::abs(axis_leftx) > deadzone)
-//		{
-//			cmds[BASE_VELX] = axis_leftx;
-//		}
-//		else
-//		{
-//			cmds[BASE_VELX] = 0;
-//		}
-//
-//		// RIGHT JOY STICK Y FOR FORWARD TRANSLATION
-//		axis_righy = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_RIGHTY);
-//
-//		if (std::abs(axis_lefty) > deadzone)
-//		{
-//			cmds[ARM_VELYZ] = -axis_lefty;
-//		}
-//		else
-//		{
-//			cmds[ARM_VELYZ] = 0;
-//		}
-//	}
-//	// CONTROL ARM MOTION IN THE XZ PLANE WITH DPAD LEFT KEYBINDING
-//	else if (SDL_CONTROLLER_BUTTON_DPAD_LEFT)
-//	{
-//
-//	}
-//	// CONTROL ARM MOTION IN THE XY PLANE WITH DPAD DOWN KEYBINDING
-//	else if (SDL_CONTROLLER_BUTTON_DPAD_DOWN)
-//	{
-//
-//	}
+	// RIGHT JOY STICK X FOR HEAD PAN
+	axis_rightx = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_RIGHTX);
+
+	if (std::abs(axis_rightx) > deadzone)
+	{
+		cmds[HEADPAN_VEL] = axis_rightx;
+	}
+	else
+	{
+		cmds[HEADPAN_VEL] = 0;
+	}
+
+	// RIGHT JOY STICK Y FOR HEAD TILT
+	axis_righty = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_RIGHTY);
+
+	if (std::abs(axis_righty) > deadzone)
+	{
+		cmds[HEADTILT_VEL] = axis_righty;
+	}
+	else
+	{
+		cmds[HEADTILT_VEL] = 0;
+	}
+
+	// TOP TRIGGERS TO OPEN AND CLOSE GRIPPER
+	int grip_close = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_LEFTSHOULDER);
+	int grip_open = SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER);
+
+	cmds[GRIPPER_VEL] = grip_open - grip_close;
+
+	// Wrist Up & Down
+	if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_X))
+	{
+		cmds[WRIST_VEL] = 1;
+	}
+	else if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_B))
+	{
+		cmds[WRIST_VEL] = -1;
+	}
+	else
+	{
+		cmds[WRIST_VEL] = 0;
+	}
+
+	// Rotate Arm Joint CW or CCW
+	if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_LEFT))
+	{
+		cmds[ARM_JOINT_VEL] = max_value;
+	}
+	else if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_RIGHT))
+	{
+		cmds[ARM_JOINT_VEL] = -max_value;
+	}
+	else
+	{
+		cmds[ARM_JOINT_VEL] = 0;
+	}
+
+	// Toggle the arm joint to control
+	if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_UP))
+	{
+		arm_joint_toggle = 1;
+	}
+	else if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_DOWN))
+	{
+		arm_joint_toggle = -1;
+	}
 
 	mapVelocity(cmds, max_value);
 
@@ -280,6 +416,7 @@ float* TeleopController::getGamepadCmds()
 
 void TeleopController::mapVelocity(float *val_array, int ceiling_value)
 {
+	int base_max;
 	float velx = val_array[BASE_VELX];
 	float vely = val_array[BASE_VELY];
 
@@ -287,15 +424,30 @@ void TeleopController::mapVelocity(float *val_array, int ceiling_value)
 
 	if (velr > ceiling_value)
 	{
-		ceiling_value = velr;
+		base_max = velr;
+	}
+	else
+	{
+		base_max = ceiling_value;
 	}
 
-	// Map value range for x and y
-	val_array[BASE_VELX] = velx * MAX_BASE_RADIAL_VEL / ceiling_value;
-	val_array[BASE_VELY] = vely * MAX_BASE_RADIAL_VEL / ceiling_value;
+	// Map value range for base x and y
+	val_array[BASE_VELX] = velx * MAX_BASE_RADIAL_VEL / base_max;
+	val_array[BASE_VELY] = vely * MAX_BASE_RADIAL_VEL / base_max;
 
-	// Map value range for angular
+	val_array[TORSO_VEL] = val_array[TORSO_VEL] * MAX_TORSO_VEL;
+
+	// Map value range for base angular
 	val_array[BASE_VELZ] = val_array[BASE_VELZ] * MAX_BASE_ANGULAR_VEL / ceiling_value;
+
+	// Map value range for head pan & tilt
+	val_array[HEADTILT_VEL] = val_array[HEADTILT_VEL] * MAX_HEADTILT_VEL / ceiling_value;
+	val_array[HEADPAN_VEL] = val_array[HEADPAN_VEL] * MAX_HEADPAN_VEL / ceiling_value;
+
+	// Map value range for arm & gripper
+	val_array[GRIPPER_VEL] = val_array[GRIPPER_VEL] * MAX_GRIPPER_VEL;
+	val_array[WRIST_VEL] = val_array[WRIST_VEL] * MAX_WRIST_VEL;
+	val_array[ARM_JOINT_VEL] = val_array[ARM_JOINT_VEL] * MAX_ARM_JOINT_VEL / ceiling_value;
 }
 
 void TeleopController::reRenderImage()
@@ -311,4 +463,18 @@ bool TeleopController::checkQuitStatus()
 	return quit;
 }
 
-} 		// namespace v2mini_teleop
+int TeleopController::armToggled()
+/*
+ * Returns:
+ * 	arm_joint_toggle: -1 for reverse toggle, 1 for forward toggle, 0 for not toggled
+ */
+{
+	return arm_joint_toggle;
+}
+
+void TeleopController::resetArmToggle()
+{
+	arm_joint_toggle = 0;
+}
+
+}  // namespace v2mini_teleop

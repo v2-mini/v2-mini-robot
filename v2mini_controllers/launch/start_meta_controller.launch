@@ -1,6 +1,5 @@
 <launch>
-  <!-- Start tilt joint controller -->
-  <rosparam file="$(find v2mini_controllers)/dynamixel_params.yaml" command="load"/>
+  <!-- Start joint controller -->
   <node name="controller_spawner" pkg="dynamixel_controllers" type="controller_spawner.py"
         args="--manager=dxl_manager
               --port pan_tilt_port
@@ -12,7 +11,7 @@
               "
         output="screen"/>
 
-  <!-- Start joints trajectory controller controller -->
+  <!-- Start joints trajectory controller -->
   <rosparam file="$(find v2mini_controllers)/joints_trajectory_controller.yaml" command="load"/>
   <node name="controller_spawner_meta" pkg="dynamixel_controllers" type="controller_spawner.py"
         args="--manager=dxl_manager
