@@ -31,7 +31,7 @@
   <include filename="$(find v2mini_description)/urdf/v2mini_head.urdf.xacro" />
 
   <!-- r200 sensor -->
-  <include filename="$(find v2mini_description)/urdf/r200.urdf.xacro" />
+  <include filename="$(find v2mini_description)/urdf/sensors/r200.urdf.xacro" />
 
   <!-- join the body with arm -->
   <joint name="shoulder" type="fixed">
