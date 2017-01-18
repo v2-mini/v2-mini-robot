@@ -3,12 +3,12 @@
 
   <xacro:macro name="v2mini_arm_transmission" params="prefix">
 
- <transmission name="${prefix}arm_joint2_trans">
+   <transmission name="${prefix}arm_joint1_trans">
       <type>transmission_interface/SimpleTransmission</type>
-      <joint name="${prefix}arm_joint2">
+      <joint name="${prefix}arm_joint1">
         <hardwareInterface>PositionJointInterface</hardwareInterface>
       </joint>
-      <actuator name="${prefix}arm_joint2_motor">
+      <actuator name="${prefix}arm_joint1_motor">
         <mechanicalReduction>1</mechanicalReduction>
       </actuator>
     </transmission>
