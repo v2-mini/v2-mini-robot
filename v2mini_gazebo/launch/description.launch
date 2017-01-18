@@ -1,4 +1,10 @@
 <launch>
   <param name="robot_description"
          command="$(find xacro)/xacro $(find v2mini_gazebo)/urdf/v2mini_robot.gazebo.xacro" />
+
+  <!-- Load the yaml files for arm controller -->
+  <rosparam command="load" file="$(find v2mini_gazebo)/config/v2mini_arm_controller.yaml" />
+  <node name="arm_controller_spawner" pkg="controller_manager" type="spawner" args="arm_controller --shutdown-timeout 3"/>
+
+
 </launch>
