@@ -4,7 +4,7 @@
 
   <!-- Load the yaml files for arm controller -->
   <rosparam command="load" file="$(find v2mini_gazebo)/config/v2mini_arm_controller.yaml" />
-  <node name="arm_controller_spawner" pkg="controller_manager" type="spawner" args="arm_controller --shutdown-timeout 3"/>
+  <node name="arm_controller_spawner" pkg="controller_manager" type="spawner" args="r_arm_controller --shutdown-timeout 3"/>
 
 
 </launch>
