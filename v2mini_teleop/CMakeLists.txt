@@ -22,6 +22,10 @@ add_executable(teleop
 	src/teleop.cpp
 	src/teleop_controller.cpp)
 
+catkin_install_python(PROGRAMS
+    scripts/random_arm.py
+    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
 target_link_libraries(teleop ${catkin_LIBRARIES})
 target_link_libraries(teleop ${SDL2_LIBRARIES} SDL2)
 target_link_libraries(teleop ${SDL2_image_LIBRARIES} SDL2_image)
