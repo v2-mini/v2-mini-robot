@@ -36,6 +36,7 @@ class TeleopController {
 
 		bool quit = false;
 		int arm_joint_toggle = 0;
+		std::string routine = "resting";
 
 		SDL_Window* window = NULL;
 		SDL_Surface* surface = NULL;
@@ -50,6 +51,7 @@ class TeleopController {
 		TeleopController();
 		~TeleopController();
 
+		std::string get_routine();
 		float* getKeyCmds();
 		float* getGamepadCmds();
 		bool checkQuitStatus();

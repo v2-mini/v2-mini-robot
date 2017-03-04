@@ -1,4 +1,5 @@
 #include <std_msgs/Float64.h>
+#include <std_msgs/String.h>
 #include <geometry_msgs/Twist.h>
 #include <sensor_msgs/JointState.h>
 #include <tf/transform_broadcaster.h>
@@ -107,7 +108,7 @@ int main(int argc, char ** argv)
 	ros::Publisher base_pub = node.advertise<geometry_msgs::Twist>("base_cmds", 1);
 	ros::Publisher torso_pub = node.advertise<geometry_msgs::Twist>("torso_cmds", 1);
 	ros::Publisher joint_pub = node.advertise<sensor_msgs::JointState>("joint_states", 1);
-
+	ros::Publisher routine_pub = node.advertise<std_msgs::String>("routines", 1);
 	ros::Publisher arm_pubs[] = {
 			node.advertise<std_msgs::Float64>("arm_joint1_controller/command", 1),
 			node.advertise<std_msgs::Float64>("arm_joint2_controller/command", 1),
@@ -139,10 +140,14 @@ int main(int argc, char ** argv)
 
 	// Get type of control from param (auto or remote)
 	std::string controller_type;
+	std::string arm_control;
 	ros::NodeHandle pnh("~");
 
 	// Controlled by either keyboard or gamepad
 	pnh.getParam("controller", controller_type);
+
+	// temperary demo script option
+	pnh.getParam("arm_control", arm_control);
 
 	// Use keyboard controller as default (no arg).
 	if (controller_type == "")
@@ -151,6 +156,7 @@ int main(int argc, char ** argv)
 	}
 
 	printf("Controller: %s\n", controller_type.c_str());
+	printf ("Scripted Arm: %s \n", arm_control.c_str());
 
 	float* cmds = NULL;
 	bool quit = false;
@@ -165,6 +171,7 @@ int main(int argc, char ** argv)
 	{
 		geometry_msgs::Twist base_cmds;
 		geometry_msgs::Twist torso_cmds;
+		std_msgs::String routine_cmds;
 		std_msgs::Float64 arm_cmds[TOTAL_ARM_JOINTS];
 
 		//update joint_state --> INCOMPLETE
@@ -218,36 +225,46 @@ int main(int argc, char ** argv)
 		torso_cmds.angular.y = cmds[v2mini_teleop::WRIST_VEL];
 		torso_cmds.angular.z = cmds[v2mini_teleop::GRIPPER_VEL];
 
-		// toggle controlled joint on button press
-		if (controller.armToggled() == 1)
+		// control arm w/ script
+		if (arm_control == "script")
 		{
-			current_joint = toggleArmJoint(current_joint, TOTAL_ARM_JOINTS, false);
-			controller.resetArmToggle();
+			routine_cmds.data = controller.get_routine();
+			routine_pub.publish(routine_cmds);
 		}
-		else if (controller.armToggled() == -1)
+		// teleop arm
+		else
 		{
-			current_joint = toggleArmJoint(current_joint, TOTAL_ARM_JOINTS, true);
-			controller.resetArmToggle();
-		}
-
-		// set the target value for each joint dynamixel and publish
-		for (int joint = 0; joint < TOTAL_ARM_JOINTS; joint++)
-		{
-			if (current_joint == joint)
+			// toggle controlled joint on button press
+			if (controller.armToggled() == 1)
 			{
-				arm_joint_positions[joint] = incrementPosition(
-						arm_joint_positions[joint], cmds[v2mini_teleop::ARM_JOINT_VEL],
-						arm_joint_lims[joint][0], arm_joint_lims[joint][1]);
-
-				arm_cmds[joint].data = arm_joint_positions[joint];
-
+				current_joint = toggleArmJoint(current_joint, TOTAL_ARM_JOINTS, false);
+				controller.resetArmToggle();
 			}
-			else
+			else if (controller.armToggled() == -1)
 			{
-				arm_cmds[joint].data = arm_joint_positions[joint];
+				current_joint = toggleArmJoint(current_joint, TOTAL_ARM_JOINTS, true);
+				controller.resetArmToggle();
 			}
 
-			arm_pubs[joint].publish(arm_cmds[joint]);
+			// set the target value for each joint dynamixel and publish
+			for (int joint = 0; joint < TOTAL_ARM_JOINTS; joint++)
+			{
+				if (current_joint == joint)
+				{
+					arm_joint_positions[joint] = incrementPosition(
+							arm_joint_positions[joint], cmds[v2mini_teleop::ARM_JOINT_VEL],
+							arm_joint_lims[joint][0], arm_joint_lims[joint][1]);
+
+					arm_cmds[joint].data = arm_joint_positions[joint];
+
+				}
+				else
+				{
+					arm_cmds[joint].data = arm_joint_positions[joint];
+				}
+
+				arm_pubs[joint].publish(arm_cmds[joint]);
+			}
 		}
 
 		// publish topics

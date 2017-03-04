@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <stdio.h>
 #include <cmath>
+#include <string>
 
 #include "v2mini_teleop/teleop_controller.h"
 
@@ -409,6 +410,12 @@ float* TeleopController::getGamepadCmds()
 		arm_joint_toggle = -1;
 	}
 
+//	// Toggle the arm joint to control
+//	if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_UP))
+//	{
+//		arm_joint_toggle = 1;
+//	}
+
 	mapVelocity(cmds, max_value);
 
 	return cmds;
@@ -477,4 +484,9 @@ void TeleopController::resetArmToggle()
 	arm_joint_toggle = 0;
 }
 
-}  // namespace v2mini_teleop
+std::string TeleopController::get_routine()
+{
+	return routine;
+}
+
+} // namespace v2mini_teleop
