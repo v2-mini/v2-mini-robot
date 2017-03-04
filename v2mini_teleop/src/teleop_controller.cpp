@@ -285,6 +285,16 @@ float* TeleopController::getKeyCmds()
 		arm_joint_toggle = -1;
 	}
 
+	// Toggle the arm joint to control
+	if (keys[SDL_SCANCODE_1])
+	{
+		routine = "grab";
+	}
+	else if (keys[SDL_SCANCODE_2])
+	{
+		routine = "pass";
+	}
+
 	mapVelocity(key_cmds, max_value);
 
 	return key_cmds;
@@ -409,12 +419,6 @@ float* TeleopController::getGamepadCmds()
 	{
 		arm_joint_toggle = -1;
 	}
-
-//	// Toggle the arm joint to control
-//	if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_UP))
-//	{
-//		arm_joint_toggle = 1;
-//	}
 
 	mapVelocity(cmds, max_value);
 
