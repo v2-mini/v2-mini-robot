@@ -493,4 +493,9 @@ std::string TeleopController::get_routine()
 	return routine;
 }
 
+void TeleopController::set_routine(std::string routine_type)
+{
+	routine = routine_type;
+}
+
 } // namespace v2mini_teleop

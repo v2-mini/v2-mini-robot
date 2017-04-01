@@ -52,6 +52,7 @@ class TeleopController {
 		~TeleopController();
 
 		std::string get_routine();
+		void set_routine(std::string);
 		float* getKeyCmds();
 		float* getGamepadCmds();
 		bool checkQuitStatus();

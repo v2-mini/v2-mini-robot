@@ -228,8 +228,16 @@ int main(int argc, char ** argv)
 		// control arm w/ script
 		if (arm_control == "script")
 		{
-			routine_cmds.data = controller.get_routine();
-			routine_pub.publish(routine_cmds);
+			std::string routine_type = controller.get_routine();
+
+			if (routine_type != "none")
+			{
+				routine_cmds.data = routine_type;
+				routine_pub.publish(routine_cmds);
+				controller.set_routine("none");
+			}
+
+
 		}
 		// teleop arm
 		else
