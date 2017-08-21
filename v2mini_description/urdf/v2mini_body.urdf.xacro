@@ -23,7 +23,7 @@
   <link name="base_link">
     <!-- fake inertial values -->
     <inertial>
-      <mass value="1"/>
+      <mass value="10"/>
       <inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
       <origin/>
     </inertial>
@@ -55,7 +55,7 @@
   <link name="torso_link">
     <!-- fake inertial values -->
     <inertial>
-      <mass value="1"/>
+      <mass value="5"/>
       <inertia ixx="100" ixy="0" ixz="0" iyy="100" iyz="0" izz="100" />
       <origin/>
     </inertial>
@@ -89,6 +89,12 @@
       </geometry>
       <material name="red"/>
     </visual>
+     <inertial>
+       <origin xyz="0 0 0" rpy="0 0 0"/>
+       <mass value="1"/>
+       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+
   </link>
 
   <joint name="${prefix}_axel" type="continuous">

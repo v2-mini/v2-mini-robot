@@ -1,5 +1,24 @@
 # Software Usage and Setup Instruction for V2-Mini
 
+## ROS packages for the V2-Mini Robot.
+
+## STOMP MOVEIT README
+
+Note you also need to git clone https://github.com/ros-industrial/industrial_moveit 
+
+to your workspace, and compile it before this will work.
+
+
+To run:
+
+roslaunch v2mini_moveit_config demo.launch
+
+
+In Rviz turn on:
+
+Allow Ik approximate
+Show robot goal state
+set planner to "stomp" 
 This repository is a ROS stack for the V2Mini robot.
 
 ## Setup
@@ -384,3 +403,4 @@ The robot arm should now move to the planned position.
 ## Bugs
 
 See GitHub issues for bug tracking.
+>>>>>>> edd4ad2a0806ac6aed72b4d5be87fa5412908b27

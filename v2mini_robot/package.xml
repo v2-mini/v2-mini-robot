@@ -14,6 +14,7 @@
   <run_depend>v2mini_teleop</run_depend>
   <run_depend>v2mini_controllers</run_depend>
   <run_depend>v2mini_moveit_config</run_depend>
+  <run_depend>v2mini_gazebo</run_depend>
 
   <export>
       <metapackage/>

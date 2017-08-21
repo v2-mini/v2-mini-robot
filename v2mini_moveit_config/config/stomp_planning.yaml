@@ -1,0 +1,32 @@
+# OPTIMIZATION TASK
+
+num_feature_basis_functions: 1
+trajectory_duration: 8.0
+num_time_steps: 30
+publish_trajectory_markers: False
+publish_best_trajectory_marker: True
+
+# STOMP
+
+max_iterations: 180
+max_iterations_after_collision_free: 1
+max_rollouts: 100
+min_rollouts: 30
+num_rollouts_per_iteration: 10
+
+# STOMP (optional params)
+
+use_noise_adaption: true
+write_to_file: false
+use_openmp: false
+
+noise_coefficients:
+  - group_name: right_arm
+    stddev: [0.3, 1.0, 1.0, 0.8, 0.3, 0.3]
+    min_stddev: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
+    decay: [0.8, 0.8, 0.8, 0.8, 0.8, 0.8]
+
+features:
+  - class: stomp_moveit_interface/ObstacleAvoidanceFeature
+    collision_clearance: 0.02
+

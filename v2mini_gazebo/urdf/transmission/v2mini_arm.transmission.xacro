@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:macro name="v2mini_arm_transmission" params="prefix">
+
+   <transmission name="${prefix}arm_joint1_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="${prefix}arm_joint1">
+        <hardwareInterface>PositionJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="${prefix}arm_joint1_motor">
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
+
+    <transmission name="${prefix}arm_joint2_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="${prefix}arm_joint2">
+        <hardwareInterface>PositionJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="${prefix}arm_joint2_motor">
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
+  
+    <transmission name="${prefix}arm_joint3_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="${prefix}arm_joint3">
+        <hardwareInterface>PositionJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="${prefix}arm_joint3_motor">
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
+
+   <transmission name="${prefix}arm_joint4_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="${prefix}arm_joint4">
+        <hardwareInterface>PositionJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="${prefix}arm_joint4_motor">
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
+
+   <transmission name="${prefix}arm_joint5_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="${prefix}arm_joint5">
+        <hardwareInterface>PositionJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="${prefix}arm_joint5_motor">
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
+
+  </xacro:macro>
+
+</robot>
